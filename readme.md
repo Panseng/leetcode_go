@@ -10,7 +10,7 @@
 思路1：先用sort.Int排序，然后比较相邻元素是否相同\
 ```if nums[i] == nums[i-1]```\
 思路2：hash表，判断hash表中是否存在该值，存在返回真，不存在则添加\
-实现：arr_repeat
+实现：[arr_repeat](arr_repeat)
 
 ## [53. 最大子数组和](https://leetcode-cn.com/problems/two-sum/solution/liang-shu-zhi-he-by-leetcode-solution/)
 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。\
@@ -21,7 +21,7 @@
 >解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
 
 思路：贪心算法，将前值累加，如果大于0则继续累计，同时求最大值\
-实现：max_sub_array
+实现：[max_sub_array](max_sub_array)
 ```
     max := nums[0]
     for i := 1; i < len(nums); i++ {
@@ -45,7 +45,7 @@
 
 思路1：暴力枚举，通过两层遍历求解\
 思路2 ：hash表法，遍历期间，先求解hash表中是否存在目标值，不存在则将当前值加入hash表
-实现：two_sum
+实现：[two_sum](two_sum)
 ```bigquery
     hashTable := map[int]int{}
     for i, x := range nums {
@@ -109,7 +109,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
         nums1[tail] = cur
     }
 ```
-实现：merge_increase_array
+实现：[merge_increase_array](merge_increase_array)
 
 ##  [350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
 给你两个整数数组nums1 和 nums2 ，请你以数组形式返回两数组的交集。返回结果中每个元素出现的次数，应与元素在两个数组中都出现的次数一致（如果出现次数不一致，则考虑取较小值）。可以不考虑输出结果的顺序。
@@ -156,7 +156,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
     }
     return intersection
 ```
-实现：two_array_intersect
+实现：[two_array_intersect](two_array_intersect)
 
 ## [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 给定一个数组 prices ，它的第i 个元素prices[i]表示一支给定股票第 i 天的价格。\
@@ -181,4 +181,79 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 	}
 	return maxProfit
 ```
-实现：stock_max_profit
+实现：[stock_max_profit](stock_max_profit)
+
+## [566. 重塑矩阵](https://leetcode-cn.com/problems/reshape-the-matrix/)
+
+在 MATLAB 中，有一个非常有用的函数 reshape ，它可以将一个m x n 矩阵重塑为另一个大小不同（r x c）的新矩阵，但保留其原始数据。\
+给你一个由二维数组 mat 表示的m x n 矩阵，以及两个正整数 r 和 c ，分别表示想要的重构的矩阵的行数和列数。\
+重构后的矩阵需要将原始矩阵的所有元素以相同的 行遍历顺序 填充。\
+如果具有给定参数的 reshape 操作是可行且合理的，则输出新的重塑矩阵；否则，输出原始矩阵。
+
+> ![image](img/566-01.jpg)
+>输入：mat = [[1,2],[3,4]], r = 1, c = 4\
+>输出：[[1,2,3,4]]\
+> 
+> ![image](img/566-02.jpg)\
+> 输入：mat = [[1,2],[3,4]], r = 2, c = 4\
+>输出：[[1,2],[3,4]]
+
+思路：二维数组的一维表示，对于m行n列的数组，i < m*n，则一维表示为mat[i/n][i%n]
+```bigquery
+	m,n:=len(mat), len(mat[0])
+	if m*n !=r*c{
+		return mat
+	}
+	newMat := make([][]int, r)
+	for i := range newMat{
+		newMat[i] = make([]int, c)
+	}
+	for i:=0;i<m*n;i++{
+		newMat[i/c][i%c] = mat[i/n][i%n]
+	}
+	return newMat
+```
+实现：[matrix_reshape](matrix_reshape)
+
+## [118. 杨辉三角](https://leetcode-cn.com/problems/pascals-triangle/)
+给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。\
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+![image](img/118-0.gif)
+>输入: numRows = 5\
+>输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+> 
+>输入: numRows = 1\
+>输出: [[1]]
+
+思路：数学，利用对称性\
+特征：第n行有n个数，头尾数值为1，中间数值为前一行按序两两相加，且对称\
+```bigquery
+    // 初始思路
+	ans := make([][]int, numRows)
+	for i:=range ans{
+		ans[i] = make([]int, i+1)
+		ans[i][0],ans[i][i] = 1,1
+	}
+	for i := 1;i< numRows-1;i++{
+		for j:=0;j<i;j++{
+			ans[i+1][j+1]=ans[i][j]+ans[i][j+1]
+		}
+	}
+    return ans
+```
+最终思路
+```bigquery
+    // 合并循环，利用对称性 code 3
+	ans := make([][]int, numRows)
+	for i:=range ans{
+		ans[i] = make([]int, i+1)
+		ans[i][0],ans[i][i] = 1,1
+		// 利用对称性，对半缩减循环
+		for j:=1;j<i/2+1;j++{
+			ans[i][j] = ans[i-1][j-1]+ans[i-1][j]
+			ans[i][i-j] = ans[i-1][j-1]+ans[i-1][j]
+		}
+	}
+	return ans
+```
+实现：[yang_hui_triangle](yang_hui_triangle)
