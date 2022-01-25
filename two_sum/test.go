@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-func main()  {
+func main() {
 	times := 10000000
-	nums := []int{2,7,11,15}
+	nums := []int{2, 7, 11, 15}
 
 	start := time.Now()
 	for n := 0; n < times; n++ {
@@ -25,21 +25,21 @@ func main()  {
 }
 
 func twoSum(nums []int, target int) []int {
-	for left:=0;left <= len(nums)-2;left++{
-		for right :=left+1;right<len(nums);right++{
-			if nums[left]+nums[right]==target{
-				return []int{left,right}
+	for left := 0; left <= len(nums)-2; left++ {
+		for right := left + 1; right < len(nums); right++ {
+			if nums[left]+nums[right] == target {
+				return []int{left, right}
 			}
 		}
 	}
-	return []int{-1,-1}
+	return []int{-1, -1}
 }
 
 func twoSumHash(nums []int, target int) []int {
-	hashTable := map[int]int {}
-	for i, x :=range nums{
-		if p, ok := hashTable[target-x];ok{
-			return []int {p,i}
+	hashTable := map[int]int{}
+	for i, x := range nums {
+		if p, ok := hashTable[target-x]; ok {
+			return []int{p, i}
 		}
 		hashTable[x] = i
 	}

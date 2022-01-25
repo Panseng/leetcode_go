@@ -38,10 +38,10 @@ func maxProfit1(prices []int) int {
 
 func maxProfit2(prices []int) int {
 	max := 0
-	for i :=0;i< len(prices)-1;i++{
-		for n:=i+1;n<len(prices);n++{
-			profit :=prices[n]-prices[i]
-			if profit>max{
+	for i := 0; i < len(prices)-1; i++ {
+		for n := i + 1; n < len(prices); n++ {
+			profit := prices[n] - prices[i]
+			if profit > max {
 				max = profit
 			}
 		}
