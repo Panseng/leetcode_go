@@ -257,3 +257,137 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 	return ans
 ```
 实现：[yang_hui_triangle](yang_hui_triangle)
+
+## [36. 有效的数独](https://leetcode-cn.com/problems/valid-sudoku/)
+
+请你判断一个9 x 9 的数独是否有效。只需要 根据以下规则 ，验证已经填入的数字是否有效即可。\
+数字1-9在每一行只能出现一次。\
+数字1-9在每一列只能出现一次。\
+数字1-9在每一个以粗实线分隔的3x3宫内只能出现一次。（请参考示例图）\
+![image](img/36-0.png)\
+
+**注意：**\
+一个有效的数独（部分已被填充）**不一定是可解**的。\
+只需要根据以上规则，验证已经填入的数字是否有效即可。\
+**空白格** 用 **'.'** 表示。
+>输入：board =
+>[["5","3",".",".","7",".",".",".","."]
+>,["6",".",".","1","9","5",".",".","."]
+>,[".","9","8",".",".",".",".","6","."]
+>,["8",".",".",".","6",".",".",".","3"]
+>,["4",".",".","8",".","3",".",".","1"]
+>,["7",".",".",".","2",".",".",".","6"]
+>,[".","6",".",".",".",".","2","8","."]
+>,[".",".",".","4","1","9",".",".","5"]
+>,[".",".",".",".","8",".",".","7","9"]]
+>输出：true
+
+思路1：将二维数组展开为一维数组，再用hash表查重，写完代码发现其实复杂度更高了。
+实现见[code](sudoku_is_valid/test.go)
+
+思路2：直接二维展开，通过3个hash表分别查重\
+这里注意需要将byte转换为int，才能用于index ```index := v - '1'```
+```bigquery
+func isValidSudoku(board [][]byte) bool {
+	var rows, cols [9][9]int
+	var ceils [3][3][9]int
+	for i, r := range board {
+		for j, v := range r {
+			if v == '.' {
+				continue
+			}
+			index := v - '1'
+			rows[i][index]++
+			cols[j][index]++
+			ceils[i/3][j/3][index]++
+			if rows[i][index] > 1 || cols[j][index] > 1 || ceils[i/3][j/3][index] > 1 {
+				return false
+			}
+		}
+	}
+	return true
+}
+```
+实现：[sudoku_is_valid](sudoku_is_valid)
+
+## [73. 矩阵置零](https://leetcode-cn.com/problems/set-matrix-zeroes/)
+给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 [原地](https://baike.baidu.com/item/%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95) 算法。\
+
+> 示例1\
+> 输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]\
+> 输出：[[1,0,1],[0,0,0],[1,0,1]]\
+> ![image](img/73-1.jpg)
+> 
+> 示例2\
+> 输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]\
+> 输出：[[0,0,0,0],[0,4,5,0],[0,3,1,0]]\
+> ![image](img/73-2.jpg)
+
+> 函数输入```func setZeroes(matrix [][]int) ```
+
+思路1：变量记录需要变更的行列索引数据```row, col := map[int]bool{}, map[int]bool{}```\
+> 两次遍历，第一次获取索引数据，第二次变更\
+
+```bigquery
+	row, col := map[int]bool{}, map[int]bool{}
+	for i, r := range matrix {
+		for j, v := range r {
+			if v == 0 {
+				row[i] = true
+				col[j] = true
+			}
+		}
+	}
+	for i, r := range matrix {
+		for j, _ := range r {
+			if row[i] || col[j] {
+				matrix[i][j] = 0
+			}
+		}
+	}
+```
+思路2：用矩阵的第一行和第一列代替方法一中的两个标记数组，以达到 O(1)O(1) 的额外空间。但这样会导致原数组的第一行和第一列被修改，无法记录它们是否原本包含 00。因此我们需要额外使用两个标记变量分别记录第一行和第一列是否原本包含 00。
+```bigquery
+    n, m := len(matrix), len(matrix[0])
+    row0, col0 := false, false
+    for _, v := range matrix[0] {
+        if v == 0 {
+            row0 = true
+            break
+        }
+    }
+    for _, r := range matrix {
+        if r[0] == 0 {
+            col0 = true
+            break
+        }
+    }
+    for i := 1; i < n; i++ {
+        for j := 1; j < m; j++ {
+            if matrix[i][j] == 0 {
+                matrix[i][0] = 0
+                matrix[0][j] = 0
+            }
+        }
+    }
+    for i := 1; i < n; i++ {
+        for j := 1; j < m; j++ {
+            if matrix[i][0] == 0 || matrix[0][j] == 0 {
+                matrix[i][j] = 0
+            }
+        }
+    }
+    if row0 {
+        for j := 0; j < m; j++ {
+            matrix[0][j] = 0
+        }
+    }
+    if col0 {
+        for _, r := range matrix {
+            r[0] = 0
+        }
+    }
+```
+实现：[matrix_set_zeros](matrix_set_zeros)
+
+
