@@ -46,7 +46,7 @@
 思路1：暴力枚举，通过两层遍历求解\
 思路2 ：hash表法，遍历期间，先求解hash表中是否存在目标值，不存在则将当前值加入hash表
 实现：[two_sum](two_sum)
-```bigquery
+```go
     hashTable := map[int]int{}
     for i, x := range nums {
         if p, ok := hashTable[target-x]; ok {
@@ -67,7 +67,7 @@
 
 思路1：暴力排序，合并两个数组后，调用系统排序方法\
 思路2：双指针法，题干的数组是有序数组（无序数组可以在排序后使用该方法，但效率可能不如第一个思路），直接用双指针进行排序
-```bigquery
+```go
     sorted := make([]int, 0, m+n)
     p1, p2 := 0, 0
     for {
@@ -90,7 +90,7 @@
     copy(nums1, sorted)
 ```
 思路3：逆向双指针法
-```bigquery
+```go
 for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
         var cur int
         if p1 == -1 {
@@ -117,7 +117,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 >输出：[2,2]
 
 思路1：hash法，短hash表，长数组校验，各循环一次
-```bigquery
+```go
     if len(nums1) > len(nums2) {
         return intersect(nums2, nums1)
     }
@@ -136,7 +136,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
     return intersection
 ```
 思路2：先排序，再加以双指针法
-```bigquery
+```go
     sort.Ints(nums1)
     sort.Ints(nums2)
     length1, length2 := len(nums1), len(nums2)
@@ -169,7 +169,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 
 思路1：暴力法，两次遍历（数组长度大时，耗时）\
 思路2：历史最低值，历史最大差值
-```bigquery
+```go
 	minPrice := prices[0] + 1
 	maxProfit :=0
 	for _, v := range prices{
@@ -199,7 +199,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 >输出：[[1,2],[3,4]]
 
 思路：二维数组的一维表示，对于m行n列的数组，i < m*n，则一维表示为mat[i/n][i%n]
-```bigquery
+```go
 	m,n:=len(mat), len(mat[0])
 	if m*n !=r*c{
 		return mat
@@ -227,7 +227,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 
 思路：数学，利用对称性\
 特征：第n行有n个数，头尾数值为1，中间数值为前一行按序两两相加，且对称\
-```bigquery
+```go
     // 初始思路
 	ans := make([][]int, numRows)
 	for i:=range ans{
@@ -242,7 +242,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
     return ans
 ```
 最终思路
-```bigquery
+```go
     // 合并循环，利用对称性 code 3
 	ans := make([][]int, numRows)
 	for i:=range ans{
@@ -287,7 +287,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 
 思路2：直接二维展开，通过3个hash表分别查重\
 这里注意需要将byte转换为int，才能用于index ```index := v - '1'```
-```bigquery
+```go
 func isValidSudoku(board [][]byte) bool {
 	var rows, cols [9][9]int
 	var ceils [3][3][9]int
@@ -328,7 +328,7 @@ func isValidSudoku(board [][]byte) bool {
 思路1：变量记录需要变更的行列索引数据```row, col := map[int]bool{}, map[int]bool{}```\
 > 两次遍历，第一次获取索引数据，第二次变更\
 
-```bigquery
+```go
 	row, col := map[int]bool{}, map[int]bool{}
 	for i, r := range matrix {
 		for j, v := range r {
@@ -347,7 +347,7 @@ func isValidSudoku(board [][]byte) bool {
 	}
 ```
 思路2：用矩阵的第一行和第一列代替方法一中的两个标记数组，以达到 O(1)O(1) 的额外空间。但这样会导致原数组的第一行和第一列被修改，无法记录它们是否原本包含 00。因此我们需要额外使用两个标记变量分别记录第一行和第一列是否原本包含 00。
-```bigquery
+```go
     n, m := len(matrix), len(matrix[0])
     row0, col0 := false, false
     for _, v := range matrix[0] {
@@ -390,4 +390,141 @@ func isValidSudoku(board [][]byte) bool {
 ```
 实现：[matrix_set_zeros](matrix_set_zeros)
 
+## [387. 字符串中的第一个唯一字符](https://leetcode-cn.com/problems/first-unique-character-in-a-string/)
+给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
 
+> 输入：s = "leetcode"\
+> 输出：返回 0\
+> 
+> 输入：s = "loveleetcode"\
+> 输出：返回 2\
+
+**提示**：你可以假定该字符串只包含小写字母。
+
+思路1：hash表记录出现次数，两次遍历获取首个出现一次的索引\
+注意，range字符串返回的是int32的值
+```go
+func firstUniqChar2(s string)int  {
+	a := make(map[int32]int)
+	for _, v:=range s{
+		a[v]++
+	}
+	for i,v:=range s{
+		if a[v] == 1{
+			return i
+		}
+	}
+	return -1
+}
+```
+思路2：hash表法，利用先进先出的数组，嵌套遍历\
+关键思路，对首个非唯一的字符串进行排除
+```go
+	for len(que) > 0 && hashTable[que[0].ch] >1{
+		que = que[1:] // 先进先出
+	}
+```
+先进先出关键代码```que = que[1:]```
+代码：
+```go
+func firstUniqChar5(s string) int {
+	var que []loc
+	hashTable := make(map[int32]int)
+	for i,v:=range s{
+		hashTable[v]++
+		if hashTable[v] == 1{
+			que = append(que, loc{v, i})
+		}
+	}
+	for len(que) > 0 && hashTable[que[0].ch] >1{
+		que = que[1:] // 先进先出
+	}
+	if len(que)>0{
+		return que[0].pos
+	}
+	return -1
+}
+```
+实现：[char_first_unique](char_first_unique)\
+**_注意_**：力扣官方解法，仅限定小写字母，所以可以声明```[26]int{}```
+
+## [383. 赎金信](https://leetcode-cn.com/problems/ransom-note/)
+给你两个字符串：ransomNote 和 magazine ，判断 ransomNote 能不能由 magazine 里面的字符构成。\
+如果可以，返回 true ；否则返回 false 。\
+magazine 中的每个字符只能在 ransomNote 中使用一次。\
+> 示例 1：\
+> 输入：ransomNote = "a", magazine = "b"\
+> 输出：false
+>
+> 示例 2：\
+> 输入：ransomNote = "aa", magazine = "ab"\
+> 输出：false
+>
+> 示例 3：\
+> 输入：ransomNote = **"aa"**, magazine = **"aba"**\
+> 输出：true
+
+关键点，```ransomNote```中同一字符出现的次数要小于等于```magazine```中字符
+
+思路：hash表法，先统计```magazine```中字符出现次数，遍历```ransomNote```，如果```ransomNote```出现其他字符或者字符多于```magazine```则返回false
+```go
+func canConstruc2(ransomNote string, magazine string) bool{
+	mHash:=make(map[int32]int)
+	for _,v:=range magazine{
+		mHash[v]++
+	}
+	for _,v:=range ransomNote{
+		mHash[v]--
+		if mHash[v] < 0{
+			return false
+		}
+	}
+	return true
+}
+```
+实现：[char_can_construct](char_can_construct)
+
+## [242. 有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
+给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。\
+**注意**：若s 和 t中每个字符出现的次数都相同，则称s 和 t互为字母异位词。
+> 示例1:\
+> 输入: s = "anagram", t = "nagaram"\
+> 输出: true
+>
+> 示例 2:\
+> 输入: s = "rat", t = "car"\
+> 输出: false
+
+思路1：hash表法，同383. 赎金信
+```go
+func isAnagram2(s string, t string) bool {
+	if len(s) != len(t){
+		return false
+	}
+	sHash := make(map[rune]int)
+	for _,v:=range s{
+		sHash[v]++
+	}
+	for _,v:=range t{
+		sHash[v]--
+		if sHash[v] < 0{
+			return false
+		}
+	}
+	return true
+}
+```
+思路2：对两个字符串进行排序后比较
+```go
+func isAnagram3(s string, t string) bool {
+	ls1,ls2 := []byte(s),[]byte(t)
+	sort.Slice(ls1, func(i, j int) bool {
+		return ls1[i]<ls1[j]
+	})
+	sort.Slice(ls2, func(i, j int) bool {
+		return ls2[i]<ls2[j]
+	})
+	return string(ls1) == string(ls2)
+}
+```
+实现：[char_is_anagram](char_is_anagram)
