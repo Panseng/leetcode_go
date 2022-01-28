@@ -528,3 +528,180 @@ func isAnagram3(s string, t string) bool {
 }
 ```
 实现：[char_is_anagram](char_is_anagram)
+
+## [141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+给你一个链表的头节点 head ，判断链表中是否有环。\
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。注意：pos 不作为参数进行传递。仅仅是为了标识链表的实际情况。\
+如果链表中存在环，则返回 true 。 否则，返回 false 。
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+```
+> ![](img/141-1.png)\
+> 输入：head = [3,2,0,-4], pos = 1\
+> 输出：true\
+> 解释：链表中有一个环，其尾部连接到第二个节点。
+> 
+> ![](img/141-2.png)\
+> 输入：head = [1,2], pos = 0\
+> 输出：true\
+> 解释：链表中有一个环，其尾部连接到第一个节点。
+> 
+> ![](img/141-3.png)\
+> 输入：head = [1], pos = -1\
+> 输出：false\
+> 解释：链表中没有环。
+
+思路1：快慢指针，如果快指针先到达nil值，则没有循环，如果快指针和慢指针相等则说明有循环
+```go
+func hasCycle(head *ListNode) bool {
+    fast, slow:= head, head
+    for{
+        if fast == nil || fast.Next == nil{
+            return false
+        }
+        fast = fast.Next.Next
+        slow = slow.Next
+        if fast == slow{
+            break
+        }
+    }
+    return true
+}
+```
+思路2：hash表法
+```go
+func hasCycle(head *ListNode) bool {
+    seen := map[*ListNode]bool{}
+    for head != nil {
+        if seen[head] {
+            return true
+        }
+        seen[head] = true
+        head = head.Next
+    }
+    return false
+}
+```
+
+## [21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+```
+![](img/21-0.jpg)
+> 输入：l1 = [1,2,4], l2 = [1,3,4]\
+> 输出：[1,1,2,3,4,4]
+
+思路1：递归调用
+```go
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+    if list1 == nil{
+        return list2
+    }
+    if list2 == nil{
+        return list1
+    }
+    if list1.Val < list2.Val{
+        list1.Next = mergeTwoLists(list1.Next, list2)
+        return list1
+    }
+    list2.Next = mergeTwoLists(list2.Next, list1)
+    return list2
+}
+```
+[思路2](https://leetcode-cn.com/problems/merge-two-sorted-lists/solution/he-bing-liang-ge-you-xu-lian-biao-by-leetcode-solu/) ：双指针、哨兵 & 游标法
+
+```go
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+    var ls *ListNode = new (ListNode)
+    var p = ls // ls作为哨兵，p作为游标，游标不断Next前进，直到最后遍历完
+    for list1 != nil && list2 != nil{
+        if list1.Val < list2.Val{
+            p.Next = list1
+            list1 = list1.Next
+        } else{
+            p.Next = list2
+            list2 = list2.Next
+        }
+        p = p.Next
+
+    }
+    if list1 == nil{
+        p.Next = list2
+    } else{
+        p.Next = list1
+    }
+    return ls.Next
+}
+```
+
+## [203. 移除链表元素](https://leetcode-cn.com/problems/remove-linked-list-elements/)
+给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。
+
+> ![](img/203-0.jpg)
+> 输入：head = [1,2,6,3,4,5,6], val = 6\
+> 输出：[1,2,3,4,5]
+
+思路1：遍历法，通过配置游标的方式
+code1：
+```go
+func removeElements(head *ListNode, val int) *ListNode {
+    for head != nil && head.Val == val{ // 去除头部可能相同值的节点
+        head = head.Next
+    }
+    if head == nil{
+        return head
+    }
+    prev := head // 配置游标
+    for prev.Next != nil{
+        if prev.Next.Val == val{
+            prev.Next = prev.Next.Next // 删除相同值节点
+        } else{
+            prev = prev.Next // 游往下一个节点
+        }
+    }
+    return head
+}
+```
+code2：
+```go
+func removeElements(head *ListNode, val int) *ListNode {
+    var preHead *ListNode = &ListNode{Next: head}
+    for temp := preHead; temp.Next != nil;{ // 游标
+        if temp.Next.Val == val{
+            temp.Next = temp.Next.Next
+        } else{
+            temp = temp.Next
+        }
+    }
+    return preHead.Next
+}
+```
+
+思路2：递归
+```go
+func removeElements(head *ListNode, val int) *ListNode {
+    if head == nil{
+        return head
+    }
+    head.Next = removeElements(head.Next, val)
+    if head.Val == val{
+        return head.Next
+    }
+    return head
+}
+```
