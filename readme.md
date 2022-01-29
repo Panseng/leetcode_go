@@ -43,8 +43,8 @@
 >输出：[0,1]\
 >解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
 
-思路1：暴力枚举，通过两层遍历求解\
-思路2 ：hash表法，遍历期间，先求解hash表中是否存在目标值，不存在则将当前值加入hash表
+思路1：暴力枚举，通过两层迭代求解\
+思路2 ：hash表法，迭代期间，先求解hash表中是否存在目标值，不存在则将当前值加入hash表
 实现：[two_sum](two_sum)
 ```go
     hashTable := map[int]int{}
@@ -167,7 +167,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 >解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。\
 >注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
 
-思路1：暴力法，两次遍历（数组长度大时，耗时）\
+思路1：暴力法，两次迭代（数组长度大时，耗时）\
 思路2：历史最低值，历史最大差值
 ```go
 	minPrice := prices[0] + 1
@@ -187,7 +187,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 
 在 MATLAB 中，有一个非常有用的函数 reshape ，它可以将一个m x n 矩阵重塑为另一个大小不同（r x c）的新矩阵，但保留其原始数据。\
 给你一个由二维数组 mat 表示的m x n 矩阵，以及两个正整数 r 和 c ，分别表示想要的重构的矩阵的行数和列数。\
-重构后的矩阵需要将原始矩阵的所有元素以相同的 行遍历顺序 填充。\
+重构后的矩阵需要将原始矩阵的所有元素以相同的 行迭代顺序 填充。\
 如果具有给定参数的 reshape 操作是可行且合理的，则输出新的重塑矩阵；否则，输出原始矩阵。
 
 > ![image](img/566-01.jpg)
@@ -326,7 +326,7 @@ func isValidSudoku(board [][]byte) bool {
 > 函数输入```func setZeroes(matrix [][]int) ```
 
 思路1：变量记录需要变更的行列索引数据```row, col := map[int]bool{}, map[int]bool{}```\
-> 两次遍历，第一次获取索引数据，第二次变更\
+> 两次迭代，第一次获取索引数据，第二次变更\
 
 ```go
 	row, col := map[int]bool{}, map[int]bool{}
@@ -401,7 +401,7 @@ func isValidSudoku(board [][]byte) bool {
 
 **提示**：你可以假定该字符串只包含小写字母。
 
-思路1：hash表记录出现次数，两次遍历获取首个出现一次的索引\
+思路1：hash表记录出现次数，两次迭代获取首个出现一次的索引\
 注意，range字符串返回的是int32的值
 ```go
 func firstUniqChar2(s string)int  {
@@ -417,7 +417,7 @@ func firstUniqChar2(s string)int  {
 	return -1
 }
 ```
-思路2：hash表法，利用先进先出的数组，嵌套遍历\
+思路2：hash表法，利用先进先出的数组，嵌套迭代\
 关键思路，对首个非唯一的字符串进行排除
 ```go
 	for len(que) > 0 && hashTable[que[0].ch] >1{
@@ -466,7 +466,7 @@ magazine 中的每个字符只能在 ransomNote 中使用一次。\
 
 关键点，```ransomNote```中同一字符出现的次数要小于等于```magazine```中字符
 
-思路：hash表法，先统计```magazine```中字符出现次数，遍历```ransomNote```，如果```ransomNote```出现其他字符或者字符多于```magazine```则返回false
+思路：hash表法，先统计```magazine```中字符出现次数，迭代```ransomNote```，如果```ransomNote```出现其他字符或者字符多于```magazine```则返回false
 ```go
 func canConstruc2(ransomNote string, magazine string) bool{
 	mHash:=make(map[int32]int)
@@ -543,17 +543,17 @@ func isAnagram3(s string, t string) bool {
  * }
  */
 ```
-> ![](img/141-1.png)\
+> ![](img/141-1.png) \
 > 输入：head = [3,2,0,-4], pos = 1\
 > 输出：true\
 > 解释：链表中有一个环，其尾部连接到第二个节点。
 > 
-> ![](img/141-2.png)\
+> ![](img/141-2.png) \
 > 输入：head = [1,2], pos = 0\
 > 输出：true\
 > 解释：链表中有一个环，其尾部连接到第一个节点。
 > 
-> ![](img/141-3.png)\
+> ![](img/141-3.png) \
 > 输入：head = [1], pos = -1\
 > 输出：false\
 > 解释：链表中没有环。
@@ -602,7 +602,7 @@ func hasCycle(head *ListNode) bool {
  * }
  */
 ```
-![](img/21-0.jpg)
+![](img/21-0.jpg) \
 > 输入：l1 = [1,2,4], l2 = [1,3,4]\
 > 输出：[1,1,2,3,4,4]
 
@@ -628,7 +628,7 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 ```go
 func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
     var ls *ListNode = new (ListNode)
-    var p = ls // ls作为哨兵，p作为游标，游标不断Next前进，直到最后遍历完
+    var p = ls // ls作为哨兵，p作为游标，游标不断Next前进，直到最后迭代完
     for list1 != nil && list2 != nil{
         if list1.Val < list2.Val{
             p.Next = list1
@@ -652,11 +652,11 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 ## [203. 移除链表元素](https://leetcode-cn.com/problems/remove-linked-list-elements/)
 给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。
 
-> ![](img/203-0.jpg)
+> ![](img/203-0.jpg) \
 > 输入：head = [1,2,6,3,4,5,6], val = 6\
 > 输出：[1,2,3,4,5]
 
-思路1：遍历法，通过配置游标的方式
+思路1：迭代法，通过配置游标的方式
 code1：
 ```go
 func removeElements(head *ListNode, val int) *ListNode {
@@ -705,3 +705,96 @@ func removeElements(head *ListNode, val int) *ListNode {
     return head
 }
 ```
+
+## [206. 反转链表](https://leetcode-cn.com/problems/reverse-linked-list/)
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+
+> ![](img/206-1.jpg) \
+> 输入：head = [1,2,3,4,5]\
+> 输出：[5,4,3,2,1]
+> 
+> 输入：head = []
+> 输出：[]
+
+思路1：迭代，通过栈辅助
+```go
+func reverseList(head *ListNode) *ListNode {
+	if head == nil{
+		return head
+	}
+	//nodeMap := make(map[*ListNode]bool)
+	nodeList := []*ListNode{}
+	for head != nil{
+		//if nodeMap[head] {
+		//	break
+		//}
+		//nodeMap[head] = true
+		nodeList = append(nodeList, head)
+		head = head.Next
+	}
+	preHead := new(ListNode)
+	prev := preHead
+	for i:=len(nodeList)-1;i>=0;i--{
+		prev.Next = nodeList[i]
+		prev = prev.Next
+	}
+	prev.Next = nil
+	return preHead.Next
+}
+```
+
+思路2：迭代，倒叙迭代
+![](img/206-0.gif)
+```go
+func reverseList2(head *ListNode) *ListNode {
+	var preHead *ListNode
+	curr := head
+	for curr != nil{
+		next:=curr.Next
+		curr.Next = preHead // 倒叙排列
+		preHead = curr
+		curr = next
+	}
+	return preHead
+}
+```
+
+思路3：[递归](https://leetcode-cn.com/problems/reverse-linked-list/solution/dong-hua-yan-shi-206-fan-zhuan-lian-biao-by-user74/) \
+```go
+func reverseList3(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil{
+		return head
+	}
+	cur := reverseList3(head.Next) //  一直递归到head.Next = 5，cur为5
+	head.Next.Next = head // head为游标，将cur为5的next指向当前head（4）
+	head.Next = nil
+	return cur
+}
+```
+实现：[reverse.go](list_node/reverse/reverse.go)
+
+## [83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
+给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表 。
+
+> ![](img/83-1.jpg) \
+> 输入：head = [1,1,2]\
+> 输出：[1,2]
+
+思路：迭代
+```go
+func deleteDuplicates2(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	prev := head
+	for prev.Next != nil {
+		if prev.Val == prev.Next.Val {
+			prev.Next = prev.Next.Next
+		} else {
+			prev = prev.Next
+		}
+	}
+	return head
+}
+```
+实现：[delete.go](list_node/duplicates/delete.go)
