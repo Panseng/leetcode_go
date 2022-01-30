@@ -798,3 +798,145 @@ func deleteDuplicates2(head *ListNode) *ListNode {
 }
 ```
 实现：[delete.go](list_node/duplicates/delete.go)
+
+## [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
+给定一个只包括 '('，')'，'{'，'}'，'['，']'的字符串 s ，判断字符串是否有效。\
+有效字符串需满足：
+1. 左括号必须用相同类型的右括号闭合。
+2. 左括号必须以正确的顺序闭合。
+
+>示例 1：\
+> 输入：s = "()"\
+> 输出：true
+> 
+> 示例2：\
+> 输入：s = "()[]{}"\
+> 输出：true
+
+> 示例3：\
+> 输入：s = "(]"\
+> 输出：false
+
+> 示例4：\
+> 输入：s = "([)]"\
+> 输出：false
+
+> 示例5：\
+> 输入：s = "{[]}"\
+> 输出：true
+
+思路：栈
+实现1：
+```go
+func isValid(s string) bool {
+	if len(s)%2 != 0 {
+		return false
+	}
+	ss := strings.Split(s, "")
+	isStart := map[string]bool{
+		"{": true,
+		"[": true,
+		"(": true,
+	}
+	rightEnd := map[string]string{
+		"{": "}",
+		"[": "]",
+		"(": ")",
+	}
+	starts := []string{}
+	for _,v:=range ss{
+		if isStart[v]{
+			starts = append(starts,v)
+			continue
+		}
+		if len(starts) == 0 || rightEnd[starts[len(starts) - 1]] != v{
+			return false
+		}
+		starts = starts[0:len(starts)-1]
+	}
+	if len(starts) > 0{
+		return false
+	}
+	return true
+}
+```
+实现2：
+```go
+func isValid2(s string) bool {
+	if len(s)%2 != 0 {
+		return false
+	}
+	rl := map[byte]byte{
+		'[':']',
+		'{':'}',
+		'(':')',
+	}
+	stack := []byte{}
+	for i := range s{
+		if rl[s[i]]>0{
+			stack = append(stack, s[i])
+			continue
+		}
+		if len(stack) == 0 || rl[stack[len(stack)-1]] != s[i]{
+			return false
+		}
+		stack = stack[:len(stack)-1]
+	}
+	return len(stack) == 0
+}
+```
+实现：[is_valid.go](string/brackets/is_valid.go)
+
+
+## [232. 用栈实现队列](https://leetcode-cn.com/problems/implement-queue-using-stacks/)
+请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（push、pop、peek、empty）：
+
+实现 MyQueue 类：
+1. void push(int x) 将元素 x 推到队列的末尾
+2. int pop() 从队列的开头移除并返回元素
+3. int peek() 返回队列开头的元素
+4. boolean empty() 如果队列为空，返回 true ；否则，返回 false
+
+说明：
+1. 你只能使用标准的栈操作 —— 也就是只有 push to top, peek/pop from top, size, 和 is empty 操作是合法的。
+2. 你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
+```go
+type MyQueue struct {
+    inStack, outStack []int
+}
+
+func Constructor() MyQueue {
+    return MyQueue{}
+}
+
+func (q *MyQueue) Push(x int) {
+    q.inStack = append(q.inStack, x)
+}
+
+func (q *MyQueue) in2out() {
+    for len(q.inStack) > 0 {
+        q.outStack = append(q.outStack, q.inStack[len(q.inStack)-1])
+        q.inStack = q.inStack[:len(q.inStack)-1]
+    }
+}
+
+func (q *MyQueue) Pop() int {
+    if len(q.outStack) == 0 {
+        q.in2out()
+    }
+    x := q.outStack[len(q.outStack)-1]
+    q.outStack = q.outStack[:len(q.outStack)-1]
+    return x
+}
+
+func (q *MyQueue) Peek() int {
+    if len(q.outStack) == 0 {
+        q.in2out()
+    }
+    return q.outStack[len(q.outStack)-1]
+}
+
+func (q *MyQueue) Empty() bool {
+    return len(q.inStack) == 0 && len(q.outStack) == 0
+}
+```
