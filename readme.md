@@ -940,3 +940,111 @@ func (q *MyQueue) Empty() bool {
     return len(q.inStack) == 0 && len(q.outStack) == 0
 }
 ```
+
+## [144. 二叉树的前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
+
+> 二叉树结构 
+> 
+> ![](img/144-0.png)
+> 
+> 先序遍历：先(根)序遍历（根左右）\
+> 中序遍历：中(根)序遍历（左根右）\
+> 后序遍历：后(根)序遍历（左右根）
+> 
+
+给你二叉树的根节点 root，返回它节点值的 前序 遍历。
+
+实现1：
+```go
+func preorderTraversal(root *TreeNode) []int {
+    vals :=[]int{}
+    stack := []*TreeNode{}
+    node := root
+    for node != nil || len(stack)>0{
+        for node != nil{
+            vals = append(vals, node.Val)
+            stack = append(stack, node.Right)
+            node = node.Left
+        }
+        node = stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+    }
+
+    return vals
+}
+```
+实现2：是实现一的实现
+```go
+func preorderTraversal(root *TreeNode) []int {
+    vals := []int{}
+    var preorder func(*TreeNode)
+    preorder =func (node *TreeNode){
+        if node == nil{
+            return
+        }
+        vals = append(vals, node.Val)
+        preorder(node.Left)
+        preorder(node.Right)
+    }
+    preorder(root)
+    return vals
+}
+```
+### [94. 二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+中序遍历，参考上题
+```go
+func inorderTraversal(root *TreeNode) []int {
+    vals :=[]int{}
+    stack := []*TreeNode{}
+    node := root
+    for node != nil || len(stack)>0{
+        for node != nil{
+            stack = append(stack, node)
+            node = node.Left
+        }
+        node = stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+        vals = append(vals, node.Val)
+        node = node.Right
+    }
+
+    return vals
+}
+```
+实现2：
+```go
+func inorderTraversal(root *TreeNode) []int {
+    vals := []int{}
+    var preorder func(*TreeNode)
+    preorder =func (node *TreeNode){
+        if node == nil{
+            return
+        }
+        preorder(node.Left)
+        vals = append(vals, node.Val)
+        preorder(node.Right)
+    }
+    preorder(root)
+    return vals
+}
+```
+
+### [145. 二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
+同144题
+实现1：
+```go
+func postorderTraversal(root *TreeNode) []int {
+    vals := []int{}
+    var preorder func(*TreeNode)
+    preorder =func (node *TreeNode){
+        if node == nil{
+            return
+        }
+        preorder(node.Left)
+        preorder(node.Right)
+        vals = append(vals, node.Val)
+    }
+    preorder(root)
+    return vals
+}
+```
