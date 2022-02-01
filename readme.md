@@ -992,6 +992,8 @@ func preorderTraversal(root *TreeNode) []int {
 ```
 ### [94. 二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 中序遍历，参考上题
+> 中序遍历：中(根)序遍历（左根右）
+> 
 ```go
 func inorderTraversal(root *TreeNode) []int {
     vals :=[]int{}
@@ -1031,6 +1033,8 @@ func inorderTraversal(root *TreeNode) []int {
 
 ### [145. 二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
 同144题
+> 后序遍历：后(根)序遍历（左右根）
+> 
 实现1：
 ```go
 func postorderTraversal(root *TreeNode) []int {
@@ -1046,5 +1050,237 @@ func postorderTraversal(root *TreeNode) []int {
     }
     preorder(root)
     return vals
+}
+```
+实现2：
+1. 先迭代所有左侧的节点，填入节点栈
+2. 将最深处的左侧节点值填入结果栈
+3. 对最深处节点右侧节点填入节点栈
+4. 迭代 2
+
+
+
+```go
+func postorderTraversal(root *TreeNode) []int {
+    vals :=[]int{}
+    stack := []*TreeNode{}
+    var prev *TreeNode
+    for root != nil || len(stack) > 0{
+        for root != nil{
+            stack = append(stack, root)
+            root = root.Left
+        }
+        root = stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+        if root.Right == nil || root.Right == prev{
+            vals = append(vals, root.Val)
+            prev = root
+            root = nil
+        } else{
+            stack = append(stack, root)
+            root = root.Right
+        }
+    }
+
+    return vals
+}
+```
+
+## [102. 二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+给你二叉树的根节点 root ，返回其节点值的 层序遍历 。 （即逐层地，从左到右访问所有节点）。
+
+> ![](img/102-1.jpg)
+> 输入：root = [3,9,20,null,null,15,7] \
+> 输出：[[3],[9,20],[15,7]]
+
+思路1：迭代读取逐层节点，并逐层填入结果栈
+```go
+func levelOrder(root *TreeNode) [][]int {
+    vals := [][]int{}
+    var levels []*TreeNode
+    for root != nil || len(levels) > 0{
+        tempVals := []int{}
+        if root != nil{
+            tempVals = append(tempVals, root.Val)
+            vals = append(vals, tempVals)
+            levels = []*TreeNode{}
+            levels = pushNode(root.Left, levels)
+            levels = pushNode(root.Right, levels)
+            root = nil
+            continue
+        }
+        tempNodes := []*TreeNode{}
+        for _, node := range levels{
+            tempVals = append(tempVals, node.Val)
+            tempNodes = pushNode(node.Left, tempNodes)
+            tempNodes = pushNode(node.Right, tempNodes)
+        }
+        vals = append(vals, tempVals)
+        levels = tempNodes
+    }
+    return vals
+}
+
+// 填入非空节点
+func pushNode(node *TreeNode, ns []*TreeNode) []*TreeNode{
+    if node != nil{
+        ns = append(ns, node)
+    }
+    return ns
+}
+```
+简易实现
+```go
+func levelOrder(root *TreeNode) [][]int {
+    ret := [][]int{}
+    if root == nil {
+        return ret
+    }
+    q := []*TreeNode{root}
+    for i := 0; len(q) > 0; i++ {
+        ret = append(ret, []int{})
+        p := []*TreeNode{}
+        for j := 0; j < len(q); j++ {
+            node := q[j]
+            ret[i] = append(ret[i], node.Val)
+            if node.Left != nil {
+                p = append(p, node.Left)
+            }
+            if node.Right != nil {
+                p = append(p, node.Right)
+            }
+        }
+        q = p
+    }
+    return ret
+}
+```
+
+## [104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
+
+给定一个二叉树，找出其最大深度。\
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。\
+说明: 叶子节点是指没有子节点的节点。
+如下，返回3
+```tree
+    3
+   / \
+  9  20
+    /  \
+   15   7
+```
+思路：类似102
+```go
+func maxDepth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    level := 0
+    q := []*TreeNode{root}
+    for i := 0; len(q) > 0; i++ {
+        p := []*TreeNode{}
+        for _, node := range(q){
+            if node.Left != nil {
+                p = append(p, node.Left)
+            }
+            if node.Right != nil {
+                p = append(p, node.Right)
+            }
+        }
+        q = p
+        level++
+    }
+    return level
+}
+```
+思路2，利用递归
+```go
+func maxDepth(root *TreeNode) int {
+    if root == nil{
+        return 0
+    }
+    return max(maxDepth(root.Right), maxDepth(root.Left)) + 1 // 每层选最大的长度+1
+}
+
+func max(a,b int) int{
+    if a > b{
+        return a
+    }
+    return b
+}
+```
+
+## [101. 对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
+下列思路存在问题：如果元素为空，那么不会纳入到节点栈，那么就可以会进入到错位对比，会出错：\
+`[1,2,2,null,3,null,3]`\
+在第三层，`null,3,null,3` -》变为`3,3`
+```go
+func isSymmetric(root *TreeNode) bool {
+    if root == nil{
+        return true
+    }
+    nodes := []*TreeNode{root}
+    for i := 0; len(nodes) > 0; i++ {
+        if i > 0 && len(nodes) % 2 != 0{
+            return false
+        }
+        temps := []*TreeNode{}
+        for j, node := range(nodes){
+            if i > 0 && j < len(nodes) / 2 && node.Val != nodes[len(nodes)-j-1].Val{
+                return false
+            }
+            if node.Left == nil {
+                temps = append(temps, node.Left)
+            } else
+            if node.Right != nil {
+                temps = append(temps, node.Right)
+            }
+        }
+        nodes = temps
+    }
+    return true
+}
+```
+思路1：利用递归
+```go
+func isSymmetric(root *TreeNode) bool {
+    return check(root, root)
+}
+
+func check(left, right *TreeNode) bool{
+    if left == nil && right == nil{
+        return true
+    }
+    if left == nil || right == nil{
+        return false
+    }
+    return left.Val == right.Val && check(left.Left, right.Right) && check(left.Right, right.Left)
+}
+```
+思路2：迭代：将需要对比的两个节点，两两前后填入节点栈，每次对比两个
+```go
+func isSymmetric(root *TreeNode) bool {
+    var left, right *TreeNode
+    que :=[]*TreeNode{root, root}
+    for len(que)>0 {
+        left, right = que[0], que[1]
+        que = que[2:]
+        if left == nil && right == nil{
+            continue
+        }
+        if left == nil || right == nil{
+            return false
+        }
+        if left.Val != right.Val{
+            return false
+        }
+
+        que = append(que, left.Left)
+        que = append(que, right.Right)
+        
+        que = append(que, left.Right)
+        que = append(que, right.Left)
+    }
+    return true
 }
 ```
