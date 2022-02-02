@@ -1284,3 +1284,112 @@ func isSymmetric(root *TreeNode) bool {
     return true
 }
 ```
+
+## [226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
+给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。
+
+> ![](img/226-1.jpg) \
+> 输入：root = [4,2,7,1,3,6,9]\
+> 输出：[4,7,2,9,6,3,1]
+
+思路1：递归
+```go
+func invertTree(root *TreeNode) *TreeNode {
+    if root == nil{
+        return root
+    }
+    root.Left, root.Right = invertTree(root.Right), invertTree(root.Left)
+    return root
+}
+```
+思路2：迭代、遍历
+```go
+func invertTree(root *TreeNode) *TreeNode {
+    if root == nil{
+        return root
+    }
+    nodes := []*TreeNode{root}
+    for len(nodes) > 0{
+        node := nodes[0]
+        nodes = nodes[1:]
+        node.Left, node.Right = node.Right, node.Left
+        if node.Left != nil{
+            nodes = append(nodes, node.Left)
+        }
+        if node.Right != nil{
+            nodes = append(nodes, node.Right)
+        }
+    }
+    return root
+}
+```
+
+## [112. 路径总和](https://leetcode-cn.com/problems/path-sum/)
+给你二叉树的根节点root 和一个表示目标和的整数targetSum 。判断该树中是否存在 根节点到叶子节点 的路径，这条路径上所有节点值相加等于目标和 targetSum 。如果存在，返回 true ；否则，返回 false 。\
+叶子节点 是指没有子节点的节点。
+
+> ![](img/112-1.jpg)
+> 输入：root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22\
+> 输出：true \
+> 解释：等于目标和的根节点到叶节点路径如上图所示。
+
+思路1：迭代
+```go
+func hasPathSum(root *TreeNode, targetSum int) bool {
+    if root == nil{
+        return false
+    }
+    nodes := []*TreeNode{root}
+    for len(nodes)>0{
+        node := nodes[0]
+        nodes = nodes[1:]
+        if node.Right == nil && node.Left == nil{
+            if node.Val == targetSum{
+                return true
+            }
+            continue
+        }
+        if node.Left != nil{
+            node.Left.Val += node.Val
+            nodes = append(nodes, node.Left)
+        }
+        if node.Right != nil{
+            node.Right.Val += node.Val
+            nodes = append(nodes, node.Right)
+        }
+    }
+    return false
+}
+```
+思路2：递归
+```go
+func hasPathSum(root *TreeNode, targetSum int) bool {
+    if root == nil{
+        return false
+    }
+    if root.Left == nil && root.Right == nil{
+        return root.Val == targetSum
+    }
+    if root.Left != nil{
+        root.Left.Val += root.Val
+    }
+    if root.Right != nil{
+        root.Right.Val += root.Val
+    }
+    return hasPathSum(root.Left, targetSum) || hasPathSum(root.Right, targetSum)
+}
+```
+优化思路2：
+```go
+func hasPathSum(root *TreeNode, targetSum int) bool {
+    if root == nil{
+        return false
+    }
+    if root.Left == nil && root.Right == nil{
+        return root.Val == targetSum
+    }
+    return hasPathSum(root.Left, targetSum - root.Val) || hasPathSum(root.Right, targetSum - root.Val)
+}
+```
+
+
