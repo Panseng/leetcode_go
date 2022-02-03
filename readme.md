@@ -1392,4 +1392,154 @@ func hasPathSum(root *TreeNode, targetSum int) bool {
 }
 ```
 
+## [700. 二叉搜索树中的搜索](https://leetcode-cn.com/problems/search-in-a-binary-search-tree/)
+给定二叉搜索树（BST）的根节点root和一个整数值val。\
+你需要在 BST 中找到节点值等于val的节点。 返回以该节点为根的子树。 如果节点不存在，则返回 null 。
+
+> 二叉搜索树满足如下性质：
+> - 左子树所有节点的元素值均小于根的元素值；
+> - 右子树所有节点的元素值均大于根的元素值。
+
+> ![](img/700-1.jpg) \
+> 输入：root = [4,2,7,1,3], val = 2 \
+> 输出：[2,1,3]
+> 
+> ![](img/700-2.jpg) \
+> 输入：root = [4,2,7,1,3], val = 5 \
+> 输出：[]
+
+思路1：迭代
+```go
+func searchBST(root *TreeNode, val int) *TreeNode {
+    if root == nil{
+        return root
+    }
+    nodes := []*TreeNode{root}
+    for len(nodes) > 0{
+        node := nodes[0]
+        if node.Val == val{
+            return node
+        }
+        nodes = nodes[1:]
+        if node.Left != nil{
+            nodes = append(nodes, node.Left)
+        }
+        if node.Right != nil{
+            nodes = append(nodes, node.Right)
+        }
+    }
+    return nil
+}
+```
+优化
+```go
+func searchBST(root *TreeNode, val int) *TreeNode {
+    if root == nil{
+        return root
+    }
+    for root != nil{
+        if root.Val == val{
+            return root
+        }
+        if val < root.Val{
+            root = root.Left
+        } else {
+            root = root.Right
+        }
+    }
+    return root
+}
+```
+思路2：递归
+```go
+func searchBST(root *TreeNode, val int) *TreeNode {
+    if root == nil{
+        return root
+    }
+    if root.Val == val{
+        return root
+    }
+    if val < root.Val{
+        return searchBST(root.Left, val)
+    }
+    return searchBST(root.Right, val)
+}
+```
+
+## [701. 二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
+给定二叉搜索树（BST）的根节点root和要插入树中的值value，将值插入二叉搜索树。 返回插入后二叉搜索树的根节点。 输入数据 保证 ，新值和原始二叉搜索树中的任意节点值都不同。\
+注意，可能**存在多种有效**的插入方式，只要树在插入后仍保持为二叉搜索树即可。 你**可以返回任意有效**的结果 。
+
+> ![](img/701-1.jpg) \
+> 输入：root = [4,2,7,1,3], val = 5 \
+> 输出：[4,2,7,1,3,5] \
+> 解释：另一个满足题目要求可以通过的树是： \
+> ![](img/701-2.jpg)
+
+思路1：迭代
+```go
+func insertIntoBST(root *TreeNode, val int) *TreeNode {
+    node := new(TreeNode)
+    node.Val = val
+    if root == nil{
+        return node
+    }
+    prev := root
+    for true{
+        if val < prev.Val{
+            if prev.Left == nil{
+                prev.Left = node
+                return root
+            }
+            prev = prev.Left
+            continue
+        }
+        if prev.Right == nil{
+            prev.Right = node
+            return root
+        }
+        prev = prev.Right
+    }
+    return root
+}
+```
+优化：新节点作为一个结果并**在需要的时候初始化**，减少变量`&TreeNode{Val: val}`
+```go
+func insertIntoBST(root *TreeNode, val int) *TreeNode {
+    if root == nil{
+        return &TreeNode{Val: val}
+    }
+    prev := root
+    for true{
+        if val < prev.Val{
+            if prev.Left == nil{
+                prev.Left = &TreeNode{Val: val}
+                return root
+            }
+            prev = prev.Left
+            continue
+        }
+        if prev.Right == nil{
+            prev.Right = &TreeNode{Val: val}
+            return root
+        }
+        prev = prev.Right
+    }
+    return root
+}
+```
+思路2：递归
+```go
+func insertIntoBST(root *TreeNode, val int) *TreeNode {
+    if root == nil{
+        return &TreeNode{Val: val}
+    }
+    if val < root.Val{
+        root.Left = insertIntoBST(root.Left, val)
+    } else{
+        root.Right = insertIntoBST(root.Right, val)
+    }
+    return root
+}
+```
 
