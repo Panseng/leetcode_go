@@ -973,7 +973,7 @@ func preorderTraversal(root *TreeNode) []int {
     return vals
 }
 ```
-实现2：是实现一的实现
+实现2：是实现一的递归
 ```go
 func preorderTraversal(root *TreeNode) []int {
     vals := []int{}
@@ -1542,4 +1542,121 @@ func insertIntoBST(root *TreeNode, val int) *TreeNode {
     return root
 }
 ```
+## [98. 验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。\
+> 有效 二叉搜索树定义如下：
+> - 节点的左子树只包含 小于 当前节点的数。
+> - 节点的右子树只包含 大于 当前节点的数。
+> - 所有左子树和右子树自身必须也是二叉搜索树。\
+> 大白话讲就是右边的**都比顶点大**
+
+思路1：递归
+```go
+func isValidBST(root *TreeNode) bool {
+    return checkBST(root, math.MinInt64, math.MaxInt64)
+}
+func checkBST(node *TreeNode, min, max int) bool{
+    if node == nil{
+        return true
+    }
+    if node.Val <= min || node.Val >= max{
+        return false
+    }
+    return checkBST(node.Left, min, node.Val) && checkBST(node.Right, node.Val, max)
+}
+```
+思路2：中序遍历，作比较
+- 中序遍历：中(根)序遍历（左根右）
+- 二叉搜索树，左侧<根<右侧节点值
+```go
+func isValidBST(root *TreeNode) bool {
+    min := math.MinInt64
+    que :=[]*TreeNode{}
+    for root != nil || len(que) > 0{
+        for root != nil{
+            que = append(que,root)
+            root = root.Left
+        }
+        root = que[len(que)-1]
+        que = que[:len(que)-1]
+        if min >= root.Val{
+            return false
+        }
+        min = root.Val
+        root = root.Right
+    }
+    return true
+}
+```
+
+## [653. 两数之和 IV - 输入 BST](https://leetcode-cn.com/problems/two-sum-iv-input-is-a-bst/)
+给定一个二叉搜索树 root 和一个目标结果 k，如果 BST 中存在两个元素且它们的和等于给定的目标结果，则返回 true。
+> ![](img/653-1.jpg) \
+> 输入: root = [5,3,6,2,4,null,7], k = 9\
+> 输出: true
+> 
+> ![](img/653-2.jpg) \
+> 输入: root = [5,3,6,2,4,null,7], k = 28 \
+> 输出: false
+
+思路：迭代
+```go
+func findTarget(root *TreeNode, k int) bool {
+    if root == nil{
+        return false
+    }
+    ans := make(map[int]bool)
+    nodes := []*TreeNode{root}
+    for len(nodes)>0{
+        node := nodes[0]
+        if _,ok := ans[k-node.Val];ok{
+            return true
+        }
+        ans[node.Val] = true
+        nodes = nodes[1:]
+        if node.Left != nil{
+            nodes = append(nodes, node.Left)
+        }
+        if node.Right != nil{
+            nodes = append(nodes, node.Right)
+        }
+    }
+    return false
+}
+```
+## [235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。\
+最近公共祖先的**定义**为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”\
+例如，给定如下二叉搜索树: root =[6,2,8,0,4,7,9,null,null,3,5]\
+![](img/235.png)\
+> 输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8\
+> 输出: 6\
+> 解释: 节点 2 和节点 8 的最近公共祖先是 6。
+> 
+> 输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4\
+> 输出: 2\
+> 解释: 节点 2 和节点 4 的最近公共祖先是 2, 因为根据定义最近公共祖先节点可以为节点本身。
+
+思路：迭代，利用二叉搜索树定义，比较两个节点与当前节点大小关系
+```go
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	for root != nil{
+        if (root.Val < p.Val && root.Val > q.Val) || (root.Val > p.Val && root.Val < q.Val){ // 在两边
+            return root
+        }
+        if root.Val == p.Val || root.Val == q.Val{ // 已经定位到其中一个节点
+            return root
+        }
+        if root.Val < p.Val && root.Val < q.Val{
+            root = root.Right
+        }
+        if root.Val > p.Val && root.Val > q.Val{
+            root = root.Left
+        }
+    }
+    return root
+}
+```
+
 
