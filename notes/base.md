@@ -95,12 +95,12 @@ func majorityElement(nums []int) int {
 1. 特判，对于数组长度 n，如果数组为 null 或者数组长度小于 3，返回[]。
 2. 对数组进行排序。
 3. 遍历排序后数组：
-- 若 nums[i]>0nums[i]>0：因为已经排序好，所以后面不可能有三个数加和等于 00，直接返回结果。
+- 若 nums[i]>0nums[i]>0：因为已经排序好，所以后面不可能有三个数加和等于 0，直接返回结果。
 - 对于重复元素：跳过，避免出现重复解
 - 令左指针 L=i+1L=i+1，右指针 R=n-1R=n−1，当 L<RL<R 时，执行循环：
 - - 当 nums[i]+nums[L]+nums[R]==0nums[i]+nums[L]+nums[R]==0，执行循环，判断左界和右界是否和下一位置重复，去除重复解。并同时将 L,RL,R 移到下一位置，寻找新的解
-- - 若和大于 00，说明 nums[R]nums[R] 太大，RR 左移
-- - 若和小于 00，说明 nums[L]nums[L] 太小，LL 右移
+- - 若和大于 0，说明 nums[R]nums[R] 太大，RR 左移
+- - 若和小于 0，说明 nums[L]nums[L] 太小，LL 右移
 
 超出时间限制
 ```go
@@ -164,5 +164,267 @@ func threeSum(nums []int) [][]int {
         }
     }
     return ans
+}
+```
+
+## [75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/)
+给定一个包含红色、白色和蓝色、共n个元素的数组nums，**原地**对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。\
+我们使用整数 0、1 和 2 分别表示红色、白色和蓝色。\
+必须在**不使用库的sort**函数的情况下解决这个问题。
+> 示例 1：\
+> 输入：nums = [2,0,2,1,1,0]\
+> 输出：[0,0,1,1,2,2]
+>
+> 示例 2：\
+> 输入：nums = [2,0,1]\
+> 输出：[0,1,2]
+
+思路1：暴力，通过判断各个值的数目，直接替换
+```go
+func sortColors(nums []int)  {
+    zeroCount := 0
+    oneCount := 0
+    for _,v := range nums{
+        if v == 0{
+            zeroCount++
+            continue
+        }
+        if v == 1{
+            oneCount++
+            continue
+        }
+    }
+    for i,_ := range nums{
+        if zeroCount > 0{
+            nums[i] = 0
+            zeroCount--
+            continue
+        }
+        if oneCount > 0{
+            nums[i] = 1
+            oneCount--
+            continue
+        }
+        nums[i] = 2
+    }
+}
+```
+思路2：单指针 \
+我们可以考虑对数组进行两次遍历。\
+- 在第一次遍历中，我们将数组中所有的 0 交换到数组的头部。\
+- 在第二次遍历中，我们将数组中所有的 1 交换到头部的 0 之后。\
+- 此时，所有的 2 都出现在数组的尾部，这样我们就完成了排序。
+
+```go
+func sortColors(nums []int)  {
+    lastIndex := replace(nums, 0)
+    replace(nums[lastIndex:], 1)
+}
+
+func replace(nums []int, target int) int{
+    lastIndex := 0
+    for i, v := range nums{
+        if v == target{
+            nums[i], nums[lastIndex] = nums[lastIndex], nums[i]
+            lastIndex++
+        }
+    }
+    return lastIndex
+}
+```
+思路3：双指针
+具体地，我们用指针 p0 来交换 0，p1来交换 1，初始值都为 0。当我们从左向右遍历整个数组时：
+- 如果找到了1，那么将其与nums[p1] 进行交换，并将p1向后移动一个位置，这与方法一是相同的；
+- 如果找到了0，那么将其与nums[p0]进行交换，并将p0 向后移动一个位置。这样做是正确的吗？
+- - 我们可以注意到，因为连续的0之后是连续的1，因此如果我们将0与nums[p0]进行交换，那么我们可能会把一个 1 交换出去。当 p0<p1时，我们已经将一些 11 连续地放在头部，此时一定会把一个 1 交换出去，导致答案错误。
+- - 因此，如果 p0<p1 ，那么我们需要再将nums[i] 与 nums[p1] 进行交换，其中 i 是当前遍历到的位置，在进行了第一次交换后，nums[i] 的值为 1，我们需要将这个 1 放到「头部」的末端。在最后，无论是否有p0<p1 ，我们需要将 p0和p1 均向后移动一个位置，而不是仅将p0向后移动一个位置。
+```go
+func sortColors(nums []int)  {
+    zeroI := 0
+    oneI := 0
+    for i, v := range nums{
+        if v == 0{
+            nums[i], nums[zeroI] = nums[zeroI], nums[i]
+            if zeroI < oneI{
+                nums[oneI], nums[i] = nums[i], nums[oneI]
+            }
+            zeroI++
+            oneI++
+            continue
+        }
+        if v == 1{
+            nums[i], nums[oneI] = nums[oneI], nums[i]
+            oneI++
+        }
+    }
+}
+```
+思路4：双指针
+与思路3类似，我们也可以考虑使用指针 p0 来交换 0，p2来交换2。\
+此时，p0 的初始值仍然为0，而 p2 的初始值为 n−1。\
+在遍历的过程中，我们需要找出所有的 0 交换至数组的头部，并且找出所有的 2 交换至数组的尾部。\
+由于此时其中一个指针 p2 是从右向左移动的，因此当我们在从左向右遍历整个数组时，如果遍历到的位置超过了 p2 ，那么就可以直接停止遍历了。
+
+```go
+func sortColors(nums []int)  {
+    zeroI := 0
+    twoI := len(nums)-1
+    for i := 0; i <= twoI; i++{
+        for ; i <= twoI && nums[i] == 2;twoI--{
+            nums[twoI], nums[i] = nums[i], nums[twoI]
+        } 
+        if nums[i] == 0{
+            nums[zeroI], nums[i] = nums[i], nums[zeroI]
+            zeroI++
+        }
+    }
+}
+```
+## [56. 合并区间](https://leetcode-cn.com/problems/merge-intervals/)
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
+
+> 示例 1：\
+> 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]\
+> 输出：[[1,6],[8,10],[15,18]]\
+> 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].\
+> **注意**，输入可能是[[1,4],[0,0]]
+```go
+func merge(intervals [][]int) [][]int {
+    iLen := len(intervals)
+    if iLen < 2{
+        return intervals
+    }
+    // 二维数组排序
+    sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i][0] < intervals[j][0]//按照每行的第一个元素排序
+	})
+    ans := [][]int{intervals[0]}
+    for i,v := range intervals{
+        if i == 0{
+            continue
+        }
+        aLen := len(ans)
+        aLast := ans[aLen-1]
+        if aLast[1] >= v[0]{
+            aLast[0] = min(aLast[0], v[0])
+            aLast[1] = max(aLast[1], v[1])
+            continue
+        }
+        ans = append(ans, v)
+    }
+    return ans
+}
+
+func min(a, b int) int{
+    if a < b{
+        return a
+    }
+    return b
+}
+
+func max(a, b int) int{
+    if a < b{
+        return b
+    }
+    return a
+}
+```
+## [706. 设计哈希映射](https://leetcode-cn.com/problems/design-hashmap/submissions/)
+不使用任何内建的哈希表库设计一个哈希映射（HashMap）。
+
+实现 MyHashMap 类：
+- MyHashMap() 用空映射初始化对象
+- void put(int key, int value) 向 HashMap 插入一个键值对 (key, value) 。如果 key 已经存在于映射中，则更新其对应的值 value 。
+- int get(int key) 返回特定的 key 所映射的 value ；如果映射中不包含 key 的映射，返回 -1 。
+- void remove(key) 如果映射中存在 key 的映射，则移除 key 和它所对应的 value 。
+
+思路1：简单粗暴
+```go
+type MyHashMap struct {
+	Val [][2]int
+}
+
+
+func Constructor() MyHashMap {
+	return MyHashMap{[][2]int{}}
+}
+
+
+func (this *MyHashMap) Put(key int, value int)  {
+	if i, ok := this.isExist(key); ok{
+		this.Val[i][1] = value
+	} else{
+		this.Val = append(this.Val,[2]int{key, value})
+	}
+}
+
+
+func (this *MyHashMap) isExist(key int) (index int, here bool) {
+	here = false
+	index = -1
+	for i, v := range this.Val{
+		if v[0] == key{
+			here = true
+			index = i
+			break
+		}
+	}
+	return
+}
+
+
+func (this *MyHashMap) Get(key int) int {
+	for _, v := range this.Val{
+		if v[0] == key{
+			return v[1]
+		}
+	}
+	return -1
+}
+
+
+func (this *MyHashMap) Remove(key int)  {
+	if i, ok := this.isExist(key); ok{
+		if len(this.Val)>i+1{
+			this.Val = append(this.Val[:i], this.Val[i+1:]...)
+		} else{
+			this.Val = this.Val[:i]
+		}
+	}
+}
+```
+思路2：仅hash表
+```go
+type MyHashMap struct {
+    Val map[int]int
+}
+
+
+func Constructor() MyHashMap {
+    return MyHashMap{}
+}
+
+
+func (this *MyHashMap) Put(key int, value int)  {
+    if this.Val == nil{
+        this.Val = make(map[int]int)
+    }
+    this.Val[key] = value
+}
+
+
+func (this *MyHashMap) Get(key int) int {
+    if _, ok := this.Val[key]; ok{
+        return this.Val[key]
+    }
+    return -1
+}
+
+
+func (this *MyHashMap) Remove(key int)  {
+    if _, ok := this.Val[key]; !ok{ // 不存在则跳出
+        return
+    }
+    delete(this.Val,key)
 }
 ```

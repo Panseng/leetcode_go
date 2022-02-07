@@ -4,6 +4,7 @@
 ![](img/structure.png) \
 目录:
 - [入门](notes/getting_started.md)
+- [基础](notes/base.md)
 
 
 
