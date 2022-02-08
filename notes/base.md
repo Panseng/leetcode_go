@@ -428,3 +428,174 @@ func (this *MyHashMap) Remove(key int)  {
     delete(this.Val,key)
 }
 ```
+
+## [119. 杨辉三角 II](https://leetcode-cn.com/problems/pascals-triangle-ii/)
+给定一个非负索引 rowIndex，返回「杨辉三角」的第 rowIndex 行。\
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+![](../img/118-0.gif)
+> 示例 1:\
+> 输入: rowIndex = 3\
+> 输出: [1,3,3,1]
+>
+> 示例 2:\
+> 输入: rowIndex = 0\
+> 输出: [1]
+
+思路1：先生成相应杨辉三角值，再输出对应行
+```go
+func getRow(rowIndex int) []int {
+	ans := make([][]int, rowIndex+1)
+	for i := range ans {
+		ans[i] = make([]int, i+1)
+		ans[i][0], ans[i][i] = 1, 1
+		// 利用对称性，对半缩减循环
+		for j := 1; j < i/2+1; j++ {
+			ans[i][j] = ans[i-1][j-1] + ans[i-1][j]
+			ans[i][i-j] = ans[i-1][j-1] + ans[i-1][j]
+		}
+	}
+	return ans[rowIndex]
+}
+```
+思路1优化：注意到对第 i+1 行的计算仅用到了第 i 行的数据，因此可以使用滚动数组的思想优化空间复杂度。
+```go
+func getRow(rowIndex int) []int {
+    var pre, cur []int
+    for i := 0; i <= rowIndex; i++ {
+        cur = make([]int, i+1)
+        cur[0], cur[i] = 1, 1
+        for j := 1; j < i; j++ {
+            cur[j] = pre[j-1] + pre[j]
+        }
+        pre = cur
+    }
+    return pre
+}
+```
+思路2：杨辉三角公式
+![](../img/119-2.png)
+```go
+func getRow(rowIndex int) []int {
+    row := make([]int, rowIndex+1)
+    row[0] = 1
+    for i := 1; i <= rowIndex; i++ {
+        row[i] = row[i-1] * (rowIndex - i + 1) / i
+    }
+    return row
+}
+```
+
+## [48. 旋转图像](https://leetcode-cn.com/problems/rotate-image/)
+给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。\
+你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
+> 示例 1：\
+> ![](../img/48-1.jpg) \
+> 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]] \
+> 输出：[[7,4,1],[8,5,2],[9,6,3]]
+> 
+> 示例 2：\
+> ![](../img/48-2.jpg) \
+> 输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]] \
+> 输出：[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+
+思路1：借助辅助数组
+![](../img/48-3.png)
+```go
+func rotate(matrix [][]int)  {
+    n := len(matrix)
+    ans := make([][]int, n)
+    for i := range ans{
+        ans[i] = make([]int, n)
+    }
+    for i, row := range matrix{
+        for j, v := range row{
+            ans[j][n-i-1] = v
+        }
+    }
+    copy(matrix, ans)
+}
+```
+思路2：思路1的公式嵌套推理
+![](../img/48-6.png)
+![](../img/48-7.png)
+![](../img/48-8.png)
+![](../img/48-9.png)
+![](../img/48-10.png)
+```go
+func rotate(matrix [][]int)  {
+    n := len(matrix)
+    for i := 0; i < n/2; i++ {
+        for j := 0; j < (n+1)/2; j++ {
+            matrix[i][j], matrix[n-j-1][i], matrix[n-i-1][n-j-1], matrix[j][n-i-1] =
+                matrix[n-j-1][i], matrix[n-i-1][n-j-1], matrix[j][n-i-1], matrix[i][j]
+        }
+    }
+}
+```
+思路3：翻转替代
+![](../img/48-4.png) \
+![](../img/48-5.png) \
+如果先对角翻转，再水平翻转，则逆时针旋转90°
+```go
+func rotate(matrix [][]int)  {
+    n := len(matrix)
+    // 水平翻转
+    for i := 0; i < n / 2; i++{
+        matrix[i], matrix[n-i-1] = matrix[n-i-1], matrix[i]
+    }
+    // 对角翻转
+    for i := range matrix{
+        for j := 0; j < i; j++{
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+        }
+    }
+}
+```
+## [59. 螺旋矩阵 II](https://leetcode-cn.com/problems/spiral-matrix-ii/)
+给你一个正整数 n ，生成一个包含 1 到 n2 所有元素，且元素按顺时针顺序螺旋排列的 n x n 正方形矩阵 matrix 。
+> 示例 1：\
+> ![](../img/59-5.jpg)
+> 输入：n = 3 \
+> 输出：[[1,2,3],[8,9,4],[7,6,5]]
+
+思路1：按层模拟
+![](../img/59-4.png) \
+![](../img/59-1.png) \
+![](../img/59-2.png) \
+![](../img/59-3.png) 
+
+```go
+func generateMatrix(n int) [][]int {
+    matrix := make([][]int, n)
+    for i := range matrix{
+        matrix[i] = make([]int, n)
+    }
+    num := 1
+    top, right, bottom, left := 0, n-1, n-1, 0
+    for top <= bottom && left <= right{
+        for col := left; col <= right; col++{
+            matrix[top][col] = num
+            num++
+        }
+        for row := top+1; row <= bottom; row++{
+            matrix[row][right] = num
+            num++
+        }
+        if top < bottom && left < right{
+            for col:= right-1; col >= left; col--{
+                matrix[bottom][col] = num
+                num++
+            }
+            for row := bottom-1; row > top; row--{
+                matrix[row][left] = num
+                num++
+            }
+        }
+        top++
+        right--
+        bottom--
+        left++
+    }
+    return matrix
+}
+```

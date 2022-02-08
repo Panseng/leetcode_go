@@ -8,7 +8,7 @@
 思路1：先用sort.Int排序，然后比较相邻元素是否相同\
 ```if nums[i] == nums[i-1]```\
 思路2：hash表，判断hash表中是否存在该值，存在返回真，不存在则添加\
-实现：[arr_repeat](arr_repeat)
+实现：[arr_repeat](../arr_repeat)
 
 ## [53. 最大子数组和](https://leetcode-cn.com/problems/two-sum/solution/liang-shu-zhi-he-by-leetcode-solution/)
 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。\
@@ -19,7 +19,7 @@
 >解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
 
 思路：贪心算法，将前值累加，如果大于0则继续累计，同时求最大值\
-实现：[max_sub_array](max_sub_array)
+实现：[max_sub_array](../max_sub_array)
 ```
     max := nums[0]
     for i := 1; i < len(nums); i++ {
@@ -43,7 +43,7 @@
 
 思路1：暴力枚举，通过两层迭代求解\
 思路2 ：hash表法，迭代期间，先求解hash表中是否存在目标值，不存在则将当前值加入hash表
-实现：[two_sum](two_sum)
+实现：[two_sum](../two_sum)
 ```go
     hashTable := map[int]int{}
     for i, x := range nums {
@@ -107,7 +107,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
         nums1[tail] = cur
     }
 ```
-实现：[merge_increase_array](merge_increase_array)
+实现：[merge_increase_array](../merge_increase_array)
 
 ##  [350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
 给你两个整数数组nums1 和 nums2 ，请你以数组形式返回两数组的交集。返回结果中每个元素出现的次数，应与元素在两个数组中都出现的次数一致（如果出现次数不一致，则考虑取较小值）。可以不考虑输出结果的顺序。
@@ -154,7 +154,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
     }
     return intersection
 ```
-实现：[two_array_intersect](two_array_intersect)
+实现：[two_array_intersect](../two_array_intersect)
 
 ## [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 给定一个数组 prices ，它的第i 个元素prices[i]表示一支给定股票第 i 天的价格。\
@@ -179,7 +179,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 	}
 	return maxProfit
 ```
-实现：[stock_max_profit](stock_max_profit)
+实现：[stock_max_profit](../stock_max_profit)
 
 ## [566. 重塑矩阵](https://leetcode-cn.com/problems/reshape-the-matrix/)
 
@@ -211,7 +211,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 	}
 	return newMat
 ```
-实现：[matrix_reshape](matrix_reshape)
+实现：[matrix_reshape](../matrix_reshape)
 
 ## [118. 杨辉三角](https://leetcode-cn.com/problems/pascals-triangle/)
 给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。\
@@ -254,7 +254,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 	}
 	return ans
 ```
-实现：[yang_hui_triangle](yang_hui_triangle)
+实现：[yang_hui_triangle](../yang_hui_triangle)
 
 ## [36. 有效的数独](https://leetcode-cn.com/problems/valid-sudoku/)
 
@@ -281,7 +281,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 >输出：true
 
 思路1：将二维数组展开为一维数组，再用hash表查重，写完代码发现其实复杂度更高了。
-实现见[code](sudoku_is_valid/test.go)
+实现见[code](../sudoku_is_valid/test.go)
 
 思路2：直接二维展开，通过3个hash表分别查重\
 这里注意需要将byte转换为int，才能用于index ```index := v - '1'```
@@ -306,7 +306,7 @@ func isValidSudoku(board [][]byte) bool {
 	return true
 }
 ```
-实现：[sudoku_is_valid](sudoku_is_valid)
+实现：[sudoku_is_valid](../sudoku_is_valid)
 
 ## [73. 矩阵置零](https://leetcode-cn.com/problems/set-matrix-zeroes/)
 给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 [原地](https://baike.baidu.com/item/%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95) 算法。\
@@ -386,7 +386,7 @@ func isValidSudoku(board [][]byte) bool {
         }
     }
 ```
-实现：[matrix_set_zeros](matrix_set_zeros)
+实现：[matrix_set_zeros](../matrix_set_zeros)
 
 ## [387. 字符串中的第一个唯一字符](https://leetcode-cn.com/problems/first-unique-character-in-a-string/)
 给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
@@ -443,7 +443,7 @@ func firstUniqChar5(s string) int {
 	return -1
 }
 ```
-实现：[char_first_unique](char_first_unique)\
+实现：[char_first_unique](../char_first_unique)\
 **_注意_**：力扣官方解法，仅限定小写字母，所以可以声明```[26]int{}```
 
 ## [383. 赎金信](https://leetcode-cn.com/problems/ransom-note/)
@@ -480,7 +480,7 @@ func canConstruc2(ransomNote string, magazine string) bool{
 	return true
 }
 ```
-实现：[char_can_construct](char_can_construct)
+实现：[char_can_construct](../char_can_construct)
 
 ## [242. 有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
 给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。\
@@ -525,7 +525,7 @@ func isAnagram3(s string, t string) bool {
 	return string(ls1) == string(ls2)
 }
 ```
-实现：[char_is_anagram](char_is_anagram)
+实现：[char_is_anagram](../char_is_anagram)
 
 ## [141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 给你一个链表的头节点 head ，判断链表中是否有环。\
@@ -769,7 +769,7 @@ func reverseList3(head *ListNode) *ListNode {
 	return cur
 }
 ```
-实现：[reverse.go](list_node/reverse/reverse.go)
+实现：[reverse.go](../list_node/reverse/reverse.go)
 
 ## [83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
 给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表 。
@@ -795,7 +795,7 @@ func deleteDuplicates2(head *ListNode) *ListNode {
 	return head
 }
 ```
-实现：[delete.go](list_node/duplicates/delete.go)
+实现：[delete.go](../list_node/duplicates/delete.go)
 
 ## [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
 给定一个只包括 '('，')'，'{'，'}'，'['，']'的字符串 s ，判断字符串是否有效。\
@@ -883,7 +883,7 @@ func isValid2(s string) bool {
 	return len(stack) == 0
 }
 ```
-实现：[is_valid.go](string/brackets/is_valid.go)
+实现：[is_valid.go](../string/brackets/is_valid.go)
 
 
 ## [232. 用栈实现队列](https://leetcode-cn.com/problems/implement-queue-using-stacks/)
