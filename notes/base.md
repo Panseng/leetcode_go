@@ -599,3 +599,142 @@ func generateMatrix(n int) [][]int {
     return matrix
 }
 ```
+
+## [240. 搜索二维矩阵 II](https://leetcode-cn.com/problems/search-a-2d-matrix-ii/)
+编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+- 每行的元素从左到右升序排列。
+- 每列的元素从上到下升序排列。
+
+> 示例 1：\
+> ![](../img/240-1.jpg) \
+> 输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5 \
+> 输出：true
+> 
+> 示例 2：\
+> ![](../img/240-2.jpg) \
+> 输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20 \
+> 输出：false
+
+思路1：倒序
+- 凡是行左侧大于target值的均跳过
+- 遇到行右侧小于target值的则说明其余行无法匹配
+- target在行区间的，用二分法匹配当前行是否有匹配项
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+    if len(matrix) == 0 || len(matrix[0]) == 0{
+        return false
+    }
+    n := len(matrix[0])
+    for i := len(matrix)-1; i >=0; i--{
+        row := matrix[i]
+        if target < row[0]{
+            continue
+        }
+        if target > row[n-1]{
+            return false
+        }
+        if row[0] == target || row[n-1] == target{
+            return true
+        }
+        left, right := 0, n-1
+        mid := right/2
+        for left <= right{
+            if target < row[mid]{
+                right = mid-1
+                mid = (left+right)/2
+                continue
+            }
+            if target > row[mid]{
+                left = mid+1
+                mid = (left+right)/2
+                continue
+            }
+            return true
+        }
+    }
+    return false    
+}
+```
+代码优化：使用`sort.SearchInts`方法代替二分法查找值
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+    if len(matrix) == 0 || len(matrix[0]) == 0{
+        return false
+    }
+    n := len(matrix[0])
+    for i := len(matrix)-1; i >=0; i--{
+        row := matrix[i]
+        if target < row[0]{
+            continue
+        }
+        if target > row[n-1]{
+            return false
+        }
+        j := sort.SearchInts(row, target)
+        if j < len(row) && row[j] == target{
+            return true
+        }
+    }
+    return false    
+}
+```
+## [435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+给定一个区间的集合，找到需要移除区间的最小数量，使剩余区间互不重叠。\
+注意:
+- 可以认为区间的终点总是大于它的起点。
+- 区间 [1,2] 和 [2,3] 的边界相互“接触”，但没有相互重叠。
+> 示例 1: \
+> 输入: [ [1,2], [2,3], [3,4], [1,3] ]\
+> 输出: 1 \
+> 解释: 移除 [1,3] 后，剩下的区间没有重叠。
+> 
+> 示例 2: \
+> 输入: [ [1,2], [2,3] ] \
+> 输出: 0 \
+> 解释: 你不需要移除任何区间，因为它们已经是无重叠的了。
+
+思路：贪心算法，[讲解视频](https://www.bilibili.com/video/BV1WK4y1R71x)
+- 按照右边界排序，就要从左向右遍历，因为右边界越小越好，只要右边界越小，留给下一个区间的空间就越大，所以从左向右遍历，优先选右边界小的。
+![](../img/435-1.png)
+```go
+func eraseOverlapIntervals(intervals [][]int) int {
+	if len(intervals) < 2{
+		return 0
+	}
+	// 以右侧端点排序
+	sort.Slice(intervals, func(i, j int) bool{
+		return intervals[i][1] < intervals[j][1]
+	})
+	// 从左往右，贪心算法
+	num, end := 1, intervals[0][1]
+	for _,v := range intervals[1:]{
+		if v[0] >= end{
+			num++
+			end = v[1]
+		}
+	}
+	return len(intervals)-num
+}
+```
+- 按照左边界排序，就要从右向左遍历，因为左边界数值越大越好（越靠右），这样就给前一个区间的空间就越大，所以可以从右向左遍历。
+```go
+func eraseOverlapIntervals2(intervals [][]int) int {
+	if len(intervals) < 2{
+		return 0
+	}
+	// 以左侧侧端点排序
+	sort.Slice(intervals, func(i, j int) bool{
+		return intervals[i][0] < intervals[j][0]
+	})
+	n := len(intervals)
+	num := 1
+	left := intervals[n-1][0]
+	for i := n-2; i >= 0; i--{
+		if left >= intervals[i][1]{
+			num++
+			left = intervals[i][0]
+		}
+	}
+	return n - num
+}
+```
