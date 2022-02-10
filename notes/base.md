@@ -838,6 +838,26 @@ func productExceptSelf(nums []int) []int {
     return ans
 }
 ```
+优化，在双向遍历中完成左右两侧乘积计算，减少遍历次数和变量
+```go
+func productExceptSelf(nums []int) []int {
+    n := len(nums)
+    if n < 2{
+        return nums
+    }
+    ans := make([]int, n)
+    ans[0] = 1
+    for i := 1; i < n; i++{ // 先获取左侧乘积
+        ans[i] = nums[i-1]*ans[i-1]
+    }
+    r := 1
+    for i := n-1; i >= 0; i--{
+        ans[i] = ans[i] * r
+        r *= nums[i]
+    }
+    return ans
+}
+```
 
 ## [560. 和为 K 的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 给你一个整数数组 nums 和一个整数 k ，请你统计并返回该数组中和为 k 的连续子数组的个数。
@@ -865,7 +885,7 @@ func subarraySum(nums []int, k int) int {
     return count
 }
 ```
-思路2：前项和+hash表法
+思路2：前项和+hash表法 \
 ![](../img/560-1.png)
 ```go
 func subarraySum(nums []int, k int) int {
