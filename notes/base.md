@@ -706,3 +706,180 @@ func eraseOverlapIntervals2(intervals [][]int) int {
 	return n - num
 }
 ```
+## [334. 递增的三元子序列](https://leetcode-cn.com/problems/increasing-triplet-subsequence/)
+给你一个整数数组 nums ，判断这个数组中是否存在长度为 3 的递增子序列。\
+如果存在这样的三元组下标 (i, j, k) 且满足 i < j < k ，使得 nums[i] < nums[j] < nums[k] ，返回 true ；否则，返回 false 。
+
+> 示例 1：\
+> 输入：nums = [2,1,5,0,4,6] \
+> 输出：true \
+> 解释：三元组 (3, 4, 5) 满足题意，因为 nums[3] == 0 < nums[4] == 4 < nums[5] == 6
+> 
+> 示例 2：\
+> 输入：nums = [5,4,3,2,1]\
+> 输出：false\
+> 解释：不存在满足题意的三元组
+
+思路1：双向遍历
+- 作3次遍历
+- 前两次遍历分别从左往右、从右往左，双向遍历获取各索引左侧最小、右侧最大值
+- 第三次遍历，将当前值与左侧最小、右侧最大值进行对比，符合递增规律的，返回真
+```go
+func increasingTriplet(nums []int) bool {
+    n := len(nums)
+    if n < 3{
+        return false
+    }
+    leftMin := make([]int, n) // 记录各个索引值左侧最小值
+    rightMax := make([]int, n) // 记录各个索引值右侧最大值
+    
+    leftMin[0] = nums[0]
+    rightMax[n-1] = nums[n-1]
+
+    for i := 1; i < n;i++{
+        leftMin[i] = min(leftMin[i-1], nums[i])
+    }
+    for i := n-2; i >= 0;i--{
+        rightMax[i] = max(rightMax[i+1], nums[i])
+    }
+
+    for i := 1; i < n-1; i++{
+        if nums[i] > leftMin[i] && nums[i] < rightMax[i]{
+            return true
+        }
+    }
+    return false
+}
+
+func min(a, b int) int{
+    if a >= b{
+        return b
+    }
+    return a
+}
+
+func max(a, b int) int{
+    if a >= b{
+        return a
+    }
+    return b
+}
+```
+思路2：贪心算法\
+使用贪心的方法将空间复杂度降到 O(1)。从左到右遍历数组nums，遍历过程中维护两个变量 first 和 second，分别表示递增的三元子序列中的第一个数和第二个数，任何时候都有first<second。\
+初始时，first=nums[0]，second=+∞。对于1≤i<n，当遍历到下标 i 时，令 num=nums[i]，进行如下操作：
+1. 如果 num>second，则找到了一个递增的三元子序列，返回true；
+2. 否则，如果 num>first，则将 second 的值更新为 num；
+3. 否则，将 first 的值更新为 num。
+
+如果遍历结束时没有找到递增的三元子序列，返回false。\
+上述做法的贪心思想是：为了找到递增的三元子序列，first 和 second 应该尽可能地小，此时找到递增的三元子序列的可能性更大。
+```go
+func increasingTriplet(nums []int) bool {
+    n := len(nums)
+    if n < 3{
+        return false
+    }
+    first, second := nums[0], math.MaxInt64
+    for i := 1; i < n; i++{
+        if nums[i] > second{
+            return true
+        }
+        if nums[i] > first{
+            second = nums[i]
+        } else{
+            first = nums[i]
+        }
+
+    }
+    return false
+}
+```
+## [238. 除自身以外数组的乘积](https://leetcode-cn.com/problems/product-of-array-except-self/)
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。\
+题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。\
+请**不要使用除法**，且在 O(n) 时间复杂度内完成此题。
+> 其实使用除法还会产生一个问题：数组中存在0值时，先乘后除，需要规避零值
+
+> 示例 1: \
+> 输入: nums = [1,2,3,4] \
+> 输出: [24,12,8,6]
+
+> 示例 2: \
+> 输入: nums = [-1,1,0,-3,3] \
+> 输出: [0,0,9,0,0]
+
+思路：双向遍历，左右乘积列表，思路同上一题
+- 3次遍历
+- 前两次遍历，先后获取当前索引值左侧乘积、右侧乘积
+- 最后一次遍历，将当前索引左右乘积相乘，得到目标乘积值
+```go
+func productExceptSelf(nums []int) []int {
+    n := len(nums)
+    if n < 2{
+        return nums
+    }
+    leftProd := make([]int, n) // 当前值左侧乘积数组
+    rightProd := make([]int, n) // 当前值右侧乘积数组
+    leftProd[0] = 1
+    rightProd[n-1] = 1
+    for i := 1; i < n; i++{
+        leftProd[i] = nums[i-1]*leftProd[i-1]
+    }
+    for i := n-2; i >= 0; i--{
+        rightProd[i] = nums[i+1]*rightProd[i+1]
+    }
+
+    ans := make([]int, n)
+    for i := 0; i < n; i++{
+        ans[i] = leftProd[i]*rightProd[i]
+    }
+    return ans
+}
+```
+
+## [560. 和为 K 的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+给你一个整数数组 nums 和一个整数 k ，请你统计并返回该数组中和为 k 的连续子数组的个数。
+> 示例 1： \
+> 输入：nums = [1,1,1], k = 2 \
+> 输出：2
+> 
+> 示例 2： \
+> 输入：nums = [1,2,3], k = 3 \
+> 输出：2
+
+思路1：暴力枚举
+```go
+func subarraySum(nums []int, k int) int {
+    count := 0
+    for i := 0; i < len(nums); i++{
+        sum := 0
+        for j := i; j >= 0; j--{
+            sum += nums[j]
+            if sum == k{
+                count++
+            }
+        }
+    }
+    return count
+}
+```
+思路2：前项和+hash表法
+![](../img/560-1.png)
+```go
+func subarraySum(nums []int, k int) int {
+    count := 0
+    pre := 0
+    mp := map[int]int{} // 记录各个前项和 出现次数
+    mp[0] = 1
+    for _, v := range nums{
+        // 前项和对应公式 mp[pre[j−1]]==mp[pre[i]−k]
+        pre += v
+        if _, ok := mp[pre-k]; ok{
+            count += mp[pre-k]
+        }
+        mp[pre] += 1
+    }
+    return count
+}
+```
