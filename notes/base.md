@@ -904,3 +904,133 @@ func subarraySum(nums []int, k int) int {
     return count
 }
 ```
+
+## [415. 字符串相加](https://leetcode-cn.com/problems/add-strings/)
+给定两个字符串形式的非负整数 num1 和num2 ，计算它们的和并同样以字符串形式返回。\
+你不能使用任何內建的用于处理大整数的库（比如 BigInteger）， 也不能直接将输入的字符串转换为整数形式。
+
+> 示例 1： \
+> 输入：num1 = "11", num2 = "123" \
+> 输出："134"
+>
+> 示例 2： \
+> 输入：num1 = "456", num2 = "77" \
+> 输出："533" 
+>
+> 示例 3： \
+> 输入：num1 = "0", num2 = "0" \
+> 输出："0"
+
+思路1：通过数组值 & 索引 进行加法运算，代码实现：[stringsAdd](../string/add/test.go) \
+优化
+- 字符串通过 `len` 获取长度，也可以通过 `下标 i ` 获取对应字符的`byte`值
+- 通过字符转换进行加法运算（替代原方法的索引加减运算）
+```go
+func addStrings2(num1 string, num2 string) string {
+	ans := ""
+	n1 := len(num1)
+	n2 := len(num2)
+	if n1 > n2 {
+		num2 = fillZero2(n1-n2) + num2
+	} else if n1 < n2 {
+		num1 = fillZero2(n2-n1) + num1
+	}
+	n1 = len(num1)
+	carry := 0
+	for i := n1 - 1; i >= 0; i-- {
+		res := carry + int(num1[i]-'0') + int(num2[i]-'0')
+		ans = strconv.Itoa(res%10) + ans
+		carry = res / 10
+	}
+	if carry > 0 {
+		ans = strconv.Itoa(carry) + ans
+	}
+	return ans
+}
+
+func fillZero2(n int) string {
+	zeroStr := ""
+	for i := 0; i < n; i++ {
+		zeroStr += "0"
+	}
+	return zeroStr
+}
+```
+终极优化：直接转换为数值进行运算，不补位
+```go
+func addStrings(num1 string, num2 string) string {
+    add := 0
+    ans := ""
+    for i, j := len(num1)-1, len(num2)-1; i >=0 || j >= 0 || add > 0; i, j = i-1, j-1{
+        x, y := 0, 0
+        if i >= 0{
+            x = int(num1[i]-'0')
+        }
+        if j >= 0{
+            y = int(num2[j]-'0')
+        }
+        res := add + x + y
+        ans = strconv.Itoa(res % 10) + ans
+        add = res / 10
+    }
+    return ans
+}
+```
+
+## [409. 最长回文串](https://leetcode-cn.com/problems/longest-palindrome/)
+给定一个包含大写字母和小写字母的字符串 s ，返回 通过这些字母构造成的 最长的回文串 。\
+在构造过程中，请注意 区分大小写 。比如 "Aa" 不能当做一个回文字符串。
+
+> 示例 1: \
+> 输入:s = "abccccdd" \
+> 输出:7 \
+> 解释: 我们可以构造的最长的回文串是"dccaccd", 它的长度是 7。
+>
+> 示例 2: \
+> 输入:s = "a" \
+> 输入:1
+>
+> 示例 3: \
+> 输入:s = "bb" \
+> 输入: 2
+
+思路1：hash表法
+```go
+func longestPalindrome(s string) int {
+	strMap := make(map[int32]int, 26*2)
+	for _, v := range s {
+		strMap[v]++
+	}
+	couldOdd := true
+	count := 0
+	for _, v := range strMap {
+		if couldOdd && v%2 == 1 {
+			couldOdd = false
+			count++
+		}
+		if v > 1 {
+			count += v / 2 * 2
+		}
+	}
+	return count
+}
+```
+优化：减少奇数变量
+```go
+func longestPalindrome(s string) int {
+	strMap := make(map[int32]int, 26*2)
+	for _, v := range s {
+		strMap[v]++
+	}
+	count := 0
+	for _, v := range strMap {
+		if count%2 == 0 && v%2 == 1 {
+			count++
+		}
+		if v > 1 {
+			count += v / 2 * 2
+		}
+	}
+	return count
+}
+```
