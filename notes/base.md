@@ -1034,3 +1034,93 @@ func longestPalindrome(s string) int {
 	return count
 }
 ```
+## [290. 单词规律](https://leetcode-cn.com/problems/word-pattern/)
+给定一种规律 pattern 和一个字符串 str ，判断 str 是否遵循相同的规律。\
+这里的 遵循 指完全匹配，例如， pattern 里的每个字母和字符串 str 中的每个非空单词之间存在着双向连接的对应规律。
+> 示例1: \
+> 输入: pattern = "abba", str = "dog cat cat dog" \
+> 输出: true
+>
+> 示例 2: \
+> 输入:pattern = "abba", str = "dog cat cat fish" \
+> 输出: false
+>
+> 示例 3: \
+> 输入: pattern = "aaaa", str = "dog cat cat dog" \
+> 输出: false
+>
+> 示例 4: \
+> 输入: pattern = "abba", str = "dog dog dog dog" \
+> 输出: false
+>
+> **示例 5:** \
+> 输入: pattern = "aba", str = "dog cat cat" \
+> 输出: false
+
+思路：hash法
+```go
+func wordPattern2(pattern string, s string) bool {
+	ps, ss := strings.Split(pattern, ""), strings.Split(s, " ")
+	np, ns := len(ps), len(ss)
+	if np != ns{
+		return false
+	}
+	p2s, s2p := make(map[string]string, np), make(map[string]string, np)
+	for i := 0; i < np; i++{
+		if _, ok := s2p[ss[i]]; ok && s2p[ss[i]] != ps[i]{
+			return false
+		}
+		if _, ok := p2s[ps[i]]; ok && p2s[ps[i]] != ss[i]{
+			return false
+		}
+		if _, ok := s2p[ss[i]]; !ok{
+			s2p[ss[i]] = ps[i]
+			p2s[ps[i]] = ss[i]
+		}
+	}
+	return true
+}
+```
+
+## [763. 划分字母区间](https://leetcode-cn.com/problems/partition-labels/)
+字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。返回一个表示每个字符串片段的长度的列表。
+
+> 示例： \
+> 输入：`S = "ababcbacadefegdehijhklij"` \
+> 输出：[9,7,8] \
+> 解释： 
+> - 划分结果为 `"ababcbaca", "defegde", "hijhklij"`。 
+> - 每个字母最多出现在一个片段中。 
+> - 像 `"ababcbacadefegde", "hijhklij"` 的划分是错误的，因为划分的片段数较少。
+
+思路1：获取每个字符的区间，然后合并重叠区间
+```go
+func partitionLabels(s string) []int {
+	n := len(s)
+	s2ares := make(map[byte][]int, n)
+	for i := 0; i < n; i++{
+		if _, ok := s2ares[s[i]]; ok{
+			s2ares[s[i]][1] = i
+ 		} else {
+ 			s2ares[s[i]] = []int{i,i}
+		}
+	}
+	ares := [][]int{}
+	for _, v := range s2ares{
+		ares = append(ares, v)
+	}
+	if len(ares) > 1{
+		ares = merge(ares)
+	}
+
+	ans := []int{}
+	for _, v := range ares{
+		ans = append(ans, v[1]-v[0]+1)
+	}
+	return ans
+}
+
+func merge(intervals [][]int) [][]int {
+	// 参考 56. 合并区间
+}
+```
