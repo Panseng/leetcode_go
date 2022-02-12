@@ -1081,7 +1081,28 @@ func wordPattern2(pattern string, s string) bool {
 	return true
 }
 ```
-
+进一步优化，减少变量：不将pattern转换为string数组，直接通过下标取byte值
+```go
+func wordPattern3(pattern string, s string) bool {
+	n := len(pattern)
+	words := strings.Split(s, " ") // 生成word值
+	pByte2word := make(map[byte]string, n) // pattern单个字节的byte值对应的word值
+	word2pByte := make(map[string]byte, n) // s单词string值对应pattern的byte值
+	if len(words) != n{
+		return false
+	}
+	for i, v := range words{
+		if word2pByte[v] > 0 && word2pByte[v] != pattern[i] || pByte2word[pattern[i]] != "" && pByte2word[pattern[i]] != v{
+			return false
+		}
+		if word2pByte[v] == 0{
+			word2pByte[v] = pattern[i]
+			pByte2word[pattern[i]] = v
+		}
+	}
+	return true
+}
+```
 ## [763. 划分字母区间](https://leetcode-cn.com/problems/partition-labels/)
 字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。返回一个表示每个字符串片段的长度的列表。
 
@@ -1122,5 +1143,31 @@ func partitionLabels(s string) []int {
 
 func merge(intervals [][]int) [][]int {
 	// 参考 56. 合并区间
+}
+```
+思路2：贪心算法 \
+![](../img/763-1.png)
+```go
+func partitionLabels(s string) []int {
+    lastPos := [26]int{} // 记录各个字母（题目限制小写字母）最后出现的位置
+    for i, alp := range s{
+        lastPos[alp-'a'] = i
+    }
+    start, end := 0, 0 // 记录当前区间起始、结束位置
+    ans := []int{}
+    for i, v := range s{
+        // 不断调整当前区间的结束位置：
+        // 1. 根据区间首个字母的结束位置判断，如果首个字母只出现1次，则end为当前下标；否则
+        // 2. 在被当前字母其实和结束位置区间内，可能会被其他字母区间叠加而扩大范围
+        if lastPos[v-'a'] > end{ 
+            end = lastPos[v-'a']
+        }
+        // 表示2种情况：1. 1个字母片段；2.区间结束
+        if i == end{
+            ans = append(ans, end-start+1)
+            start = end+1
+        }
+    }
+    return ans
 }
 ```

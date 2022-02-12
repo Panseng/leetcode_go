@@ -67,3 +67,23 @@ func wordPattern2(pattern string, s string) bool {
 	}
 	return true
 }
+
+func wordPattern3(pattern string, s string) bool {
+	n := len(pattern)
+	words := strings.Split(s, " ") // 生成word值
+	pByte2word := make(map[byte]string, n) // pattern单个字节的byte值对应的word值
+	word2pByte := make(map[string]byte, n) // s单词string值对应pattern的byte值
+	if len(words) != n{
+		return false
+	}
+	for i, v := range words{
+		if word2pByte[v] > 0 && word2pByte[v] != pattern[i] || pByte2word[pattern[i]] != "" && pByte2word[pattern[i]] != v{
+			return false
+		}
+		if word2pByte[v] == 0{
+			word2pByte[v] = pattern[i]
+			pByte2word[pattern[i]] = v
+		}
+	}
+	return true
+}
