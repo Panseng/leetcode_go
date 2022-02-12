@@ -259,8 +259,7 @@ func sortColors(nums []int)  {
 > **注意**，输入可能是[[1,4],[0,0]]
 ```go
 func merge(intervals [][]int) [][]int {
-    iLen := len(intervals)
-    if iLen < 2{
+    if len(intervals) < 2{
         return intervals
     }
     // 二维数组排序
@@ -268,34 +267,18 @@ func merge(intervals [][]int) [][]int {
 		return intervals[i][0] < intervals[j][0]//按照每行的第一个元素排序
 	})
     ans := [][]int{intervals[0]}
-    for i,v := range intervals{
-        if i == 0{
+    for _,v := range intervals{
+        if ans[len(ans)-1][1] >= v[0]{ // 如果有重叠，则合并
+            aLen := len(ans)
+            aLast := ans[aLen-1]
+            if aLast[1] < v[1]{
+                aLast[1] = v[1]
+            }
             continue
         }
-        aLen := len(ans)
-        aLast := ans[aLen-1]
-        if aLast[1] >= v[0]{
-            aLast[0] = min(aLast[0], v[0])
-            aLast[1] = max(aLast[1], v[1])
-            continue
-        }
-        ans = append(ans, v)
+        ans = append(ans, v) // 没重叠，追加
     }
     return ans
-}
-
-func min(a, b int) int{
-    if a < b{
-        return a
-    }
-    return b
-}
-
-func max(a, b int) int{
-    if a < b{
-        return b
-    }
-    return a
 }
 ```
 ## [706. 设计哈希映射](https://leetcode-cn.com/problems/design-hashmap/submissions/)
