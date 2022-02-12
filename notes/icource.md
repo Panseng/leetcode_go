@@ -17,7 +17,7 @@
 2. 1. 二叉搜索树的良好形态：平衡二叉树
     > ![](../img/4.2-01.png)
 
-平衡二叉树的再平衡代码：java
+平衡二叉树的再平衡代码：[java](https://www.cnblogs.com/hello-shf/p/11352071.html)
 ```java
    /**
      * 向以node为根的二分搜索树中插入元素(key, value)，递归算法
