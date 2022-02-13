@@ -10,7 +10,7 @@
 思路2：hash表，判断hash表中是否存在该值，存在返回真，不存在则添加\
 实现：[arr_repeat](../arr_repeat)
 
-## [53. 最大子数组和](https://leetcode-cn.com/problems/two-sum/solution/liang-shu-zhi-he-by-leetcode-solution/)
+## [53. 最大子数组和](https://leetcode-cn.com/problems/maximum-subarray/)
 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。\
 子数组 是数组中的一个连续部分。
 >示例1\
@@ -19,19 +19,21 @@
 >解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
 
 思路：贪心算法，将前值累加，如果大于0则继续累计，同时求最大值\
-实现：[max_sub_array](../max_sub_array)
-```
+```go
+func maxSubArray(nums []int) int {
     max := nums[0]
-    for i := 1; i < len(nums); i++ {
-        if nums[i] + nums[i-1] > nums[i] {
-            nums[i] += nums[i-1]
+    for i :=1; i<len(nums);i++{
+        if nums[i-1] > 0{
+            nums[i] = nums[i] + nums[i-1]
         }
-        if nums[i] > max {
+        if nums[i] > max{
             max = nums[i]
         }
     }
     return max
+}
 ```
+实现：[max_sub_array](../max_sub_array)
 
 ## [1. 两数之和](https://leetcode-cn.com/problems/two-sum/solution/liang-shu-zhi-he-by-leetcode-solution/)
 给定一个整数数组 nums和一个整数目标值 target，请你在该数组中找出 和为目标值 target的那两个整数，并返回它们的数组下标。\
@@ -41,10 +43,23 @@
 >输出：[0,1]\
 >解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
 
-思路1：暴力枚举，通过两层迭代求解\
-思路2 ：hash表法，迭代期间，先求解hash表中是否存在目标值，不存在则将当前值加入hash表
-实现：[two_sum](../two_sum)
+思路1：暴力枚举，通过两层迭代求解
 ```go
+func twoSum(nums []int, target int) []int {
+    for left:=0;left < len(nums)-1;left++{
+        for right :=left+1;right<len(nums);right++{
+            if nums[left]+nums[right]==target{
+                return []int{left,right}
+            }
+        }
+    }
+    return []int{-1,-1}
+}
+```
+思路2 ：hash表法，迭代期间，先求解hash表中是否存在目标值，不存在则将当前值加入hash表
+
+```go
+func twoSum(nums []int, target int) []int {
     hashTable := map[int]int{}
     for i, x := range nums {
         if p, ok := hashTable[target-x]; ok {
@@ -53,7 +68,10 @@
         hashTable[x] = i
     }
     return nil
+}
 ```
+实现：[two_sum](../two_sum)
+
 ## [88. 合并两个有序数组](https://leetcode-cn.com/problems/merge-sorted-array/)
 给你两个按 非递减顺序 排列的整数数组nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。\
 请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。\
@@ -66,26 +84,28 @@
 思路1：暴力排序，合并两个数组后，调用系统排序方法\
 思路2：双指针法，题干的数组是有序数组（无序数组可以在排序后使用该方法，但效率可能不如第一个思路），直接用双指针进行排序
 ```go
-    sorted := make([]int, 0, m+n)
-    p1, p2 := 0, 0
-    for {
-        if p1 == m {
-            sorted = append(sorted, nums2[p2:]...)
-            break
-        }
-        if p2 == n {
-            sorted = append(sorted, nums1[p1:]...)
-            break
-        }
-        if nums1[p1] < nums2[p2] {
-            sorted = append(sorted, nums1[p1])
-            p1++
-        } else {
-            sorted = append(sorted, nums2[p2])
-            p2++
-        }
-    }
-    copy(nums1, sorted)
+func merge(nums1 []int, m int, nums2 []int, n int)  {
+	sorted := make([]int, 0, m+n)
+	i1, i2 := 0,0 // 双指针
+	for{
+		if i1 == m{ // num1 数组已遍历完
+			sorted = append(sorted, nums2[i2:]...)
+			break
+		}
+		if i2 == n{ // num2 数组已遍历完
+			sorted = append(sorted, nums1[i1:]...)
+			break
+		}
+		if nums1[i1] < nums2[i2]{
+			sorted = append(sorted, nums1[i1])
+			i1++
+		} else{
+			sorted = append(sorted, nums2[i2])
+			i2++
+		}
+	}
+	copy(nums1,sorted)
+}
 ```
 思路3：逆向双指针法
 ```go
@@ -116,43 +136,45 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 
 思路1：hash法，短hash表，长数组校验，各循环一次
 ```go
-    if len(nums1) > len(nums2) {
-        return intersect(nums2, nums1)
-    }
-    m := map[int]int{}
-    for _, num := range nums1 {
-        m[num]++
-    }
-
-    intersection := []int{}
-    for _, num := range nums2 {
-        if m[num] > 0 {
-            intersection = append(intersection, num)
-            m[num]--
-        }
-    }
-    return intersection
+func intersectHash(nums1 []int, nums2 []int) []int {
+	if len(nums1) > len(nums2) { // 用更短的数组作nums1，实现对更短数组记录hash表
+		return intersectHash(nums2, nums1)
+	}
+	m := make(map[int]int) // m := map[int]int{}
+	for _, num := range nums1 {
+		m[num]++
+	}
+	intersection := []int{}
+	for _, num := range nums2 {
+		if m[num] > 0 {
+			intersection = append(intersection, num)
+			m[num]--
+		}
+	}
+	return intersection
+}
 ```
 思路2：先排序，再加以双指针法
 ```go
-    sort.Ints(nums1)
-    sort.Ints(nums2)
-    length1, length2 := len(nums1), len(nums2)
-    index1, index2 := 0, 0
-
-    intersection := []int{}
-    for index1 < length1 && index2 < length2 {
-        if nums1[index1] < nums2[index2] {
-            index1++
-        } else if nums1[index1] > nums2[index2] {
-            index2++
-        } else {
-            intersection = append(intersection, nums1[index1])
-            index1++
-            index2++
-        }
-    }
-    return intersection
+func intersectDoubleIndex(nums1 []int, nums2 []int) []int {
+	sort.Ints(nums1)
+	sort.Ints(nums2)
+	len1, len2 := len(nums1), len(nums2)
+	index1, index2 := 0, 0
+	intersetion := []int{}
+	for index1 < len1 && index2 < len2 {
+		if nums1[index1] < nums2[index2] {
+			index1++
+		} else if nums1[index1] > nums2[index2] {
+			index2++
+		} else { // 只有相等的值才会push到目标数组中
+			intersetion = append(intersetion, nums1[index1])
+			index1++
+			index2++
+		}
+	}
+	return intersetion
+}
 ```
 实现：[two_array_intersect](../two_array_intersect)
 
@@ -168,6 +190,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 思路1：暴力法，两次迭代（数组长度大时，耗时）\
 思路2：历史最低值，历史最大差值
 ```go
+func maxProfit(prices []int) int {
 	minPrice := prices[0] + 1
 	maxProfit :=0
 	for _, v := range prices{
@@ -178,6 +201,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 		}
 	}
 	return maxProfit
+}
 ```
 实现：[stock_max_profit](../stock_max_profit)
 
@@ -190,26 +214,48 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 
 > ![image](../img/566-01.jpg)
 >输入：mat = [[1,2],[3,4]], r = 1, c = 4\
->输出：[[1,2,3,4]]\
+>输出：[[1,2,3,4]]
 >
 > ![image](../img/566-02.jpg)\
 > 输入：mat = [[1,2],[3,4]], r = 2, c = 4\
 >输出：[[1,2],[3,4]]
 
-思路：二维数组的一维表示，对于m行n列的数组，i < m*n，则一维表示为mat[i/n][i%n]
+思路：二维数组的一维表示
+![](../img/566-03.png)
 ```go
-	m,n:=len(mat), len(mat[0])
-	if m*n !=r*c{
+func matrixReshape(mat [][]int, r int, c int) [][]int {
+	m, n := len(mat), len(mat[0])
+	if m*n != r*c {
 		return mat
 	}
 	newMat := make([][]int, r)
-	for i := range newMat{
+	for i := range newMat {
 		newMat[i] = make([]int, c)
 	}
-	for i:=0;i<m*n;i++{
+	for i := 0; i < m*n; i++ {
 		newMat[i/c][i%c] = mat[i/n][i%n]
 	}
 	return newMat
+}
+```
+思路2：暴力解法
+```go
+func matrixReshape2(mat [][]int, r int, c int) [][]int {
+	m, n := len(mat), len(mat[0])
+	if m*n/r != c {
+		return mat
+	}
+	var nums []int
+	for _, v := range mat {
+		nums = append(nums, v...)
+	}
+	newMat := make([][]int, r)
+	for i, j := 0, 0; i < m*n; i = i + c {
+		newMat[j] = nums[i : i+c]
+		j++
+	}
+	return newMat
+}
 ```
 实现：[matrix_reshape](../matrix_reshape)
 
@@ -224,35 +270,37 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 >输出: [[1]]
 
 思路：数学，利用对称性\
-特征：第n行有n个数，头尾数值为1，中间数值为前一行按序两两相加，且对称\
+特征：第n行有n个数，头尾数值为1，中间数值为前一行按序两两相加，且对称
+
 ```go
-    // 初始思路
+func generate2(numRows int) [][]int {
 	ans := make([][]int, numRows)
-	for i:=range ans{
+	for i := range ans {
 		ans[i] = make([]int, i+1)
-		ans[i][0],ans[i][i] = 1,1
-	}
-	for i := 1;i< numRows-1;i++{
-		for j:=0;j<i;j++{
-			ans[i+1][j+1]=ans[i][j]+ans[i][j+1]
-		}
-	}
-    return ans
-```
-最终思路
-```go
-    // 合并循环，利用对称性 code 3
-	ans := make([][]int, numRows)
-	for i:=range ans{
-		ans[i] = make([]int, i+1)
-		ans[i][0],ans[i][i] = 1,1
-		// 利用对称性，对半缩减循环
-		for j:=1;j<i/2+1;j++{
-			ans[i][j] = ans[i-1][j-1]+ans[i-1][j]
-			ans[i][i-j] = ans[i-1][j-1]+ans[i-1][j]
+		ans[i][0], ans[i][i] = 1, 1
+		for j := 1; j < i; j++ {
+			ans[i][j] = ans[i-1][j-1] + ans[i-1][j]
 		}
 	}
 	return ans
+}
+```
+最终思路
+```go
+// 合并循环，利用对称性
+func generate3(numRows int) [][]int {
+	ans := make([][]int, numRows)
+	for i := range ans {
+		ans[i] = make([]int, i+1)
+		ans[i][0], ans[i][i] = 1, 1
+		// 利用对称性，对半缩减循环
+		for j := 1; j < i/2+1; j++ {
+			ans[i][j] = ans[i-1][j-1] + ans[i-1][j]
+			ans[i][i-j] = ans[i-1][j-1] + ans[i-1][j]
+		}
+	}
+	return ans
+}
 ```
 实现：[yang_hui_triangle](../yang_hui_triangle)
 
@@ -284,11 +332,11 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
 实现见[code](../sudoku_is_valid/test.go)
 
 思路2：直接二维展开，通过3个hash表分别查重\
-这里注意需要将byte转换为int，才能用于index ```index := v - '1'```
+巧妙 index `index := v - '1'`，取相对值，1-9的所有值相对1的位值作索引
 ```go
 func isValidSudoku(board [][]byte) bool {
 	var rows, cols [9][9]int
-	var ceils [3][3][9]int
+	var ceils [3][3][9]int // 小方块的查重
 	for i, r := range board {
 		for j, v := range r {
 			if v == '.' {
@@ -425,6 +473,11 @@ func firstUniqChar2(s string)int  {
 先进先出关键代码```que = que[1:]```
 代码：
 ```go
+type loc struct {
+    ch  int32 // 字符串被range之后的值
+    pos int
+}
+
 func firstUniqChar5(s string) int {
 	var que []loc
 	hashTable := make(map[int32]int)
@@ -1656,5 +1709,5 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 }
 ```
 
-[数据结构与算法 ->](icource.md)
+[数据结构与算法 ->](icource.md) \
 [基础 ->](base.md)

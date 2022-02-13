@@ -378,5 +378,5 @@ void merge(int A[], int p, int q, int r, int n) {
   - 实用最大装填因子一般取 0.5 <= α<= 0.85
 - 当装填因子过大时，解决的方法是加倍扩大散列表，这个过程叫做“再散列（Rehashing）”
 
-[入门 -> ](getting_started.md)
+[入门 -> ](getting_started.md) \
 [基础 ->](base.md)
