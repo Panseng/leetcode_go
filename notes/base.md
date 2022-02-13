@@ -1250,3 +1250,6 @@ func multiply(num1 string, num2 string) string {
     return str
 }
 ```
+
+[数据结构与算法 ->](icource.md)
+[入门 -> ](getting_started.md)
