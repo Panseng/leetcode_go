@@ -276,7 +276,7 @@ func merge(intervals [][]int) [][]int {
             }
             continue
         }
-        ans = append(ans, v) // 没重叠，追加
+        ans = append(ans, v) // 没重叠，追加Slice
     }
     return ans
 }
@@ -1152,5 +1152,101 @@ func partitionLabels(s string) []int {
         }
     }
     return ans
+}
+```
+## [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/) 
+给你一个字符串数组，请你将 字母异位词 组合在一起。可以按任意顺序返回结果列表。 \
+字母异位词 是由重新排列源单词的字母得到的一个新单词，所有源单词中的字母通常恰好只用一次。
+
+> 示例 1: \
+> 输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"] \
+> 输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+> `strs[i]` 仅包含小写字母
+
+思路：hash法
+- 将每个单词字母进行排序，获得有序字母key，并更新对应结果索引
+```go
+func groupAnagrams(strs []string) [][]string {
+	ans := [][]string{}
+	mp := make(map[string]int, len(strs))
+	for _, v := range strs{
+		a := []byte(v)
+		sort.Slice(a, func(i, j int) bool {
+			return a[i] < a[j]
+		})
+		sv := string(a)
+		if i, ok := mp[sv]; ok{
+			ans[i] = append(ans[i], v)
+		} else {
+			mp[sv] = len(ans)
+			ans = append(ans, []string{v})
+		}
+	}
+	return ans
+}
+```
+优化：将字母表(小写)数组作为key值，用空间换取时间
+```go
+func groupAnagrams(strs []string) [][]string {
+	ans := [][]string{}
+	mp := map[[26]int]int{}
+	for _, v := range strs{
+		cn := [26]int{}
+		for _, a := range v{
+			cn[a-'a']++
+		}
+		if i, ok := mp[cn]; ok{
+			ans[i] = append(ans[i], v)
+		} else {
+			mp[cn] = len(ans)
+			ans = append(ans, []string{v})
+		}
+	}
+	return ans
+}
+```
+
+##[43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
+给定两个以字符串形式表示的非负整数 num1 和 num2，返回 num1 和 num2 的乘积，它们的乘积也表示为字符串形式。
+
+注意：不能使用任何内置的 BigInteger 库或直接将输入转换为整数。
+> 示例 1: \
+> 输入: num1 = "2", num2 = "3" \
+> 输出: "6"
+> 
+> 示例 2: **大数** \
+> 输入: num1 = "498828660196", num2 = "840477629533" \
+> 输出: "6"
+
+思路：通过数组，记录乘积的每个位值
+![](../img/43-1.png)
+```go
+func multiply(num1 string, num2 string) string {
+    if num1 == "0" || num2 == "0"{
+        return "0"
+    }
+    n, m := len(num1), len(num2)
+    multiArr := make([]int,m+n)
+    for i := n-1; i >= 0; i--{
+        x := int(num1[i]-'0')
+        for j := m-1; j >= 0; j--{
+            y := int(num2[j]-'0')
+            multiArr[i+j+1] += x*y
+        }
+    }
+    for i := n+m-1; i>0; i--{
+        multiArr[i-1] += multiArr[i]/10
+        multiArr[i] %= 10
+    }
+    ind := 0
+    str := ""
+    if multiArr[0] == 0{
+        ind = 1
+    }
+    for ; ind < n+m; ind++{
+        str += strconv.Itoa(multiArr[ind])
+    }
+    return str
 }
 ```
