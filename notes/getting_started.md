@@ -773,13 +773,8 @@ func reverseList(head *ListNode) *ListNode {
 	if head == nil{
 		return head
 	}
-	//nodeMap := make(map[*ListNode]bool)
 	nodeList := []*ListNode{}
 	for head != nil{
-		//if nodeMap[head] {
-		//	break
-		//}
-		//nodeMap[head] = true
 		nodeList = append(nodeList, head)
 		head = head.Next
 	}
@@ -794,7 +789,7 @@ func reverseList(head *ListNode) *ListNode {
 }
 ```
 
-思路2：迭代，倒叙迭代
+思路2：迭代，倒叙迭代 \
 ![](../img/206-0.gif)
 ```go
 func reverseList2(head *ListNode) *ListNode {
@@ -1710,4 +1705,5 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 ```
 
 [数据结构与算法 ->](icource.md) \
-[基础 ->](base.md)
+[基础 ->](base.md)\
+[随想录题集 ->](random.md)
