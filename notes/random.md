@@ -489,6 +489,106 @@ func intersection(nums1 []int, nums2 []int) []int {
     return res
 }
 ```
+## [202. 快乐数](https://leetcode-cn.com/problems/happy-number/)
+编写一个算法来判断一个数 n 是不是快乐数。
+
+「快乐数」 定义为：
+- 对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和。
+- 然后重复这个过程直到这个数变为 1，也可能是 无限循环 但始终变不到 1。
+- 如果这个过程 结果为 1，那么这个数就是快乐数。
+- 如果 n 是 快乐数 就返回 true ；不是，则返回 false 。
+
+> 示例 1： \
+> 输入：n = 19 \
+> 输出：true \
+> 解释： \
+> ![](../img/202-1.png)
+>
+> 示例 2： \
+> 输入：n = 2 \
+> 输出：false
+
+思路：hash法，将数值转换为字符串，然后逐个求平方并累加，将结果填入hash表，如果出现重复则说明有循环无法得到1的结果
+```go
+func isHappy(n int) bool {
+	if n == 1{
+		return true
+	}
+	s := strconv.Itoa(n)
+	intMap := make(map[int]struct{})
+	intMap[n] = struct{}{}
+	for {
+		n = 0
+		for _,v := range s{
+			n += int(v-'0')*int(v-'0')
+		}
+		if n == 1{
+			return true
+		}
+		if _, ok := intMap[n]; ok{
+			return false
+		}
+		intMap[n] = struct{}{}
+		s = strconv.Itoa(n)
+	}
+}
+```
+优化：
+- 各位的平方求和方法，不需要转换，通过step方法
+- 直接for循环不计算
+```go
+func isHappy(n int) bool {
+	if n == 1{
+		return true
+	}
+	intMap := make(map[int]bool)
+	for ; n != 1 && !intMap[n];n, intMap[n] = step(n), true{}
+	return n == 1
+}
+
+func step(n int) int {
+	sum := 0
+	for n > 0{
+		sum += (n%10) * (n%10)
+		n = n/10
+	}
+	return sum
+}
+```
+思路2：快慢指针，需要判断循环的，hash算法可以转换位快慢指针
+```go
+func isHappy(n int) bool {
+	if n == 1{
+		return true
+	}
+    slow, fast := n, step(n)
+    for fast != 1 && fast != slow {
+        slow, fast = step(slow), step(step(fast))
+    }
+	return fast == 1
+}
+
+func step(n int) int {
+	sum := 0
+	for n > 0{
+		sum += (n%10) * (n%10)
+		n = n/10
+	}
+	return sum
+}
+```
+思路3：数学法 \
+![](../img/202-2.png)
+```go
+func isHappy(n int) bool {
+    cycle := map[int]bool{4: true, 6: true, 37: true, 58: true, 89: true, 145: true, 42: true, 20: true}
+    for n != 1 && !cycle[n] {
+        n = step(n)
+    }
+    return n == 1
+}
+```
+
 
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \

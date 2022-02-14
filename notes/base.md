@@ -1251,6 +1251,104 @@ func multiply(num1 string, num2 string) string {
 }
 ```
 
+## [187. 重复的DNA序列](https://leetcode-cn.com/problems/repeated-dna-sequences/)
+DNA序列 由一系列核苷酸组成，缩写为 'A', 'C', 'G' 和 'T'.。
+- 例如，"ACGAATTCCG" 是一个 DNA序列 。
+
+在研究 DNA 时，识别 DNA 中的重复序列非常有用。 \
+给定一个表示 DNA序列 的字符串 s ，返回所有在 DNA 分子中出现不止一次的 长度为 10 的序列(子字符串)。你可以按 任意顺序 返回答案。
+
+> 示例 1： \
+> 输入：s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT" \
+> 输出：["AAAAACCCCC","CCCCCAAAAA"]
+>
+> 示例 2： \
+> 输入：s = "AAAAAAAAAAAAA" \
+> 输出：["AAAAAAAAAA"]
+
+思路：hash法
+```go
+func findRepeatedDnaSequences(s string) []string {
+	ans := []string{}
+	ansMap := make(map[string]int)
+	for i:=0; i < len(s)-9; i++{
+		rep := s[i:i+10]
+		ansMap[rep]++
+		if ansMap[rep] == 2{
+			ans = append(ans, rep)
+		}
+	}
+	return ans
+}
+```
+## [5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
+给你一个字符串 s，找到 s 中最长的回文子串。
+
+> 示例 1： \
+> 输入：s = "babad" \
+> 输出："bab" \
+> 解释："aba" 同样是符合题意的答案。
+>
+> 示例 2： \
+> 输入：s = "cbbd" \
+> 输出："bb"
+
+思路1：动态规划
+```go
+func longestPalindrome(s string) string {
+	n := len(s)
+	str := s[0:1]
+	for i := 0; i < n;i++{
+		ns := len(str)
+		for j := i+ns+1; j <= n; j++{  // 每次只对比 大于目前最大回文长度 的字符串
+			if isPali(s[i:j]){
+				str = s[i:j]
+			}
+		}
+	}
+	return str
+}
+
+func isPali(s string) bool{
+	for i := 0; i < len(s)/2; i++{
+		if s[i] != s[len(s)-1-i]{
+			return false
+		}
+	}
+	return true
+}
+```
+思路2：中心拓展
+- 回文可能是奇数、偶数的数目
+- 拓展需要比较是否符合回文性质
+```go
+func longestPalindrome2(s string) string {
+	if s == ""{
+		return ""
+	}
+	start, end := 0,0
+	for i := 0; i < len(s); i++{
+		// 中心拓展
+		start1, end1 := expandPali(s, i, i) // 回文数目为奇数
+		start2, end2 := expandPali(s, i, i+1) // 回文数目为偶数
+		if end1-start1 > end-start{
+			start, end = start1, end1
+		}
+		if end2-start2 > end-start{
+			start, end = start2, end2
+		}
+	}
+	return s[start:end+1]
+}
+func expandPali(s string,start, end int) (int, int){
+	// 由中心往两边同步拓展
+	// 左侧-1，右侧+1，拓展后左右两侧相等构成回文则继续拓展
+	// 否则返回缩窄左右两侧指针
+	for ; start >= 0 && end < len(s) && s[start] == s[end]; start, end = start-1, end+1{}
+	return start+1, end-1
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)
