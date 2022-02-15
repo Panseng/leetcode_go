@@ -1349,6 +1349,93 @@ func expandPali(s string,start, end int) (int, int){
 }
 ```
 
+## [2. 两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
+给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
+请你将两个数相加，并以相同形式返回一个表示和的链表。
+你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+> 示例 1： \
+> ![](../img/2-1.jpg) \
+> 输入：l1 = [2,4,3], l2 = [5,6,4] \
+> 输出：[7,0,8] \
+> 解释：342 + 465 = 807.
+> 
+> 示例 2： \
+> 输入：l1 = [0], l2 = [0] \
+> 输出：[0]
+>
+> 示例 3： \
+> 输入：l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9] \
+> 输出：[8,9,9,9,0,0,0,1]
+
+思路：加法进位
+```go
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+    result := new(ListNode)
+    prev := result
+    coin := 0 // 低进位
+    for l1 != nil && l2 != nil{
+        prev.Next = new(ListNode)
+        prev = prev.Next
+        sum := coin+l1.Val+l2.Val
+        prev.Val, coin = sum%10, sum/10
+        l1, l2 = l1.Next, l2.Next
+    }
+    if l2 == nil{
+        l2 = l1
+    }
+    for l2 != nil{
+        prev.Next = new(ListNode)
+        prev = prev.Next
+        sum := coin+l2.Val
+        prev.Val, coin = sum%10, sum/10
+        l2 = l2.Next
+    }
+    if coin > 0{
+        prev.Next = new(ListNode)
+        prev = prev.Next
+        prev.Val = coin
+    } 
+    return result.Next
+}
+```
+思路更加清晰的写法，但是判断的次数更多了
+```go
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+    result := new(ListNode)
+    prev := result
+    carry := 0 // 低进位
+    for l1 != nil || l2 != nil{
+        a, b := 0, 0
+        if l1 != nil{
+            a = l1.Val
+        }
+        if l2 != nil{
+            b = l2.Val
+        }
+        a += b+carry
+        prev.Next = new(ListNode)
+        prev = prev.Next
+        prev.Val, carry = a%10, a/10
+
+        if l1 != nil{
+            l1 = l1.Next
+        }
+        if l2 != nil{
+            l2 = l2.Next
+        }
+    }
+
+    if carry > 0{
+        prev.Next = new(ListNode)
+        prev = prev.Next
+        prev.Val = carry
+    }
+    return result.Next
+}
+```
+
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)

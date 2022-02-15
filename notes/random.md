@@ -589,6 +589,79 @@ func isHappy(n int) bool {
 }
 ```
 
+## [454. 四数相加 II](https://leetcode-cn.com/problems/4sum-ii/)
+
+思路：hash法 \
+两两搭配，关键的代码 \
+`mp[v1+v2]++` & `count+=mp[-v3-v4] // 这里可以写 count+=mp[0-v3-v4]`
+```go
+func fourSumCount(nums1 []int, nums2 []int, nums3 []int, nums4 []int) int {
+    mp := make(map[int]int)
+    for _, v1 := range nums1{
+        for _, v2 := range nums2{
+            mp[v1+v2]++
+        }
+    }
+    count := 0
+    for _,v3 := range nums3{
+        for _,v4 := range nums4{
+            count+=mp[-v3-v4] // 这里可以写 mp[0-v3-v4]
+        }
+    }
+    return count
+}
+```
+##[383. 赎金信](https://leetcode-cn.com/problems/ransom-note/)
+给你两个字符串：ransomNote 和 magazine ，判断 ransomNote 能不能由 magazine 里面的字符构成。\
+如果可以，返回 true ；否则返回 false 。\
+magazine 中的每个字符只能在 ransomNote 中使用一次。
+> ransomNote 和 magazine **由小写英文字母组成**
+
+> 示例 1：\
+> 输入：ransomNote = "a", magazine = "b"\
+> 输出：false
+>
+> 示例 2：\
+> 输入：ransomNote = "aa", magazine = "ab"\
+> 输出：false
+>
+> 示例 3：\
+> 输入：ransomNote = "aa", magazine = "aab"\
+> 输出：true
+
+思路：hash法 \
+实现1：用map方式，效率会更低，数组方式更快
+```go
+func canConstruct(ransomNote string, magazine string) bool {
+    mp := make(map[rune]int)
+    for _,v:= range magazine{
+        mp[v]++
+    }
+    for _,v:=range ransomNote{
+        mp[v]--
+        if mp[v]<0{
+            return false
+        }
+    }
+    return true
+}
+```
+实现2：将hash表，转换为数组，其中key值转换为下标
+```go
+func canConstruct(ransomNote string, magazine string) bool {
+    mp := make([]int, 26)
+    for _,v:= range magazine{
+        mp[v-'a']++
+    }
+    for _,v:=range ransomNote{
+        mp[v-'a']--
+        if mp[v-'a']<0{
+            return false
+        }
+    }
+    return true
+}
+```
 
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
