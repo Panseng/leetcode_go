@@ -66,3 +66,12 @@ func step(n int) int {
 	}
 	return sum
 }
+
+func step2(n int) int {
+	s := strconv.Itoa(n)
+	sum := 0
+	for _,v := range s{
+		sum += int(v-'0')*int(v-'0')
+	}
+	return sum
+}

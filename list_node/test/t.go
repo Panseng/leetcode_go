@@ -22,6 +22,11 @@ func main()  {
 		fmt.Println(naa,"相等",nbb)
 	}
 
+	var naaa, nbbb struct{}
+	if naaa == nbbb{
+		fmt.Println(naaa,"相等",nbbb)
+	}
+
 	a :=[]int{1,2,3,4,5}
 	head1 := generator(a)
 	b :=[]int{6,7,8,9,10}

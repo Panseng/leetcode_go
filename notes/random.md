@@ -348,6 +348,7 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
     return prevA
 }
 ```
+未初始化的同类型值相等
 ```go
 	na := new(ListNode)
 	nb := new(ListNode)
@@ -360,6 +361,11 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	if naa == nbb{
 		fmt.Println(naa,"相等",nbb) // 相等 {0 <nil>} 相等 {0 <nil>}
 	}
+
+    var naaa, nbbb struct{}
+    if naaa == nbbb{
+        fmt.Println(naaa,"相等",nbbb)
+    }
 ```
 
 ## [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
@@ -502,6 +508,8 @@ func intersection(nums1 []int, nums2 []int) []int {
     return res
 }
 ```
+精妙的代码`len(res) == 0 || res[len(res)-1] < x`
+
 ## [202. 快乐数](https://leetcode-cn.com/problems/happy-number/)
 编写一个算法来判断一个数 n 是不是快乐数。
 
@@ -559,6 +567,9 @@ func isHappy(n int) bool {
 	return n == 1
 }
 
+```
+求各个位数的平方和
+```go
 func step(n int) int {
 	sum := 0
 	for n > 0{
