@@ -333,8 +333,7 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 ```go
 func getIntersectionNode(headA, headB *ListNode) *ListNode {
     prevA, prevB := headA, headB
-	// 如果两条链长度一样，而不相交，则同时指向 nill
-    for prevA != prevB && !(prevA == nil && prevB == nil){ 
+    for prevA != prevB{ // <nil>  ==  <nil>，即 如果A、B链表长度相等且无交集，则在最后都指向*ListNode 的声明值
         if prevA == nil{
             prevA = headB
         } else{
@@ -349,6 +348,20 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
     return prevA
 }
 ```
+```go
+	na := new(ListNode)
+	nb := new(ListNode)
+	if na.Next == nb.Next{
+		fmt.Println("相等") // 相等 
+	}
+
+	var naa ListNode
+	var nbb ListNode
+	if naa == nbb{
+		fmt.Println(naa,"相等",nbb) // 相等 {0 <nil>} 相等 {0 <nil>}
+	}
+```
+
 ## [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 给定一个链表的头节点  head ，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。\
 如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。如果 pos 是 -1，则在该链表中没有环。注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。\
@@ -589,28 +602,6 @@ func isHappy(n int) bool {
 }
 ```
 
-## [454. 四数相加 II](https://leetcode-cn.com/problems/4sum-ii/)
-
-思路：hash法 \
-两两搭配，关键的代码 \
-`mp[v1+v2]++` & `count+=mp[-v3-v4] // 这里可以写 count+=mp[0-v3-v4]`
-```go
-func fourSumCount(nums1 []int, nums2 []int, nums3 []int, nums4 []int) int {
-    mp := make(map[int]int)
-    for _, v1 := range nums1{
-        for _, v2 := range nums2{
-            mp[v1+v2]++
-        }
-    }
-    count := 0
-    for _,v3 := range nums3{
-        for _,v4 := range nums4{
-            count+=mp[-v3-v4] // 这里可以写 mp[0-v3-v4]
-        }
-    }
-    return count
-}
-```
 ##[383. 赎金信](https://leetcode-cn.com/problems/ransom-note/)
 给你两个字符串：ransomNote 和 magazine ，判断 ransomNote 能不能由 magazine 里面的字符构成。\
 如果可以，返回 true ；否则返回 false 。\
@@ -660,6 +651,264 @@ func canConstruct(ransomNote string, magazine string) bool {
         }
     }
     return true
+}
+```
+
+## [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。\
+注意：答案中不可以包含重复的三元组。
+> 示例 1：
+> 输入：nums = [-1,0,1,2,-1,-4] \
+> 输出：[[-1,-1,2],[-1,0,1]]
+>
+> 示例 2： \
+> 输入：nums = []\
+> 输出：[]
+>
+> 示例 3：\
+> 输入：nums = [0]\
+> 输出：[]
+1. 特判，对于数组长度 n，如果数组为 null 或者数组长度小于 3，返回[]。
+2. 对数组进行排序。
+3. 遍历排序后数组：
+- 若 `nums[i]>0`：因为已经排序好，所以后面不可能有三个数加和等于 0，直接返回结果。
+- 对于重复元素：跳过，避免出现重复解
+- 令左指针 `L=i+1`，右指针 `R=n-1`，当 `L<R` 时，执行循环：
+    - 当 `nums[i]+nums[L]+nums[R]==0`，执行循环，判断左界和右界是否和下一位置重复，去除重复解。并同时将 L,RL,R 移到下一位置，寻找新的解
+    - 若和大于 0，说明 `nums[R]` 太大，R 左移
+    - 若和小于 0，说明 `nums[L]` 太小，L 右移
+```go
+func threeSum(nums []int) [][]int {
+    ans := make([][]int, 0)
+    n := len(nums)
+    sort.Ints(nums) // 排序，让可能相同的值聚合在一起
+    for firstI := 0; firstI < n; firstI++{
+        if firstI > 0 && nums[firstI] == nums[firstI-1]{ // 跳过相同的首位值
+            continue
+        }
+        thirdI := n-1
+        target := -1*nums[firstI]
+        if target<0{
+            break
+        }
+        for secondI := firstI+1; secondI < n;secondI++{
+            if secondI > firstI+1 && nums[secondI] == nums[secondI-1]{ // 跳过相同的第二位
+                continue
+            }
+            for secondI < thirdI && nums[secondI] + nums[thirdI]>target{ // 跳过第三位大值
+            // 这里不需要跳过相同第三位，因为，前面已经保证第一二位组合不会重复，那么第三位也不会重复
+                thirdI--
+            }
+            if secondI == thirdI{ // 说明第二三为组合已经迭代完成
+                break
+            }
+            if nums[secondI]+ nums[thirdI] == target{
+                ans = append(ans, []int{nums[firstI], nums[secondI], nums[thirdI]})
+            }
+        }
+    }
+    return ans
+}
+```
+
+## [18. 四数之和](https://leetcode-cn.com/problems/4sum/)
+给你一个由 n 个整数组成的数组 nums ，和一个目标值 target 。请你找出并返回满足下述全部条件且不重复的四元组 [nums[a], nums[b], nums[c], nums[d]] （若两个四元组元素一一对应，则认为两个四元组重复）：
+- 0 <= a, b, c, d < n
+- a、b、c 和 d 互不相同
+- nums[a] + nums[b] + nums[c] + nums[d] == target
+
+你可以按 **任意顺序** 返回答案 。
+
+> 示例 1： \
+> 输入：nums = [1,0,-1,0,-2,2], target = 0 \
+> 输出：[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+>
+> 示例 2： \
+> 输入：nums = [2,2,2,2,2], target = 8 \
+> 输出：[[2,2,2,2]]
+
+思路1：同三数求和
+```go
+func fourSum(nums []int, target int) [][]int {
+    sort.Ints(nums)
+    n := len(nums)
+    ans := [][]int{}
+    for first := 0; first < n; first++{
+        if first > 0 && nums[first] == nums[first-1]{
+            continue
+        }
+        for second := first+1; second < n; second++{
+            if second > first+1 && nums[second] == nums[second-1]{
+                continue
+            }
+            for third := second+1; third < n; third++{
+                if third > second+1 && nums[third] == nums[third-1]{
+                    continue
+                }
+                fVal := target-nums[first]-nums[second]-nums[third]
+                fourth := n-1
+                for ;fourth > third && nums[fourth] > fVal; fourth--{}
+                if fourth == third{
+                    break
+                }
+                if nums[fourth] == fVal{
+                    ans = append(ans,[]int{nums[first], nums[second], nums[third], nums[fourth]})
+                }
+            }
+        }
+    }
+    return ans
+}
+```
+代码优化：排序+左右指针
+```go
+func fourSum(nums []int, target int) [][]int {
+    sort.Ints(nums)
+    n := len(nums)
+    ans := [][]int{}
+    // 增加了过滤条件：当最小和已经大于目标和时，不再循环
+    for first := 0; first < n-3 && nums[first]+nums[first+1]+nums[first+2]+nums[first+3]<=target; first++{
+        if first > 0 && nums[first] == nums[first-1]{
+            continue
+        }
+        // 增加了过滤条件：当最小和已经大于目标和时，不再循环
+        for second := first+1; second < n-2 && nums[first]+nums[second]+nums[second+1]+nums[second+2]<=target; second++{
+            if second > first+1 && nums[second] == nums[second-1]{
+                continue
+            }
+            for left, right := second+1, n-1; left < right;{
+                if sum := nums[first]+nums[second]+nums[left]+nums[right]; sum == target{
+                    ans = append(ans,[]int{nums[first], nums[second], nums[left], nums[right]})
+                    // 用for循环剔除相同的值（如果不剔除，则会构成重复的结果
+                    for left++; left < right && nums[left] == nums[left-1];left++{}
+                    for right--; left < right && nums[right] == nums[right+1];right--{}
+                } else if sum < target{
+                	// 同样的去重，不再对已排除且无效的值进行循环
+                    for left++; left < right && nums[left] == nums[left-1];left++{}
+                } else{
+                    // 同样的去重，不再对已排除且无效的值进行循环
+                    for right--; left < right && nums[right] == nums[right+1];right--{}
+                }
+            }
+        }
+    }
+    return ans
+}
+```
+
+## [454. 四数相加 II](https://leetcode-cn.com/problems/4sum-ii/)
+
+思路：hash法 \
+两两搭配，关键的代码 \
+`mp[v1+v2]++` & `count+=mp[-v3-v4] // 这里可以写 count+=mp[0-v3-v4]`
+```go
+func fourSumCount(nums1 []int, nums2 []int, nums3 []int, nums4 []int) int {
+    mp := make(map[int]int)
+    for _, v1 := range nums1{
+        for _, v2 := range nums2{
+            mp[v1+v2]++
+        }
+    }
+    count := 0
+    for _,v3 := range nums3{
+        for _,v4 := range nums4{
+            count+=mp[-v3-v4] // 这里可以写 mp[0-v3-v4]
+        }
+    }
+    return count
+}
+```
+
+# 字符串
+
+##[344. 反转字符串](https://leetcode-cn.com/problems/reverse-string/)
+编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 s 的形式给出。\
+不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。
+
+> 示例 1： \
+> 输入：s = ["h","e","l","l","o"] \
+> 输出：["o","l","l","e","h"]
+>
+> 示例 2： \
+> 输入：s = ["H","a","n","n","a","h"] \
+> 输出：["h","a","n","n","a","H"]
+
+思路：双指针法
+```go
+func reverseString(s []byte)  {
+    n := len(s)
+    for i := 0; i < n/2; i++{
+        s[i], s[n-1-i] = s[n-1-i], s[i]
+    }
+}
+```
+优化：更加直观的代码
+```go
+func reverseString(s []byte)  {
+    for left, right := 0, len(s)-1; left<right;left,right = left+1, right-1{
+        s[left], s[right] = s[right], s[left]
+    }
+}
+```
+
+## [541. 反转字符串 II](https://leetcode-cn.com/problems/reverse-string-ii/)
+给定一个字符串 s 和一个整数 k，从字符串开头算起，每计数至 2k 个字符，就反转这 2k 字符中的前 k 个字符。
+- 如果剩余字符少于 k 个，则将剩余字符全部反转。
+- 如果剩余字符小于 2k 但大于或等于 k 个，则反转前 k 个字符，其余字符保持原样。
+
+> 示例 1： \
+> 输入：s = "abcdefg", k = 2 \
+> 输出："bacdfeg"
+>
+> 示例 2： \
+> 输入：s = "abcd", k = 2 \
+> 输出："bacd"
+
+思路：结合反转字符串方法，暴力迭代
+```go
+func reverseStr(s string, k int) string {
+	str := ""
+	n := len(s)
+	for i := 0; i < n; i += 2*k {
+		end := i + k
+		if end >= n {
+			str = str + reverseString([]byte(s[i:]))
+		} else {
+			if end+k >= n{
+				str = str + reverseString([]byte(s[i:end])) + s[end:]
+			} else {
+				str = str + reverseString([]byte(s[i:end])) + s[end:end+k]
+			}
+		}
+	}
+	return str
+}
+
+func reverseString(s []byte) string {
+	for left, right := 0, len(s)-1; left < right; left, right = left+1, right-1 {
+		s[left], s[right] = s[right], s[left]
+	}
+	return string(s)
+}
+```
+优化
+```go
+func reverseStr(s string, k int) string {
+    tem := []byte(s) // 一次转换，在数组中操作
+    for i := 0; i < len(s); i+=2*k{
+        sub := tem[i:min(len(s), i+k)] // 取最小值，确保不越界
+        for j, n := 0, len(sub); j < n/2;j++{
+            sub[j], sub[n-1-j] = sub[n-1-j], sub[j]
+        } 
+    }
+    return string(tem)
+}
+
+func min(a,b int)int{
+    if a>b{
+        return b
+    }
+    return a
 }
 ```
 

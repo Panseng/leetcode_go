@@ -1435,6 +1435,59 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 }
 ```
 
+##[82. 删除排序链表中的重复元素 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/)
+给定一个已排序的链表的头 head ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。
+
+> 示例 1： \
+> ![](../img/82-1.jpg) \
+> 输入：head = [1,2,3,3,4,4,5] \
+> 输出：[1,2,5]
+
+> 示例 2： \
+> ![](../img/82-2.jpg) \
+> 输入：head = [1,1,1,2,3] \
+> 输出：[2,3]
+
+思路1：逐个对比，且对每一个都比到不再重复为止
+```go
+func deleteDuplicates(head *ListNode) *ListNode {
+    result := &ListNode{Val: math.MinInt64, Next: head} // 为了能够排除头部的重复，所以需要再加一个头，值为最小值
+    prev := result
+    for prev != nil && prev.Next != nil{
+        next := prev.Next
+        nextNext := next.Next
+        for nextNext != nil && nextNext.Val == next.Val{
+            nextNext = nextNext.Next
+        }
+        if nextNext == next.Next{
+            prev = next
+        } else{
+            prev.Next = nextNext
+        }
+    }
+    return result.Next
+}
+```
+思路2：hash法
+```go
+func deleteDuplicates(head *ListNode) *ListNode {
+    result := &ListNode{Val: math.MinInt64, Next: head}
+    prev := result
+    mp := make(map[int]int)
+    for prev != nil{
+        mp[prev.Val]++
+        prev = prev.Next
+    }
+    prev = result
+    for prev != nil{
+        for prev.Next != nil && mp[prev.Next.Val] > 1{
+            prev.Next = prev.Next.Next
+        }
+        prev = prev.Next
+    }
+    return result.Next
+}
+```
 
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
