@@ -11,7 +11,16 @@ type MyLinkedList struct {
 }
 
 func main()  {
-	//linkedList := new(MyLinkedList)
+	l := Constructor()
+	l.AddAtHead(1)
+	l.AddAtTail(3)
+	l.AddAtIndex(1,2)
+	fmt.Println(l.Get(1))
+	l.DeleteAtIndex(0)
+	l.Show()
+	fmt.Println(l.Get(0))
+
+	//linkedList := Constructor()
 	//linkedList.AddAtHead(1)
 	//linkedList.AddAtTail(3)
 	//linkedList.Show()
@@ -21,35 +30,37 @@ func main()  {
 	//linkedList.DeleteAtIndex(1)  //现在链表是1-> 3
 	//linkedList.Show()
 	//fmt.Println(linkedList.Get(1) )         //返回3
-
-	//a := math.MinInt64
-	//b := math.MinInt64
-	//if a == b{
-	//	fmt.Println("可等")
-	//}
-
-	ll := new(MyLinkedList)
-	fmt.Println("AddAtHead 7")
-	ll.AddAtHead(7)
-	fmt.Println("AddAtHead 2")
-	ll.AddAtHead(2)
-	fmt.Println("AddAtHead 1")
-	ll.AddAtHead(1)
-	fmt.Println("AddAtHead 0")
-	ll.Show()
-	ll.AddAtIndex(3,0)
-	ll.DeleteAtIndex(2)
-	ll.AddAtHead(6)
-	ll.AddAtTail(4)
-	fmt.Println(ll.Get(4))
-	ll.AddAtHead(4)
-	ll.AddAtIndex(5,0)
-	ll.AddAtHead(6)
-	ll.Show()
+	//
+	////a := math.MinInt64
+	////b := math.MinInt64
+	////if a == b{
+	////	fmt.Println("可等")
+	////}
+	//
+	//ll := Constructor()
+	//ll.AddAtHead(7)
+	//ll.AddAtHead(2)
+	//ll.AddAtHead(1)
+	//ll.Show()
+	//ll.AddAtIndex(3,0)
+	//ll.Show()
+	//ll.DeleteAtIndex(2)
+	//ll.Show()
+	//ll.AddAtHead(6)
+	//ll.Show()
+	//ll.AddAtTail(4)
+	//ll.Show()
+	//fmt.Println(ll.Get(4))
+	//ll.AddAtHead(4)
+	//ll.Show()
+	//ll.AddAtIndex(5,0)
+	//ll.Show()
+	//ll.AddAtHead(6)
+	//ll.Show()
 }
 
 func Constructor() MyLinkedList {
-	return MyLinkedList{Val: math.MinInt64}
+	return MyLinkedList{Val: math.MinInt64, Next: nil}
 }
 
 func (this *MyLinkedList) Get(index int) int {
@@ -66,10 +77,8 @@ func (this *MyLinkedList) AddAtHead(val int)  {
 		this.Val = val
 		return
 	}
-	nodes := this.GetSlice()
-
+	this.Next = &MyLinkedList{Val: this.Val, Next: this.Next}
 	this.Val = val
-	this.Next = nodes[0]
 }
 
 
@@ -104,12 +113,17 @@ func (this *MyLinkedList) AddAtIndex(index int, val int)  {
 
 
 func (this *MyLinkedList) DeleteAtIndex(index int)  {
-	if index == 0{
-		this = this.Next
-		return
-	}
 	nodes := this.GetSlice()
 	n := len(nodes)
+	if index == 0{
+		if n > 1{
+			this.Val = this.Next.Val
+			this.Next = this.Next.Next
+		} else if n == 1{
+			this.Val = math.MinInt64
+		}
+		return
+	}
 	if index < n && index > 0{
 		node := nodes[index-1]
 		node.Next = node.Next.Next

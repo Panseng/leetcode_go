@@ -923,6 +923,138 @@ func min(a,b int)int{
 }
 ```
 
+## [剑指 Offer 05. 替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
+请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
+
+> 示例 1： \
+> 输入：s = "We are happy." \
+> 输出："We%20are%20happy."
+
+思路：字符串操作，相对耗时
+```go
+func replaceSpace(s string) string {
+	for i := 0; i < len(s); i++{
+		if s[i] == " "[0]{
+			if i == len(s)-1{
+				s = s[:i]+"%20"
+				break
+			}
+			s = s[:i]+"%20"+s[i+1:]
+			i += 2
+		}
+	}
+	return s
+}   
+```
+思路2：转换为数组的方式，在固定空间操作
+```go
+func replaceSpace(s string) string {
+    count := 0
+    for _,v := range s{
+        if v == ' '{
+            count++
+        }
+    }
+    ans := make([]byte, len(s)+2*count) // 固定长度数组
+    leftS, leftAns := len(s)-1, len(ans)-1
+    for ; leftS >= 0; leftS--{
+        if s[leftS] == ' '{
+            ans[leftAns] = '0'
+            ans[leftAns-1] = '2'
+            ans[leftAns-2] = '%'
+            leftAns -= 3 // 替换了更长的字符，则需要定位到更新的位置
+        } else{
+            ans[leftAns] = s[leftS]
+            leftAns--
+        }
+    }
+    return string(ans)
+}
+```
+
+##[151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
+给你一个字符串 s ，逐个翻转字符串中的所有 单词 。\
+单词 是由非空格字符组成的字符串。s 中使用至少一个空格将字符串中的 单词 分隔开。\
+请你返回一个翻转 s 中单词顺序并用单个空格相连的字符串。
+
+说明：
+- 输入字符串 s 可以在前面、后面或者单词间包含多余的空格。
+- 翻转后单词间应当仅用一个空格分隔。
+- 翻转后的字符串中不应包含额外的空格。
+
+> 示例 1：
+> 输入：s = "the sky is blue"
+> 输出："blue is sky the"
+>
+> 示例 2：
+> 输入：s = "  hello world  "
+> 输出："world hello"
+> 解释：输入字符串可以在前面或者后面包含多余的空格，但是翻转后的字符不能包括。
+>
+> 示例 3：
+> 输入：s = "a good   example"
+> 输出："example good a"
+> 解释：如果两个单词间有多余的空格，将翻转后单词间的空格减少到只含一个。
+> 示例 4：
+> 输入：s = "  Bob    Loves  Alice   "
+> 输出："Alice Loves Bob"
+> 示例 5：
+> 输入：s = "Alice does not even like bob"
+> 输出："bob like even not does Alice"
+
+思路1：使用库函数去除多余空格再转换
+```go
+func reverseWords(s string) string {
+	s = strings.Trim(s, " ")  // 排除两边空格
+	reg := regexp.MustCompile(`\s{2,}`)
+	s = reg.ReplaceAllString(s, " ") // 所有多空格转换为1个
+	ans := strings.Split(s, " ")
+	for left, right := 0, len(ans)-1; left < right; left, right = left+1, right-1{
+		ans[left], ans[right] = ans[right], ans[left]
+	}
+	return strings.Join(ans, " ")
+}
+```
+思路2：用for循环剔除多余空格
+```go
+func reverseWords(s string) string {
+	ans := strings.Split(s, " ")
+	for i, n := 0, len(ans); i < n; i++{
+		if ans[i] == ""{
+			if i == n-1{
+				ans = ans[:i]
+			} else {
+				ans = append(ans[:i], ans[i+1:]...)
+				i--
+				n = len(ans)
+			}
+		}
+	}
+	for left, right := 0, len(ans)-1; left < right; left, right = left+1, right-1{
+		ans[left], ans[right] = ans[right], ans[left]
+	}
+	return strings.Join(ans, " ")
+}
+```
+
+##[剑指 Offer 58 - II. 左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
+字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+
+> 示例 1： \
+> 输入: s = "abcdefg", k = 2 \
+> 输出: "cdefgab"
+>
+> 示例 2： \
+> 输入: s = "lrloseumgh", k = 6 \
+> 输出: "umghlrlose"
+
+```go
+func reverseLeftWords(s string, n int) string {
+    return s[n:]+s[:n]
+}
+```
+
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [基础 ->](base.md)

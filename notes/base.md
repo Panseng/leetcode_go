@@ -1489,6 +1489,98 @@ func deleteDuplicates(head *ListNode) *ListNode {
 }
 ```
 
+## [707. 设计链表](https://leetcode-cn.com/problems/design-linked-list/)
+
+```go
+type MyLinkedList struct {
+	Val int
+	Next *MyLinkedList
+}
+
+func Constructor() MyLinkedList {
+	return MyLinkedList{Val: math.MinInt64, Next: nil}
+}
+
+func (this *MyLinkedList) Get(index int) int {
+	nodes := this.GetSlice()
+	if index < 0 || index >= len(nodes){
+		return -1
+	}
+	return nodes[index].Val
+}
+
+
+func (this *MyLinkedList) AddAtHead(val int)  {
+	if this.Val == math.MinInt64{
+		this.Val = val
+		return
+	}
+	this.Next = &MyLinkedList{Val: this.Val, Next: this.Next}
+	this.Val = val
+}
+
+
+func (this *MyLinkedList) AddAtTail(val int)  {
+	nodes := this.GetSlice()
+	n := len(nodes)
+	if n == 0{
+		this.Val = val
+		return
+	}
+	nodes[len(nodes)-1].Next = &MyLinkedList{Val: val}
+}
+
+
+func (this *MyLinkedList) AddAtIndex(index int, val int)  {
+	if index <= 0{
+		this.AddAtHead(val)
+		return
+	}
+	nodes := this.GetSlice()
+	n := len(nodes)
+	if index > n{
+		return
+	}
+	if index == n{
+		this.AddAtTail(val)
+		return
+	}
+	node := nodes[index-1]
+	node.Next = &MyLinkedList{Val: val, Next: node.Next}
+}
+
+
+func (this *MyLinkedList) DeleteAtIndex(index int)  {
+	nodes := this.GetSlice()
+	n := len(nodes)
+	if index == 0{
+		if n > 1{
+			this.Val = this.Next.Val
+			this.Next = this.Next.Next
+		} else if n == 1{
+			this.Val = math.MinInt64
+		}
+		return
+	}
+	if index < n && index > 0{
+		node := nodes[index-1]
+		node.Next = node.Next.Next
+	}
+}
+
+func (this *MyLinkedList) GetSlice() (ans []*MyLinkedList ){
+	prev := this
+	for prev != nil{
+		if prev.Val == math.MinInt64{
+			break
+		}
+		ans = append(ans, prev)
+		prev = prev.Next
+	}
+	return
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)
