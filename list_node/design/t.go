@@ -29,9 +29,13 @@ func main()  {
 	//}
 
 	ll := new(MyLinkedList)
+	fmt.Println("AddAtHead 7")
 	ll.AddAtHead(7)
+	fmt.Println("AddAtHead 2")
 	ll.AddAtHead(2)
+	fmt.Println("AddAtHead 1")
 	ll.AddAtHead(1)
+	fmt.Println("AddAtHead 0")
 	ll.Show()
 	ll.AddAtIndex(3,0)
 	ll.DeleteAtIndex(2)
@@ -62,8 +66,10 @@ func (this *MyLinkedList) AddAtHead(val int)  {
 		this.Val = val
 		return
 	}
+	nodes := this.GetSlice()
 
-	this = &MyLinkedList{Val: val, Next: this}
+	this.Val = val
+	this.Next = nodes[0]
 }
 
 
