@@ -792,18 +792,19 @@ func reverseList(head *ListNode) *ListNode {
 思路2：迭代，倒叙迭代 \
 ![](../img/206-0.gif)
 ```go
-func reverseList2(head *ListNode) *ListNode {
-	var preHead *ListNode
-	curr := head
-	for curr != nil{
-		next:=curr.Next
-		curr.Next = preHead // 倒叙排列
-		preHead = curr
-		curr = next
+func reverseList(head *ListNode) *ListNode {
+	var nilHead *ListNode
+	node1 := head
+	for node1 != nil {
+		node2 := node1.Next
+		node1.Next = nilHead // 倒叙排列
+		nilHead = node1
+		node1 = node2
 	}
-	return preHead
+	return nilHead
 }
 ```
+
 
 思路3：[递归](https://leetcode-cn.com/problems/reverse-linked-list/solution/dong-hua-yan-shi-206-fan-zhuan-lian-biao-by-user74/) 
 ```go

@@ -972,7 +972,7 @@ func replaceSpace(s string) string {
 }
 ```
 
-##[151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
+## [151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
 给你一个字符串 s ，逐个翻转字符串中的所有 单词 。\
 单词 是由非空格字符组成的字符串。s 中使用至少一个空格将字符串中的 单词 分隔开。\
 请你返回一个翻转 s 中单词顺序并用单个空格相连的字符串。
@@ -1037,7 +1037,7 @@ func reverseWords(s string) string {
 }
 ```
 
-##[剑指 Offer 58 - II. 左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
+## [剑指 Offer 58 - II. 左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
 字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
 
 > 示例 1： \
@@ -1051,6 +1051,87 @@ func reverseWords(s string) string {
 ```go
 func reverseLeftWords(s string, n int) string {
     return s[n:]+s[:n]
+}
+```
+
+## [28. 实现 strStr()](https://leetcode-cn.com/problems/implement-strstr/)
+实现 strStr() 函数。
+
+给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串出现的第一个位置（下标从 0 开始）。如果不存在，则返回  -1 。
+
+说明：
+- 当 needle 是空字符串时，我们应当返回什么值呢？这是一个在面试中很好的问题。
+- 对于本题而言，当 needle 是空字符串时我们应当返回 0 。这与 C 语言的 strstr() 以及 Java 的 indexOf() 定义相符。
+
+> 示例 1： \
+> 输入：haystack = "hello", needle = "ll" \
+> 输出：2
+>
+> 示例 2： \
+> 输入：haystack = "aaaaa", needle = "bba" \
+> 输出：-1
+>
+> 示例 3： \
+> 输入：haystack = "", needle = "" \
+> 输出：0
+
+思路1：遍历比较
+```go
+func strStr(haystack string, needle string) int {
+    n1, n2 := len(haystack), len(needle)
+    if n2 == 0{
+        return 0
+    }
+    if n1 == 0 || n1<n2 || (n1 == n2 && haystack != needle){
+        return -1
+    }
+    for i := 0; i <= n1-n2; i++{
+        if haystack[i:i+n2] == needle{
+            return i
+        }
+    }
+    return -1
+}
+```
+思路2：KMP算法 \
+核心内容：前缀表 \
+![](../img/28-1.gif)
+- 获取前缀表，然后根据前缀表匹配值
+```go
+func strStr(haystack string, needle string) int {
+	n := len(needle)
+	if n == 0{
+		return 0
+	}
+	next := make([]int, n)
+	getNext(needle, next)
+	j := 0;
+	for i := 0; i < len(haystack); i++{
+		for j > 0 && haystack[i] != needle[j]{ // 遇到不匹配的，则不断回溯，直到遇到匹配的前缀值
+			j = next[j-1] // 根据next回退
+		}
+		if haystack[i] == needle[j]{ // 扩大匹配前缀长度
+			j++
+		}
+		if j == n{ // 说明已经完全匹配
+			return i-n+1
+		}
+	}
+	return -1
+}
+
+func getNext(s string, next []int){
+	j := 0;
+	next[0] = j
+	for i := 1; i < len(s); i++{
+		for j > 0 && s[j] != s[i]{ // 凡是遇到不匹配的，则需要从头开始寻找前缀值
+			j = next[j-1]
+		}
+		if s[i]==s[j]{ // 前缀右侧端点右移：增加匹配的前缀长度
+			j++
+		}
+		next[i] = j // 记录当前索引字符能够匹配的 前缀右侧端点索引
+	}
 }
 ```
 

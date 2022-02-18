@@ -1581,6 +1581,229 @@ func (this *MyLinkedList) GetSlice() (ans []*MyLinkedList ){
 }
 ```
 
+## [25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。\
+k 是一个正整数，它的值小于或等于链表的长度。 \
+如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。 \
+进阶：
+- 你可以设计一个**只使用常数额外空间**的算法来解决此问题吗？
+- 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+
+> 示例 1： \
+> ![](../img/25-1.jpg) \
+> 输入：head = [1,2,3,4,5], k = 2 \
+> 输出：[2,1,4,3,5] 
+>
+> 示例 2： \
+> ![](../img/25-2.jpg) \
+> 输入：head = [1,2,3,4,5], k = 3 \
+> 输出：[3,2,1,4,5]
+>
+> 示例 3： \
+> 输入：head = [1,2,3,4,5], k = 1 \
+> 输出：[1,2,3,4,5]
+>
+> 示例 4： \
+> 输入：head = [1], k = 1 \
+> 输出：[1]
+
+思路1：借助数组进行翻转
+```go
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	nodes := []*ListNode{}
+	prev := head
+	for prev != nil{
+		nodes = append(nodes, prev)
+		prev = prev.Next
+	}
+	n := len(nodes)
+	if n < k || n == 1 || k == 1{
+		return head
+	}
+	node := &ListNode{}
+	prev = node
+	i := 0
+	for ;i < n && i < (n/k)*k;i+=k{
+		next, tail := slice2Node(nodes[i:i+k])
+		prev.Next = next
+		prev = tail
+	}
+	for ; i < n; i++{
+		prev.Next = nodes[i]
+		prev = prev.Next
+	}
+	prev.Next = nil
+	return node.Next
+}
+
+func slice2Node(nodes []*ListNode) (*ListNode, *ListNode){
+	node := &ListNode{Next:nil}
+	prev := node
+	n := len(nodes)
+	for n > 0{
+		prev.Next = nodes[n-1]
+		prev = prev.Next
+		nodes = nodes[:n-1]
+		n = len(nodes)
+	}
+	return node.Next, prev
+}
+```
+思路2：动态规划
+- 以k个节点为一组，分头尾，取余后，尾下标为0，头下标为k-1，上一组的尾接下一组的头
+```go
+func reverseKGroup2(head *ListNode, k int) *ListNode {
+	prev := head
+	n := 0
+	for prev != nil{
+		prev = prev.Next
+		n++
+	}
+	if n < k || n == 1 || k == 1{
+		return head
+	}
+
+	var leftTail, rightTail, firstHead, nilHead, node1, node2 *ListNode
+	node1 = head
+	i := 0
+	// 整体思路是：以k个节点为一组，分头尾，取余后，尾下标为0，头下标为k-1，上一组的尾接下一组的头
+	for ;i < n && i < (n/k)*k;i++ {
+		if i%k == 0{
+			nilHead = nil
+		}
+		node2 = node1.Next
+		node1.Next = nilHead
+		nilHead = node1
+		node1 = node2
+		if i % k == 0{
+			rightTail = nilHead // 获取当前组的尾
+			continue
+		}
+		if i%k != k-1{ // 如果当前节点不是新的头节点，则进入下一个循环
+			continue
+		}
+		if i == k-1{
+			firstHead = nilHead
+		} else {
+			leftTail.Next = nilHead
+		}
+		leftTail = rightTail // 记录当前组的尾，因为下一个组的尾会覆盖rightTail值
+	}
+
+	if i < n{
+		leftTail.Next = node1
+	}
+	return firstHead
+}
+```
+
+## [143. 重排链表](https://leetcode-cn.com/problems/reorder-list/)
+
+思路1：队列
+- 先将所有节点填入队列，然后逐个填入head节点
+```go
+func reorderList(head *ListNode)  {
+    nodes := []*ListNode{}
+    prev := head.Next
+    for prev != nil{
+        nodes = append(nodes, prev)
+        prev = prev.Next
+    }
+    n := len(nodes)
+    if n == 1{
+        return 
+    }
+    prev = head
+    for n > 0{
+        prev.Next = nodes[n-1]
+        prev = prev.Next
+        nodes = nodes[:n-1]
+        n--
+        if n > 0{
+            prev.Next = nodes[0]
+            prev = prev.Next
+            if n > 1{
+                nodes = nodes[1:]
+            }
+            n--
+        }
+    }
+    prev.Next = nil
+}
+```
+优化，直接在队列中调整节点前后顺序
+```go
+func reorderList(head *ListNode)  {
+    if head == nil{
+        return
+    }
+    nodes := []*ListNode{}
+    
+    for head != nil{
+        nodes = append(nodes, head)
+        head = head.Next
+    }
+    i, j := 0, len(nodes)-1
+    for i<j{
+        nodes[i].Next = nodes[j]
+        i++
+        if i==j{
+            break
+        }
+        nodes[j].Next = nodes[i]
+        j--
+    }
+    nodes[i].Next = nil
+}
+```
+思路2：寻找链表中点 + 链表逆序 + 合并链表
+- 类似双指针思路
+```go
+func reorderList(head *ListNode) {
+    if head == nil {
+        return
+    }
+    mid := getMid(head)
+    l1 := head
+    l2 := mid.Next // 获取后半段（可能会比前半段少1个）
+    mid.Next = nil // 让head即l1只保留前半段
+    l2 = reverseList(l2) // 反转后半段 
+    mergeList(l1,l2) // 类似双指针法
+}
+
+func getMid(head *ListNode) *ListNode{
+    fast, slow := head, head
+    for fast.Next != nil && fast.Next.Next != nil{
+        fast = fast.Next.Next
+        slow = slow.Next
+    }
+    return slow
+}
+func reverseList(head *ListNode) *ListNode {
+	var nilHead *ListNode
+	node1 := head
+	for node1 != nil {
+		node2 := node1.Next
+		node1.Next = nilHead // 倒叙排列
+		nilHead = node1
+		node1 = node2
+	}
+	return nilHead
+}
+func mergeList(l1, l2 *ListNode){
+    for l1 != nil && l2 != nil{
+        t1 := l1.Next
+        t2 := l2.Next
+
+        l1.Next = l2
+        l1 = t1
+
+        l2.Next = l1
+        l2 = t2
+    }
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)
