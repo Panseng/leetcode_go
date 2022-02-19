@@ -48,7 +48,7 @@ func strStr2(haystack string, needle string) int {
 }
 
 func getNext(s string, next []int){
-	j := 0;
+	j := 0
 	next[0] = j
 	for i := 1; i < len(s); i++{
 		for j > 0 && s[j] != s[i]{

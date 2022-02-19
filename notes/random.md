@@ -1135,6 +1135,88 @@ func getNext(s string, next []int){
 }
 ```
 
+## [459. 重复的子字符串](https://leetcode-cn.com/problems/repeated-substring-pattern/)
+给定一个非空的字符串 s ，检查是否可以通过由它的一个子串重复多次构成。
+
+> 示例 1: \
+> 输入: s = "abab" \
+> 输出: true \
+> 解释: 可由子串 "ab" 重复两次构成。
+>
+> 示例 2: \
+> 输入: s = "aba" \
+> 输出: false
+>
+> 示例 3: \
+> 输入: s = "abcabcabcabc" \
+> 输出: true \
+> 解释: 可由子串 "abc" 重复四次构成。 (或子串 "abcabc" 重复两次构成。)
+
+思路1：暴力解法
+```go
+func repeatedSubstringPattern(s string) bool {
+	n := len(s)
+	for i := 1; i < n;i++{
+		if n%i == 0{
+			match := true
+			for j := i; j<n;j++{
+				if s[j] != s[j-i]{
+					match = false
+					break
+				}
+			}
+			if match{
+				return true
+			}
+		}
+	}
+	return false
+}
+```
+思路2：kmp算法
+- 如果是由小段字符串重复组成，那么s2掐头去尾后，仍包含 s
+```go
+func repeatedSubstringPattern2(s string) bool {
+	s2 := s+s // 如果是由小段字符串重复组成，那么s2掐头去尾后，仍包含 s
+	return kmp(s2[1:len(s2)-1], s) // 有重复，则，由2个该字符串组成的新字符串掐头去尾之后，仍包含原字符串
+}
+
+func kmp(haystack string, needle string) bool {
+	n := len(needle)
+	//if n == 0{ // needle > 0
+	//	return 0
+	//}
+	next := make([]int, n)
+	getNext(needle, next)
+	j := 0;
+	for i := 0; i < len(haystack); i++{
+		for j > 0 && haystack[i] != needle[j]{
+			j = next[j-1] // 根据next回退
+		}
+		if haystack[i] == needle[j]{
+			j++
+		}
+		if j == n{
+			return true
+		}
+	}
+	return false
+}
+func getNext(s string, next []int)  {
+	j := 0
+	next[0] = j
+	for i := 1; i < len(s); i++{
+		for j > 0 && s[i] != s[j]{
+			j = next[j-1]
+		}
+		if s[i] == s[j]{
+			j++
+		}
+		next[i] = j
+	}
+}
+```
+
 
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \

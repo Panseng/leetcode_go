@@ -1803,6 +1803,211 @@ func mergeList(l1, l2 *ListNode){
     }
 }
 ```
+## [155. 最小栈](https://leetcode-cn.com/problems/min-stack/)
+设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。 \
+实现 MinStack 类:
+- MinStack() 初始化堆栈对象。
+- void push(int val) 将元素val推入堆栈。
+- void pop() 删除堆栈顶部的元素。
+- int top() 获取堆栈顶部的元素。
+- int getMin() 获取堆栈中的最小元素。
+
+
+> 示例 1: \
+> 输入：
+> - ["MinStack","push","push","push","getMin","pop","top","getMin"]
+> - [[],[-2],[0],[-3],[],[],[],[]] 
+>
+> 输出：[null,null,null,null,-3,null,0,-2] \
+> 解释：
+> - MinStack minStack = new MinStack();
+> - minStack.push(-2);
+> - minStack.push(0);
+> - minStack.push(-3);
+> - minStack.getMin();   --> 返回 -3.
+> - minStack.pop();
+> - minStack.top();      --> 返回 0.
+> - minStack.getMin();   --> 返回 -2.
+
+![](../img/155-1.png)
+思路：通过值记录常用值
+```go
+type MinStack struct {
+	stack []int
+	len int
+	min int
+}
+
+func Constructor() MinStack {
+	return MinStack{min: math.MaxInt64}
+}
+
+
+func (this *MinStack) Push(val int)  {
+	this.stack = append(this.stack, val)
+	this.len++
+	if this.min > val{
+		this.min = val
+	}
+}
+
+
+func (this *MinStack) Pop()  {
+	if this.len > 0{
+		oldTop := this.stack[this.len-1]
+		this.stack = this.stack[:this.len-1]
+		this.len--
+		if this.min == oldTop{
+			this.resetMin()
+		}
+	}
+}
+
+
+func (this *MinStack) Top() int {
+	return this.stack[this.len-1]
+}
+
+
+func (this *MinStack) GetMin() int {
+	return this.min
+}
+
+
+func (this *MinStack) resetMin() {
+	this.min = math.MaxInt64
+	for i := 0; i < this.len; i++{
+		if this.min > this.stack[i]{
+			this.min = this.stack[i]
+		}
+	}
+}
+```
+
+## [1249. 移除无效的括号](https://leetcode-cn.com/problems/minimum-remove-to-make-valid-parentheses/)
+给你一个由 '('、')' 和小写字母组成的字符串 s。\
+你需要从字符串中删除最少数目的 '(' 或者 ')' （可以删除任意位置的括号)，使得剩下的「括号字符串」有效。 \
+请返回任意一个合法字符串。
+
+有效「括号字符串」应当符合以下 任意一条 要求：
+- 空字符串或只包含小写字母的字符串
+- 可以被写作 AB（A 连接 B）的字符串，其中 A 和 B 都是有效「括号字符串」
+- 可以被写作 (A) 的字符串，其中 A 是一个有效的「括号字符串」
+
+
+> 示例 1： \
+> 输入：s = "lee(t(c)o)de)" \
+> 输出："lee(t(c)o)de" \
+> 解释："lee(t(co)de)" , "lee(t(c)ode)" 也是一个可行答案。
+>
+> 示例 2： \
+> 输入：s = "a)b(c)d" \
+> 输出："ab(c)d"
+>
+> 示例 3： \
+> 输入：s = "))((" \
+> 输出："" \
+> 解释：空字符串也是有效的
+
+![](../img/1249-1.png)
+
+思路1：栈，用栈存放 "(" 位置，判断遇到的 ")"是否合法
+- leftBs 存放 "(" 位置
+- 遇到 ")"，如果leftBs为空，则非法，需移除，如果非空则Pop"("栈
+```go
+func minRemoveToMakeValid(s string) string {
+	leftBs := []int{}
+	ln := 0
+	sn := len(s)
+	for i := 0; i < sn; i++{
+		if s[i] == '('{
+			leftBs = append(leftBs, i)
+			ln++
+		}
+		if s[i] == ')'{
+			if ln == 0{
+				s = removeIndex(s, sn, i)
+				sn = len(s)
+				i--
+				continue
+			}
+			leftBs = leftBs[:ln-1]
+			ln--
+		}
+	}
+	for i := ln-1; i >= 0; i--{
+		s = removeIndex(s, sn, leftBs[i])
+		sn = len(s)
+	}
+	return s
+}
+
+func removeIndex (s string, n, index int) string{
+	if index == n-1{
+		return s[:n-1]
+	}
+	return s[:index]+s[index+1:]
+}
+```
+
+思路1：使用队列，暴力模拟
+- 注意，当前计数过程中，不要重复从头数，即，要将被删数，**队列左侧**移到尾部
+- 关键代码：`nums = append(nums[i+1:], nums[:i]...)`
+```go
+func findTheWinner(n int, k int) int {
+	nums := make([]int, n)
+	for i := range nums {
+		nums[i] = i + 1
+	}
+	for ; n > 1; n-- {
+		if n == k || k%n == 0 {
+			nums = nums[:n-1]
+			continue
+		}
+		i := k%n - 1
+		if i == 0 {
+			nums = nums[1:]
+		} else {
+			nums = append(nums[i+1:], nums[:i]...)
+		}
+	}
+	return nums[0]
+}
+```
+思路2：动态规划
+- 对于n其淘汰一位后势必变成n-1继续比赛，而n-1继续比赛的结果是x的话，那么这个结果映射回f(n,k)就是x+k即f(n-1,k) + k; 所以我们能够得知，n与n-1的状态转移f(n, k) = f(n-1, k) + k;
+- 特别的当一个人参赛时，最终结果就是他自己， 即f(1, k) = 1;
+
+用递归实现
+```go
+func findTheWinner(n int, k int) int {
+    if n == 1{
+        return n
+    }
+    return (findTheWinner(n-1, k) + k -1) % n + 1
+}
+```
+迭代实现
+```go
+func findTheWinner(n int, k int) int {
+	nums := make([]int, n+1)
+    nums[1] = 1
+    for i := 2; i <= n; i++{
+        nums[i] = ((nums[i-1]+k-1)%i) + 1
+    }
+	return nums[n]
+}
+```
+代码优化
+```go
+func findTheWinner(n int, k int) int {
+    lucky := 1
+    for i := 2; i <= n; i++{
+        lucky = ((lucky+k-1)%i) + 1
+    }
+	return lucky
+}
+```
 
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
