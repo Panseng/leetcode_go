@@ -2009,6 +2009,238 @@ func findTheWinner(n int, k int) int {
 }
 ```
 
+## [108. 将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。\
+高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
+
+![](../img/108-4.png)
+
+> 示例 1： \
+> ![](../img/108-1.jpg) \
+> 输入：nums = [-10,-3,0,5,9] \
+> 输出：[0,-3,9,-10,null,5] \
+> 解释：[0,-10,5,null,-3,null,9] 也将被视为正确答案：\
+> ![](../img/108-2.jpg) 
+>
+> 示例 2： \
+> ![](../img/108-3.jpg) \
+> 输入：nums = [1,3] \
+> 输出：[3,1] \
+> 解释：[1,3] 和 [3,1] 都是高度平衡二叉搜索树。
+
+// 思路1：中分，中位为根节点，左右分别产生左右节点
+简单粗暴
+```go
+func sortedArrayToBST(nums []int) *TreeNode {
+    return getMidNode(nums, 0, len(nums)-1)
+}
+
+func getMidNode(nums []int, left, right int) *TreeNode{
+    if left > right{
+        return nil
+    }
+    mid := (left+right+1) / 2
+    root := &TreeNode{Val: nums[mid]}
+    root.Left = getMidNode(nums, left, mid-1)
+    root.Right = getMidNode(nums, mid+1, right)
+    return root
+}
+```
+思路2：传统添加
+```go
+func sortedArrayToBST(nums []int) *TreeNode {
+	var node *TreeNode
+	for _,v:=range nums{
+		node = add(node, v)
+	}
+	return node
+}
+
+// 计算层高
+func  getHeight(node *TreeNode) int {
+	if node == nil {
+		return 0
+	}
+	return max(getHeight(node.Right), getHeight(node.Left)) + 1 // 每层选最大的长度+1
+}
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// 计算平衡因子
+func  getBalanceFactor(node *TreeNode) int {
+	if node == nil {
+		return 0
+	}
+	return getHeight(node.Left) - getHeight(node.Right)
+}
+
+///////////////////////////////////////////////////
+// LL T1<Z<T2< X <T3<Y<T4                        //
+//        y                             x       //
+//       / \                           /   \     //
+//      x   T4 向右旋转 (y)      z     y    //
+//     / \      - - - - - - - ->    / \    / \   //
+//    z   T3                    T1 T2 T3 T4  //
+//   / \                                         //
+// T1   T2                                       //
+///////////////////////////////////////////////////
+// 右旋
+func  rightRotate(y *TreeNode) *TreeNode {
+	x := y.Left
+	T3 := x.Right
+
+	x.Right = y
+	y.Left = T3
+	return x
+}
+
+////////////////////////////////////////////////
+// RR T1<Y<T2< X <T3<Z<T4                     //
+//    y                             x         //
+//  /  \                          /   \       //
+// T1 x 向左旋转 (y)       y     z      //
+//     / \  - - - - - - - ->  / \    / \     //
+//   T2  z                T1 T2 T3 T4    //
+//       / \                                  //
+//      T3 T4                                 //
+////////////////////////////////////////////////
+// 左旋
+func  leftRotate(y *TreeNode) *TreeNode {
+	x := y.Right
+	T2 := x.Left
+
+	x.Left = y
+	y.Right = T2
+	return x
+}
+
+// 添加
+func  add(node *TreeNode, value int) *TreeNode {
+	if node == nil {
+		return &TreeNode{Val: value}
+	}
+	if value < node.Val {
+		node.Left = add(node.Left, value)
+	} else if value > node.Val {
+		node.Right = add(node.Right, value)
+	}
+
+	balanceFactor := getBalanceFactor(node)
+	if balanceFactor > 1 && getBalanceFactor(node.Left) >= 0 {
+		return rightRotate(node)
+	}
+	if balanceFactor > 1 && getBalanceFactor(node.Left) < 0 {
+		node.Left = leftRotate(node.Left)
+		return rightRotate(node)
+	}
+	if balanceFactor < -1 && getBalanceFactor(node.Right) <= 0{
+		return leftRotate(node)
+	}
+	if balanceFactor < -1 && getBalanceFactor(node.Right) >0{
+		node.Right = rightRotate(node.Right)
+		return leftRotate(node)
+	}
+	return node
+}
+```
+## [105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+给定两个整数数组 preorder 和 inorder ，其中 preorder 是二叉树的先序遍历， inorder 是同一棵树的中序遍历，请构造二叉树并返回其根节点。\
+![](../img/105-2.png)
+
+> 示例 1: \
+> ![](../img/105-1.jpg) \
+> 输入: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7] \
+> 输出: [3,9,20,null,null,15,7]
+>
+> 示例 2: \
+> 输入: preorder = [-1], inorder = [-1] \
+> 输出: [-1]
+
+思路：找根，分左右，递归
+```go
+func buildTree(preorder []int, inorder []int) *TreeNode {
+    n := len(preorder)
+    if n == 0{
+        return nil
+    }
+    if n == 1{
+        return &TreeNode{Val: preorder[0]}
+    }
+    root := &TreeNode{Val: preorder[0]}
+    inorderRoot := getIndex(inorder, preorder[0])
+    if inorderRoot > 0{
+        root.Left = buildTree(preorder[1:1+inorderRoot], inorder[:inorderRoot])
+    }
+    if n-1 > inorderRoot{
+        root.Right = buildTree(preorder[1+inorderRoot:], inorder[inorderRoot+1:])
+    }
+    return root
+}
+
+func getIndex(inorder []int, rootNum int) int{
+    for i, v := range inorder{
+        if v == rootNum{
+            return i
+        }
+    }
+    return -1
+}
+```
+
+## [103. 二叉树的锯齿形层序遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
+给你二叉树的根节点 root ，返回其节点值的 锯齿形层序遍历 。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
+
+> 示例 1： \
+> ![](../img/103-1.jpg) \
+> 输入：root = [3,9,20,null,null,15,7] \
+> 输出：[[3],[20,9],[15,7]] 
+>
+> 示例 2： \
+> 输入：root = [1] \
+> 输出：[[1]]
+>
+> 示例 3： \
+> 输入：root = [] \
+> 输出：[]
+
+思路：层序遍历+左右取值标签
+```go
+func zigzagLevelOrder(root *TreeNode) [][]int {
+    ans := [][]int{}
+    if root == nil{
+        return ans
+    }
+    tag := true // 真为左往右
+    stack := []*TreeNode{root}
+    for i := 0; len(stack) > 0; i++{
+        n := len(stack)
+        temp := []*TreeNode{}
+        ans = append(ans, []int{})
+        for j := 0; j < n; j++{
+            node := stack[j]
+            if tag{
+                ans[i] = append(ans[i], node.Val)
+            } else{
+                ans[i] = append(ans[i], stack[n-1-j].Val)
+            }
+            if node.Left != nil{
+                temp = append(temp, node.Left)
+            }
+            if node.Right != nil{
+                temp = append(temp, node.Right)
+            }
+        }
+        stack = temp
+        tag = !tag
+    }
+    return ans
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)
