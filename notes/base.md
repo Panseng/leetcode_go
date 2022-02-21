@@ -2241,6 +2241,187 @@ func zigzagLevelOrder(root *TreeNode) [][]int {
 }
 ```
 
+## [199. 二叉树的右视图](https://leetcode-cn.com/problems/binary-tree-right-side-view/)
+给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。\
+![](../img/199-1.png)
+>这里的右侧，是指所有元素中最右侧的节点，并不单纯的指节点的右侧
+
+> 示例 1: \
+> 输入: [1,2,3,null,5,null,4] \
+> 输出: [1,3,4]
+>
+> 示例 2: \
+> 输入: [1,null,3] \
+> 输出: [1,3]
+>
+> 示例 3: \
+> 输入: [] \
+> 输出: []
+
+思路：广度优先的搜索
+```go
+func rightSideView(root *TreeNode) []int {
+    ans := []int{}
+    if root == nil{
+        return ans
+    }
+    nodes := []*TreeNode{root}
+    n := len(nodes)
+    for i := 0; n > 0; i++{
+        tem := []*TreeNode{}
+        for j := 0; j < n; j++{
+            node := nodes[j]
+            if node.Left != nil{
+                tem = append(tem, node.Left)
+            }
+            if node.Right != nil{
+                tem = append(tem, node.Right)
+            }
+        }
+        ans = append(ans, nodes[n-1].Val)
+        nodes = tem
+        n = len(nodes)
+    }
+    return ans
+}
+```
+
+思路1：广度优先
+> 注意，这里有个切片相关的[知识点](slice_note.md)
+> - go的slice切片，append会在原地址操作
+> - 如果 tRight 直接 = append(path, node.Right.Val, ps+node.Right.Val)
+> - 则 上方的 tLeft 值会被 tRight 值覆盖 
+> - 因为 tLeft 值与 tRight 值都是在path切片原地址上进行的操作，
+```go
+func pathSum(root *TreeNode, targetSum int) [][]int {
+	ans := [][]int{}
+	if root == nil {
+		return ans
+	}
+	nodes := []*TreeNode{root}
+	valSum := [][]int{} // 记录每个节点路径，最后一位是当前路径和
+	valSum = append(valSum, []int{root.Val, root.Val})
+	n := len(nodes) // 当前层节点数目
+	level := 1      // 当前节点为第几层，root为第1层
+	for n > 0 {
+		temN := []*TreeNode{}
+		temV := make([][]int, 0)
+		for j := 0; j < n; j++ {
+			node := nodes[j]
+			ps := valSum[j][level]    // 路径和
+			path := valSum[j][:level] // 路径
+			if node.Left == nil && node.Right == nil && ps == targetSum {
+				ans = append(ans, path)
+			}
+			if node.Left != nil {
+				temN = append(temN, node.Left)
+				tLeft := append(path, node.Left.Val, ps+node.Left.Val)
+				temV = append(temV, tLeft)
+			}
+			if node.Right != nil {
+				temN = append(temN, node.Right)
+				// 注意，go的slice切片，会在原地址操作
+				// 如果 tRight 直接 = append(path, node.Right.Val, ps+node.Right.Val)
+				// 则 上方的 tLeft 值会被 tRight 值覆盖
+				// 因为 tLeft 值与 tRight 值都是在path切片原地址上进行的操作，
+				tRight := make([]int, level)
+				copy(tRight, path)
+				tRight = append(tRight, node.Right.Val, ps+node.Right.Val)
+				temV = append(temV, tRight)
+			}
+		}
+		level++
+		nodes = temN
+		valSum = temV
+		n = len(nodes)
+	}
+	return ans
+}
+```
+深度优先
+```go
+func pathSum(root *TreeNode, targetSum int) (ans [][]int) {
+    path := []int{}
+    var dfs func(*TreeNode, int)
+    dfs = func(node *TreeNode, left int) {
+        if node == nil {
+            return
+        }
+        left -= node.Val
+        path = append(path, node.Val)
+        defer func() { path = path[:len(path)-1] }()
+        if node.Left == nil && node.Right == nil && left == 0 {
+            ans = append(ans, append([]int(nil), path...))
+            return
+        }
+        dfs(node.Left, left)
+        dfs(node.Right, left)
+    }
+    dfs(root, targetSum)
+    return
+}
+```
+
+## [450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
+给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。\
+一般来说，删除节点可分为两个步骤：
+- 首先找到需要删除的节点；
+- 如果找到了，删除它。
+
+> 示例 1: \
+> ![](../img/450-1.jpg) \
+> 输入：root = [5,3,6,2,4,null,7], key = 3 \
+> 输出：[5,4,6,2,null,null,7] \
+> 解释：给定需要删除的节点值是 3，所以我们首先找到 3 这个节点，然后删除它。 \
+> 一个正确的答案是 [5,4,6,2,null,null,7], 如下图所示。 \
+> ![](../img/450-2.jpg) \
+> 另一个正确答案是 [5,2,6,null,4,null,7]。
+>
+> 示例 2: \
+> 输入: root = [5,3,6,2,4,null,7], key = 0 \
+> 输出: [5,3,6,2,4,null,7] \
+> 解释: 二叉树不包含值为 0 的节点
+>
+> 示例 3: \
+> 输入: root = [], key = 0 \
+> 输出: []
+
+思路：二叉搜索树+右侧最小值
+- 左右均不为空
+- 找右侧最小值（第一个左侧为nil的节点）
+```go
+func deleteNode(root *TreeNode, key int) *TreeNode {
+    if root == nil{
+        return root
+    }
+    if root.Val > key{
+        root.Left = deleteNode(root.Left, key)
+        return root
+    }
+    if root.Val < key{
+        root.Right = deleteNode(root.Right, key)
+        return root
+    }
+    // 值相等，删除当前节点
+    if root.Left == nil{
+        return root.Right
+    }
+    if root.Right == nil{
+        return root.Left
+    }
+
+    // 左右均不为空
+    // 找右侧最小值
+    minR := root.Right
+    for minR.Left != nil{
+        minR = minR.Left
+    }
+    minR.Right = deleteNode(root.Right, minR.Val)
+    minR.Left = root.Left
+    return minR
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)
