@@ -1037,7 +1037,7 @@ func preorderTraversal(root *TreeNode) []int {
     return vals
 }
 ```
-### [94. 二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+## [94. 二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 中序遍历，参考上题
 > 中序遍历：中(根)序遍历（左根右）
 
@@ -1079,7 +1079,7 @@ func inorderTraversal(root *TreeNode) []int {
 }
 ```
 
-### [145. 二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
+## [145. 二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
 同144题
 > 后序遍历：后(根)序遍历（左右根）
 >

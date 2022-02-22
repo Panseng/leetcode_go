@@ -2422,6 +2422,110 @@ func deleteNode(root *TreeNode, key int) *TreeNode {
 }
 ```
 
+## [230. 二叉搜索树中第K小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/)
+给定一个二叉搜索树的根节点 root ，和一个整数 k ，请你设计一个算法查找其中第 k 个最小元素（从 1 开始计数）。
+
+> 示例 1： \
+> ![](../img/230-1.jpg) \
+> 输入：root = [3,1,4,null,2], k = 1 \
+> 输出：1
+>
+> 示例 2： \
+> ![](../img/230-2.jpg) \
+> 输入：root = [5,3,6,2,4,null,null,1], k = 3 \
+> 输出：3
+
+思路：中序遍历，再取值
+```go
+func kthSmallest(root *TreeNode, k int) int {
+    vals := []int{}
+    nodes := []*TreeNode{}
+    node := root
+    for node != nil || len(nodes) > 0{
+        for node != nil{
+            nodes = append(nodes, node)
+            node = node.Left
+        }
+        node = nodes[len(nodes)-1]
+        nodes = nodes[:len(nodes)-1]
+        vals = append(vals, node.Val)
+        node = node.Right
+    }
+    return vals[k-1]
+}
+```
+
+## [173. 二叉搜索树迭代器](https://leetcode-cn.com/problems/binary-search-tree-iterator/)
+实现一个二叉搜索树迭代器类BSTIterator ，表示一个按中序遍历二叉搜索树（BST）的迭代器：
+- BSTIterator(TreeNode root) 初始化 BSTIterator 类的一个对象。BST 的根节点 root 会作为构造函数的一部分给出。指针应初始化为一个不存在于 BST 中的数字，且该数字小于 BST 中的任何元素。
+- boolean hasNext() 如果向指针右侧遍历存在数字，则返回 true ；否则返回 false 。
+- int next()将指针向右移动，然后返回指针处的数字。
+
+注意，指针初始化为一个不存在于 BST 中的数字，所以对 next() 的首次调用将返回 BST 中的最小元素。 \
+你可以假设 next() 调用总是有效的，也就是说，当调用 next() 时，BST 的中序遍历中至少存在一个下一个数字。
+
+> 示例： \
+> ![](../img/173-1.png) \
+> 输入 \
+> ["BSTIterator", "next", "next", "hasNext", "next", "hasNext", "next", "hasNext", "next", "hasNext"] \
+> [[[7, 3, 15, null, null, 9, 20]], [], [], [], [], [], [], [], [], []] \
+> 输出 \
+> [null, 3, 7, true, 9, true, 15, true, 20, false] \
+> 解释 \
+> BSTIterator bSTIterator = new BSTIterator([7, 3, 15, null, null, 9, 20]); \
+> bSTIterator.next();    // 返回 3 \
+> bSTIterator.next();    // 返回 7 \
+> bSTIterator.hasNext(); // 返回 True \
+> bSTIterator.next();    // 返回 9 \
+> bSTIterator.hasNext(); // 返回 True \
+> bSTIterator.next();    // 返回 15 \
+> bSTIterator.hasNext(); // 返回 True \
+> bSTIterator.next();    // 返回 20 \
+> bSTIterator.hasNext(); // 返回 False 
+
+```go
+type BSTIterator struct {
+    root *TreeNode
+    vals []int
+    pos int
+    length int
+}
+
+
+func Constructor(root *TreeNode) BSTIterator {
+    vals := inorderTraversal(root)
+    return BSTIterator{root: root, vals: vals, pos: -1, length: len(vals)}
+}
+func inorderTraversal(root *TreeNode) []int {
+    vals :=[]int{}
+    stack := []*TreeNode{}
+    node := root
+    for node != nil || len(stack)>0{
+        for node != nil{
+            stack = append(stack, node)
+            node = node.Left
+        }
+        node = stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+        vals = append(vals, node.Val)
+        node = node.Right
+    }
+
+    return vals
+}
+
+
+func (this *BSTIterator) Next() int {
+    this.pos++
+    return this.vals[this.pos]
+}
+
+
+func (this *BSTIterator) HasNext() bool {
+    return this.pos < this.length-1
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)

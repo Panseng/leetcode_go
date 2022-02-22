@@ -1217,6 +1217,129 @@ func getNext(s string, next []int)  {
 }
 ```
 
+# 图
+
+## [743. 网络延迟时间](https://leetcode-cn.com/problems/network-delay-time/)
+有 n 个网络节点，标记为 1 到 n。 \
+给你一个列表 times，表示信号经过 有向 边的传递时间。 times[i] = (ui, vi, wi)，其中 ui 是源节点，vi 是目标节点， wi 是一个信号从源节点传递到目标节点的时间。 \
+现在，从某个节点 K 发出一个信号。需要多久才能使所有节点都收到信号？如果不能使所有节点收到信号，返回 -1 。
+
+> 示例 1： \
+> ![](../img/743-1.png) \
+> 输入：times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2 \
+> 输出：2
+>
+> 示例 2： \
+> 输入：times = [[1,2,1]], n = 2, k = 1 \
+> 输出：1
+>
+> 示例 3： \
+> 输入：times = [[1,2,1]], n = 2, k = 2 \
+> 输出：-1
+
+思路1：Dijkstra 算法
+- 找出 k 点到所有点的最短路径（加权）
+```go
+func networkDelayTime(times [][]int, n int, k int) int {
+    const inf = math.MaxInt64/2 // 这里，用最大值，在加法后，会变成负数，反而更小，因此需要根据题目提示，给值，或者简单粗暴，给最大值的1/2
+    path := make([][]int, n)
+    for i := range path{
+        path[i] = make([]int, n)
+        for j := range path[i]{
+            path[i][j] = inf // 此值表示无法到达的值
+        }
+    }
+    for _, t := range times{ // 转换为 邻接矩阵
+        i, j := t[0]-1, t[1]-1
+        path[i][j] = t[2]
+    }
+
+    dist := make([]int, n) // 记录k到其他节点的时间
+    for i := range dist{
+        dist[i] = inf
+    }
+    dist[k-1] = 0 // 到自身的时间
+
+    used := make([]bool, n) // k到其他节点 是否被计算（被包含）
+    for i := 0; i < n; i++{
+        x := -1 // 寻找未被包含，最小距离
+        for y, u := range used{
+            if !u && (x == -1 || dist[y] < dist[x]){
+                x = y
+            }
+        }
+        used[x] = true
+        for y, t := range path[x]{ // 找最短时间
+            if dist[y] > dist[x] + t{
+                dist[y] = dist[x]+t
+            }
+        }
+    }
+    maxT := 0 // 题目中需要找总共所需时间，则找最大值
+    fmt.Println(dist)
+    for _, t := range dist{
+        if t == inf{ // 表示有不能到达的节点
+            return -1
+        }
+        if t > maxT{
+            maxT = t
+        }
+    }
+    return maxT
+}
+```
+思路2：最小堆
+```go
+func networkDelayTime(times [][]int, n int, k int) int {
+    type edge struct{to, time int}
+    path := make([][]edge, n)
+    for _, t := range times{
+        x, y := t[0]-1, t[1]-1
+        path[x] = append(path[x], edge{y, t[2]})
+    }
+
+    const inf = math.MaxInt64/2
+    dist := make([]int, n)
+    for i := range dist{
+        dist[i] = inf
+    }
+    dist[k-1] = 0
+    h := &hp{{0, k-1}} // 记录距离的数组
+    for h.Len() > 0 {
+        p := heap.Pop(h).(pair)
+        x := p.x
+        if dist[x] < p.d {
+            continue
+        }
+        for _, e := range path[x] {
+            y := e.to
+            if d := dist[x] + e.time; d < dist[y] {
+                dist[y] = d
+                heap.Push(h, pair{d, y})
+            }
+        }
+    }
+    ans := 0
+    for _, d := range dist {
+        if d == inf {
+            return -1
+        }
+        if d > ans{
+            ans = d
+        }
+    }
+    return ans
+}
+
+type pair struct{ d, x int }
+type hp []pair
+
+func (h hp)Len() int{return len(h)}
+func (h hp)Less(i, j int) bool {return h[i].d < h[j].d}
+func (h hp)Swap(i,j int){h[i], h[j] = h[j], h[i]}
+func (h *hp) Push(v interface{}){*h = append(*h, v.(pair))}
+func (h *hp) Pop() (v interface{}) { a := *h; *h, v = a[:len(a)-1], a[len(a)-1]; return }
+```
 
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
