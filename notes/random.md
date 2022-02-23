@@ -1304,7 +1304,7 @@ func networkDelayTime(times [][]int, n int, k int) int {
         dist[i] = inf
     }
     dist[k-1] = 0
-    h := &hp{{0, k-1}} // 记录距离的数组
+    h := &hp{{0, k-1}} // 最小堆
     for h.Len() > 0 {
         p := heap.Pop(h).(pair)
         x := p.x
@@ -1313,7 +1313,7 @@ func networkDelayTime(times [][]int, n int, k int) int {
         }
         for _, e := range path[x] {
             y := e.to
-            if d := dist[x] + e.time; d < dist[y] {
+            if d := dist[x] + e.time; d < dist[y] { // 最小的距离
                 dist[y] = d
                 heap.Push(h, pair{d, y})
             }

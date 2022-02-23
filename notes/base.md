@@ -2526,6 +2526,216 @@ func (this *BSTIterator) HasNext() bool {
 }
 ```
 
+## [236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/) 
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。 \
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+> 示例 1： \
+> ![](../img/236-1.png) \
+> 输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1 \
+> 输出：3 \
+> 解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+>
+> 示例 2： \
+> ![](../img/236-2.png) \
+> 输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4 \
+> 输出：5 \
+> 解释：节点 5 和节点 4 的最近公共祖先是节点 5 。因为根据定义最近公共祖先节点可以为节点本身。
+>
+> 示例 3： \
+> 输入：root = [1,2], p = 1, q = 2 \
+> 输出：1
+
+思路：递归
+```go
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+  if root == p || root == q{
+      return root
+  }
+  isLeftP := isContain(root.Left, p)
+  isLeftQ := isContain(root.Left, q)
+  if isLeftP && isLeftQ{
+      return lowestCommonAncestor(root.Left, p, q)
+  }
+  if (isLeftP && !isLeftQ) || (!isLeftP && isLeftQ){
+      return root
+  }
+  return lowestCommonAncestor(root.Right, p, q)
+}
+
+func isContain(root, p *TreeNode)bool{
+    stack := []*TreeNode{root}
+    node := stack[len(stack)-1]
+    for len(stack) > 0{
+        for node != nil{
+            if node == p{
+                return true
+            }
+            stack = append(stack, node.Right)
+            node = node.Left
+        }
+        node = stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+    }
+    return false
+}
+```
+优化，通过递归自身返回的值来判断p、q存在的情况
+- 深读优先
+```go
+ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+  if root == nil{
+      return root
+  }
+  if root == p || root == q{ // 这里，只要碰到其中之一就返回当前节点，作为节点存在的判断依据，不为nil
+      return root
+  }
+  left := lowestCommonAncestor(root.Left, p, q)
+  right := lowestCommonAncestor(root.Right, p, q)
+  if left != nil && right != nil{ // 两边都不为空，说明存在于两侧
+      return root
+  }
+  if right == nil{
+      return left
+  }
+  return right
+}
+```
+![](../img/236-3.png)
+思路2：hash法，获取所有节点的父节点
+- 叶子节点，通过父节点往上推，首个共同父节点即最深共同节点
+```go
+ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+     // 通过父节点路径，从底层往上不断寻找父节点，最先被找到的，共同访问的父节点即最底层的
+     parents := map[int]*TreeNode{} // 所有 Node.val 互不相同
+     isVisited := map[int]bool{}
+
+     var deepFindP func(*TreeNode)
+     // 递归获取所有节点的父节点
+     deepFindP = func(node *TreeNode){
+         if node == nil{
+             return
+         }
+         if node.Right != nil{
+             parents[node.Right.Val] = node
+             deepFindP(node.Right)
+         }
+         if node.Left != nil{
+             parents[node.Left.Val] = node
+             deepFindP(node.Left)
+         }
+     }
+     deepFindP(root)
+     for p != nil{
+         isVisited[p.Val] = true
+         p = parents[p.Val]
+     }
+     for q != nil{
+         if isVisited[q.Val]{ // 首个共同父节点
+             return q
+         }
+         q = parents[q.Val]
+     }
+     return nil
+}
+```
+
+思路1：转换为前序 & 中序遍历数组，再转换为字符串，反序列时根据前中序数组形成二叉搜索树
+- 存在重复元素，会出错，如树[3,2,4,3]
+
+思路2：按前序遍历编码
+- 如[1,2,3,4,5]，序列化为：1,2,3,nil,nil,4,nil,nil,5,nil,nil, \
+![](../img/297-1.png)
+```go
+type Codec struct {
+    
+}
+
+func Constructor() (_ Codec) {
+    return
+}
+
+// Serializes a tree to a single string.
+func (this *Codec) serialize(root *TreeNode) string {
+    sBuild := &strings.Builder{}
+    var deepFind func(*TreeNode)
+    deepFind = func(node *TreeNode){
+        if node == nil{
+            sBuild.WriteString("nil,")
+            return
+        }
+        sBuild.WriteString(strconv.Itoa(node.Val))
+        sBuild.WriteByte(',')
+        deepFind(node.Left)
+        deepFind(node.Right)
+    }
+    deepFind(root)
+    return sBuild.String()
+}
+
+// Deserializes your encoded data to tree.
+func (this *Codec) deserialize(data string) *TreeNode {
+    sSpilt := strings.Split(data, ",")
+    var build func()*TreeNode
+    build = func()*TreeNode {
+        if sSpilt[0] == "nil"{
+            sSpilt = sSpilt[1:]
+            return nil
+        }
+        val,_ := strconv.Atoi(sSpilt[0])
+        sSpilt = sSpilt[1:]
+        return &TreeNode{Val: val, Left: build(), Right: build()}
+    }
+    return build()
+}
+```
+
+思路2：括号表示编码 + 递归下降解码
+```go
+type Codec struct {
+    
+}
+
+func Constructor() (_ Codec) {
+    return
+}
+
+// Serializes a tree to a single string.
+func (this *Codec) serialize(root *TreeNode) string {
+    if root == nil{
+        return "N"
+    }
+    left := "(" + this.serialize(root.Left) + ")"
+    right := "(" + this.serialize(root.Right) + ")"
+    return left + strconv.Itoa(root.Val) + right
+}
+
+// Deserializes your encoded data to tree.
+func (this *Codec) deserialize(data string) *TreeNode {
+    var parse func()*TreeNode
+    parse = func()*TreeNode{
+        if data[0] == 'N'{
+            data = data[1:]
+            return nil
+        }
+        node := &TreeNode{}
+        data = data[1:] // 跳过左括号
+        node.Left = parse() // 获取左侧节点
+        data = data[1:] // 跳过右括号
+        i := 0
+        // 序列化保证了 节点不为空时，数值右侧还有字符
+        for ; data[i] == '-' || ('0'<=data[i] && data[i]<='9'); i++{}
+        node.Val,_ = strconv.Atoi(data[:i])
+        data = data[i:]
+        data = data[1:] // 跳过左括号
+        node.Right = parse() // 获取左侧节点
+        data = data[1:] // 跳过右括号
+        return node
+    }
+    return parse()
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)

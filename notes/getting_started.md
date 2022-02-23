@@ -1020,6 +1020,7 @@ func preorderTraversal(root *TreeNode) []int {
     return vals
 }
 ```
+
 实现2：是实现一的递归
 ```go
 func preorderTraversal(root *TreeNode) []int {
@@ -1037,6 +1038,7 @@ func preorderTraversal(root *TreeNode) []int {
     return vals
 }
 ```
+
 ## [94. 二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 中序遍历，参考上题
 > 中序遍历：中(根)序遍历（左根右）
