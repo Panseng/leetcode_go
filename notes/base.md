@@ -2758,6 +2758,149 @@ func (this *Codec) deserialize(data string) *TreeNode {
 }
 ```
 
+## [997. 找到小镇的法官](https://leetcode-cn.com/problems/find-the-town-judge/)
+小镇里有 n 个人，按从 1 到 n 的顺序编号。传言称，这些人中有一个暗地里是小镇法官。 \
+如果小镇法官真的存在，那么：
+- 小镇法官不会信任任何人。
+- 每个人（除了小镇法官）都信任这位小镇法官。
+- 只有一个人同时满足属性 1 和属性 2 。
+- trust 中的所有trust[i] = [ai, bi] 互不相同
+
+给你一个数组 trust ，其中 trust[i] = [ai, bi] 表示编号为 ai 的人信任编号为 bi 的人。 \
+如果小镇法官存在并且可以确定他的身份，请返回该法官的编号；否则，返回 -1 。
+
+> 示例 1： \
+> 输入：n = 2, trust = [[1,2]] \
+> 输出：2
+>
+> 示例 2： \
+> 输入：n = 3, trust = [[1,3],[2,3]] \
+> 输出：3
+>
+> 示例 3： \
+> 输入：n = 3, trust = [[1,3],[2,3],[3,1]] \
+> 输出：-1
+
+思路1：计算出度、入度
+```go
+func findJudge(n int, trust [][]int) int {
+    inDe := make([]int, n+1)
+    outDe := make([]int, n+1)
+    for _, t := range trust{
+        inDe[t[1]]++
+        outDe[t[0]]++
+    }
+    for i := 1; i <= n; i++{
+        if inDe[i] == n-1 && outDe[i] == 0{
+            return i
+        }
+    }
+    return -1
+}
+```
+
+思路2：hash法
+```go
+func findJudge(n int, trust [][]int) int {
+    beTrust := make(map[int]int, n)
+    for i := 1; i <= n; i++{
+        beTrust[i] = 0
+    }
+    for _, t := range trust{
+        // 如果有信任其他人（包括自己），则直接降级到-1
+    	// 使得投过票的人无法成为法官
+        beTrust[t[0]] = -1 
+        beTrust[t[1]]++
+    }
+    for k, v := range beTrust{
+        if v == n-1{ // 所有人都信任自己，且自己不信任自己
+            return k
+        }
+    }
+    return -1
+}
+```
+
+## [1557. 可以到达所有点的最少点数目](https://leetcode-cn.com/problems/minimum-number-of-vertices-to-reach-all-nodes/)
+给你一个 有向无环图 ， n 个节点编号为 0 到 n-1 ，以及一个边数组 edges ，其中 edges[i] = [fromi, toi] 表示一条从点  fromi 到点 toi 的有向边。 \
+找到最小的点集使得从这些点出发能到达图中所有点。题目保证解存在且唯一。 \
+你可以以任意顺序返回这些节点编号。 \
+所有点对 (fromi, toi) 互不相同。
+
+> 示例 1： \
+> ![](../img/1557-1.png) \
+> 输入：n = 6, edges = [[0,1],[0,2],[2,5],[3,4],[4,2]] \
+> 输出：[0,3] \
+> 解释：从单个节点出发无法到达所有节点。从 0 出发我们可以到达 [0,1,2,5] 。从 3 出发我们可以到达 [3,4,2,5] 。所以我们输出 [0,3] 。
+>
+> 示例 2： \
+> ![](../img/1557-2.png) \
+> 输入：n = 5, edges = [[0,1],[2,1],[3,1],[1,4],[2,4]] \
+> 输出：[0,2,3] \
+> 解释：注意到节点 0，3 和 2 无法从其他节点到达，所以我们必须将它们包含在结果点集中，这些点都能到达节点 1 和 4 。
+
+思路1：获取所有to节点
+```go
+func findSmallestSetOfVertices(n int, edges [][]int) []int {
+    heads := make([]int, n)
+    for _, e := range edges{
+        if heads[e[1]] == 0{
+            heads[e[1]] = -1 // to节点标记
+        }
+    }
+    ans := []int{}
+    for i, h := range heads{
+        if h == 0{ // 收集所有不能到达的节点
+            ans = append(ans, i)
+        }
+    }
+    return ans
+}
+```
+
+## [841. 钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
+有 n 个房间，房间按从 0 到 n - 1 编号。最初，除 0 号房间外的其余所有房间都被锁住。你的目标是进入所有的房间。然而，你不能在没有获得钥匙的时候进入锁住的房间。\
+当你进入一个房间，你可能会在里面找到一套不同的钥匙，每把钥匙上都有对应的房间号，即表示钥匙可以打开的房间。你可以拿上所有钥匙去解锁其他房间。\
+给你一个数组 rooms 其中 rooms[i] 是你进入 i 号房间可以获得的钥匙集合。如果能进入 所有 房间返回 true，否则返回 false。
+
+> 示例 1： \
+> 输入：rooms = [[1],[2],[3],[]] \
+> 输出：true \
+> 解释：
+> - 我们从 0 号房间开始，拿到钥匙 1。
+> - 之后我们去 1 号房间，拿到钥匙 2。
+> - 然后我们去 2 号房间，拿到钥匙 3。
+> - 最后我们去了 3 号房间。
+> - 由于我们能够进入每个房间，我们返回 true。
+>
+> 示例 2： \
+> 输入：rooms = [[1,3],[3,0,1],[2],[0]] \
+> 输出：false \
+> 解释：我们不能进入 2 号房间。
+
+```go
+func canVisitAllRooms(rooms [][]int) bool {
+    keys := rooms[0]
+    opened := make([]int, len(rooms))
+    opened[0] = 1
+    for len(keys) > 0{
+        key := keys[0]
+        keys = keys[1:]
+        if opened[key] == 1{
+            continue
+        }
+        opened[key] = 1
+        keys = append(keys, rooms[key]...)
+    }
+    for _, o := range opened{
+        if o == 0{
+            return false
+        }
+    }
+    return true
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)
