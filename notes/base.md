@@ -2900,6 +2900,85 @@ func canVisitAllRooms(rooms [][]int) bool {
     return true
 }
 ```
+## [347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
+给你一个整数数组 nums 和一个整数 k ，请你返回其中出现频率前 k 高的元素。你可以按 任意顺序 返回答案。
+
+> 示例 1: \
+> 输入: nums = [1,1,1,2,2,3], k = 2 \
+> 输出: [1,2]
+> 
+> 示例 2: \
+> 输入: nums = [1], k = 1 \
+> 输出: [1]
+
+![](../img/347.png)
+
+思路：统计次数，排序，获取目标数组
+```go
+func topKFrequent(nums []int, k int) []int {
+    n := len(nums)
+    if n == 1{
+        return nums
+    }
+    counts := make(map[int]int, n)
+    for _,v := range nums{
+        counts[v]++
+    }
+    nns := [][]int{}
+    for k,v := range counts{
+        nns = append(nns, []int{k,v})
+    }
+    sort.Slice(nns, func(i,j int)bool{
+        return nns[i][1] > nns[j][1] // 按出现次数从大到小排列
+    })
+    ans := make([]int, k)
+    for i := 0; i < k; i++{
+        ans[i] = nns[i][0]
+    }
+    return ans
+}
+```
+
+优化，用堆排序
+```go
+func topKFrequent(nums []int, k int) []int {
+	occurrences := map[int]int{}
+	for _, num := range nums {
+		occurrences[num]++
+	}
+	h := &IHeap{}
+	heap.Init(h)
+	for key, value := range occurrences {
+		heap.Push(h, [2]int{key, value}) // 每次push都会进行排序（按 IHeap 中实现的Less方法）
+		if h.Len() > k {
+			heap.Pop(h) // 出栈的总是最小值
+		}
+	}
+	ret := make([]int, k)
+	for i := 0; i < k; i++ {
+		ret[k - i - 1] = heap.Pop(h).([2]int)[0]
+	}
+	return ret
+}
+
+type IHeap [][2]int
+
+func (h IHeap) Len() int           { return len(h) }
+func (h IHeap) Less(i, j int) bool { return h[i][1] < h[j][1] } // 当前是从小到大排序，如果要从大到小，则 h[i][1] > h[j][1]
+func (h IHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *IHeap) Push(x interface{}) {
+	*h = append(*h, x.([2]int))
+}
+
+func (h *IHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+```
 
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
