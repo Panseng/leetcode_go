@@ -2980,6 +2980,179 @@ func (h *IHeap) Pop() interface{} {
 }
 ```
 
+## [451. 根据字符出现频率排序](https://leetcode-cn.com/problems/sort-characters-by-frequency/)
+给定一个字符串，请将字符串里的字符按照出现的频率降序排列。
+
+> 示例 1:
+> 输入:"tree"
+> 输出:"eert"
+> 解释:
+> 'e'出现两次，'r'和't'都只出现一次。
+> 因此'e'必须出现在'r'和't'之前。此外，"eetr"也是一个有效的答案。
+>
+> 示例 2:
+> 输入:"cccaaa"
+> 输出:"cccaaa"
+> 解释:
+> 'c'和'a'都出现三次。此外，"aaaccc"也是有效的答案。
+> 注意"cacaca"是不正确的，因为相同的字母必须放在一起。
+>
+> 示例 3:
+> 输入:"Aabb"
+> 输出:"bbAa"
+> 解释:
+> 此外，"bbaA"也是一个有效的答案，但"Aabb"是不正确的。
+> 注意'A'和'a'被认为是两种不同的字符。
+
+
+思路1：最小堆
+```go
+func frequencySort(s string) string {
+	n := len(s)
+	ac := make(map[int32]int, n)
+	for _,v := range s{
+		ac[v]++
+	}
+
+	ah := &alphaH{}
+	heap.Init(ah) // 初始化堆
+	for k,v := range ac{
+		heap.Push(ah, alphaC{k,v})
+	}
+
+	ans := ""
+	for ah.Len() > 0{
+		tem := heap.Pop(ah).(alphaC) // 使用堆时注意转换 pop 出来的格式
+		for i := 0; i < tem.c;i++{
+			ans += string(tem.i)
+		}
+	}
+
+	return ans
+}
+
+type alphaC struct {
+	i int32 // 字符串 int32 码
+	c int  // 字符串出现次数
+}
+
+type alphaH []alphaC
+
+func (a alphaH) Len() int { return len(a) }
+func (a alphaH) Less(i, j int) bool { return a[i].c > a[j].c } // 当前是从小到大排序，如果要从大到小，则 a[i].c < a[j].c
+func (a alphaH) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a *alphaH) Push(x interface{}) {
+	*a = append(*a, x.(alphaC))
+}
+
+func (a *alphaH) Pop() interface{} {
+	old := *a
+	n := len(old)
+	x := old[n-1]
+	*a = old[0 : n-1]
+	return x
+}
+```
+> 注意，字符串也包含数字···
+
+思路2：hash法+排序 \
+`ans = append(ans,bytes.Repeat([]byte{v.b}, v.c)...) // 关键代码`
+```go
+func frequencySort(s string) string {
+	cnt := make(map[byte]int)
+	for i := range s{
+		cnt[s[i]]++
+	}
+
+	type ac struct {
+		b byte // 字符 byte
+		c int // 出现次数
+	}
+	cts := []ac{}
+	for k,v := range cnt{
+		cts = append(cts, ac{k,v})
+	}
+
+	sort.Slice(cts, func(i, j int) bool {
+		return cts[i].c > cts[j].c
+	})
+	ans := make([]byte, 0, len(s))
+	for _,v := range cts{
+		ans = append(ans,bytes.Repeat([]byte{v.b}, v.c)...) // 关键代码
+	}
+	return string(ans)
+}
+```
+
+思路3：桶排序 \
+由于每个字符在字符串中出现的频率存在上限，因此可以使用桶排序的思想，根据出现次数生成排序后的字符串。具体做法如下：
+- 遍历字符串，统计每个字符出现的频率，同时记录最高频率 maxFreq；
+- 创建桶，存储从 1 到 maxFreq 的每个出现频率的字符；
+- 按照出现频率从大到小的顺序遍历桶，对于每个出现频率，获得对应的字符，然后将每个字符按照出现频率拼接到排序后的字符串。
+
+```go
+func frequencySort(s string) string {
+	cnt := make(map[byte]int)
+	maxFre := 0 // 最高出现频率
+	for i := range s{
+		cnt[s[i]]++
+		if cnt[s[i]] > maxFre{
+			maxFre = cnt[s[i]]
+		}
+	}
+
+	buckets := make([][]byte, maxFre+1) // 记录各个频率出现的字母byte值
+	for k,v := range cnt{
+		buckets[v] = append(buckets[v], k)
+	}
+
+	ans := make([]byte, 0, len(s))
+	for i := maxFre; i > 0; i--{
+		for n := 0; n < len(buckets[i]); n++{
+			ans = append(ans,bytes.Repeat([]byte{buckets[i][n]}, i)...)
+		}
+	}
+	return string(ans)
+}
+```
+
+思路：hash法
+```go
+func kClosest(points [][]int, k int) [][]int {
+    n := len(points)
+    ip := make([][2]int, 0, n) // 数组0位记录下标，1位记录平方和
+    for i,v := range points{
+        ip = append(ip, [2]int{i, v[0]*v[0]+v[1]*v[1]})
+    }
+    sort.Slice(ip, func(i,j int)bool{
+        return ip[i][1] < ip[j][1] 
+    })
+    ans := [][]int{}
+    ans = append(ans, points[ip[k-1][0]])
+    path := ip[k-1][1]
+    for l, r := k-2,k; l >= 0 || r < n; l, r = l-1, r+1{
+        if l >= 0{ // 获取k之前的所有记录
+            ans = append(ans, points[ip[l][0]])
+        }
+        if r < n && ip[r][1] == path{ // 考虑可能存在相等距离
+            ans = append(ans, points[ip[r][0]])
+        }
+    }
+    return ans
+}
+```
+
+思路2：原位排序
+```go
+func kClosest(points [][]int, k int) [][]int {
+    sort.Slice(points, func(i,j int)bool{
+        pi, pj := points[i], points[j]
+        return pi[0]*pi[0]+pi[1]*pi[1] <pj[0]*pj[0]+pj[1]*pj[1]
+    })
+    return points[:k]
+}
+```
+
 [数据结构与算法 ->](icource.md) \
 [入门 -> ](getting_started.md) \
 [随想录题集 ->](random.md)
