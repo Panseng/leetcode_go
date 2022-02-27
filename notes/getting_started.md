@@ -18,7 +18,7 @@
 >输出：6\
 >解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
 
-思路：贪心算法，将前值累加，如果大于0则继续累计，同时求最大值\
+思路：贪心算法，将前值累加，如果大于0则继续累计，同时求最大值
 ```go
 func maxSubArray(nums []int) int {
     max := nums[0]
@@ -220,7 +220,7 @@ func maxProfit(prices []int) int {
 > 输入：mat = [[1,2],[3,4]], r = 2, c = 4\
 >输出：[[1,2],[3,4]]
 
-思路：二维数组的一维表示
+思路：二维数组的一维表示 \
 ![](../img/566-03.png)
 ```go
 func matrixReshape(mat [][]int, r int, c int) [][]int {
@@ -332,7 +332,7 @@ func generate3(numRows int) [][]int {
 实现见[code](../sudoku_is_valid/test.go)
 
 思路2：直接二维展开，通过3个hash表分别查重\
-巧妙 index `index := v - '1'`，取相对值，1-9的所有值相对1的位值作索引
+巧妙 `index := v - '1'`，取相对值，1-9的所有值相对1的位值作索引
 ```go
 func isValidSudoku(board [][]byte) bool {
 	var rows, cols [9][9]int
@@ -371,10 +371,10 @@ func isValidSudoku(board [][]byte) bool {
 
 > 函数输入```func setZeroes(matrix [][]int) ```
 
-思路1：变量记录需要变更的行列索引数据```row, col := map[int]bool{}, map[int]bool{}```\
-> 两次迭代，第一次获取索引数据，第二次变更\
-
+思路1：变量记录需要变更的行列索引数据```row, col := map[int]bool{}, map[int]bool{}```
+> 两次迭代，第一次获取索引数据，第二次变更
 ```go
+func setZeroes(matrix [][]int) {
 	row, col := map[int]bool{}, map[int]bool{}
 	for i, r := range matrix {
 		for j, v := range r {
@@ -391,8 +391,10 @@ func isValidSudoku(board [][]byte) bool {
 			}
 		}
 	}
+}
 ```
-思路2：用矩阵的第一行和第一列代替方法一中的两个标记数组，以达到 O(1)O(1) 的额外空间。但这样会导致原数组的第一行和第一列被修改，无法记录它们是否原本包含 00。因此我们需要额外使用两个标记变量分别记录第一行和第一列是否原本包含 00。
+
+思路2：用矩阵的第一行和第一列代替方法一中的两个标记数组，以达到 O(1) 的额外空间。但这样会导致原数组的第一行和第一列被修改，无法记录它们是否原本包含 00。因此我们需要额外使用两个标记变量分别记录第一行和第一列是否原本包含 0。
 ```go
     n, m := len(matrix), len(matrix[0])
     row0, col0 := false, false
@@ -440,10 +442,10 @@ func isValidSudoku(board [][]byte) bool {
 给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
 
 > 输入：s = "leetcode"\
-> 输出：返回 0\
+> 输出：返回 0
 >
 > 输入：s = "loveleetcode"\
-> 输出：返回 2\
+> 输出：返回 2
 
 **提示**：你可以假定该字符串只包含小写字母。
 
@@ -502,7 +504,8 @@ func firstUniqChar5(s string) int {
 ## [383. 赎金信](https://leetcode-cn.com/problems/ransom-note/)
 给你两个字符串：ransomNote 和 magazine ，判断 ransomNote 能不能由 magazine 里面的字符构成。\
 如果可以，返回 true ；否则返回 false 。\
-magazine 中的每个字符只能在 ransomNote 中使用一次。\
+magazine 中的每个字符只能在 ransomNote 中使用一次。
+
 > 示例 1：\
 > 输入：ransomNote = "a", magazine = "b"\
 > 输出：false
