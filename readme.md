@@ -20,7 +20,7 @@
 目录:
 - [入门](notes/getting_started.md)
 - [基础](notes/base.md)
-- [基础](notes/advance.md)
+- [进阶](notes/advance.md)
 - [随想录题集](notes/random.md)
 
 ![](img/structure.png) \

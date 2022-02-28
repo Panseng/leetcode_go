@@ -646,8 +646,8 @@ func searchMatrix(matrix [][]int, target int) bool {
 > 输出: 0 \
 > 解释: 你不需要移除任何区间，因为它们已经是无重叠的了。
 
-思路：贪心算法，[讲解视频](https://www.bilibili.com/video/BV1WK4y1R71x)
-- 按照右边界排序，就要从左向右遍历，因为右边界越小越好，只要右边界越小，留给下一个区间的空间就越大，所以从左向右遍历，优先选右边界小的。
+思路：贪心算法，[算法讲解](https://leetcode-cn.com/problems/non-overlapping-intervals/solution/435-wu-zhong-die-qu-jian-tan-xin-jing-di-qze0/) [讲解视频](https://www.bilibili.com/video/BV1WK4y1R71x)
+- 按照右边界排序，就要从左向右遍历，因为右边界越小越好，只要右边界越小，留给下一个区间的空间就越大，所以从左向右遍历，优先选右边界小的。 \
 ![](../img/435-1.png)
 ```go
 func eraseOverlapIntervals(intervals [][]int) int {
