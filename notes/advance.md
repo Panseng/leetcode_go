@@ -219,3 +219,208 @@ func findMinArrowShots(points [][]int) int {
 }
 ```
 
+## [128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。 \
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+
+> 示例 1： \
+> 输入：nums = [100,4,200,1,3,2] \
+> 输出：4 \
+> 解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+>
+> 示例 2： \
+> 输入：nums = [0,3,7,2,5,8,4,6,0,1] \
+> 输出：9
+
+
+思路：排序(nlogn)+计数（取最大值）
+```go
+func longestConsecutive(nums []int) int {
+    n := len(nums)
+    if n < 1{
+        return 0
+    }
+    sort.Ints(nums)
+    ans := 1
+    s := 0
+    
+    for i := 1; i < n; i++{
+        if nums[i] == nums[i-1]{ // 删除重复项，避免累计错误
+            if i == 1{
+                nums = nums[1:]
+            } else if i == n-1{
+                nums = nums[:i]
+            } else{
+                nums = append(nums[:i], nums[i+1:]...)
+            }
+            i--
+            n--
+            continue
+        }
+        if nums[i] == nums[i-1]+1{
+            s++
+            if s+1 > ans{
+                ans = s+1
+            }
+        } else{
+            s = 0
+        }
+    }
+    return ans
+}
+```
+
+思路2：hash法，对每个头部数据进行递增匹配，找最大长度
+```go
+func longestConsecutive(nums []int) int {
+    numMap := make(map[int]bool)
+    for _,v := range nums{
+        numMap[v] = true
+    }
+    ans := 0
+    for k := range numMap{
+        if ans > len(nums)/2{ // 如果过半数，则不可能产生更大的连续序列了
+            break
+        }
+        // 保证只从最小值开始寻找，一直找到最大值，来保障最大长度
+        // 同时避免重复遍历子集
+        if _, okP := numMap[k-1]; !okP{ 
+            next := k+1
+            for numMap[next]{ // 通过迭代找最大
+                next++
+            }
+            if next-k > ans{
+                ans = next-k
+            }
+        }
+    }
+    return ans
+}
+```
+
+## [454. 四数相加 II](https://leetcode-cn.com/problems/4sum-ii/)
+给你四个整数数组 nums1、nums2、nums3 和 nums4 ，数组长度都是 n ，请你计算有多少个元组 (i, j, k, l) 能满足：
+- 0 <= i, j, k, l < n
+- nums1[i] + nums2[j] + nums3[k] + nums4[l] == 0
+
+
+> 示例 1： \
+> 输入：nums1 = [1,2], nums2 = [-2,-1], nums3 = [-1,2], nums4 = [0,2] \
+> 输出：2 \
+> 解释： \
+> 两个元组如下：
+> 1. (0, 0, 0, 1) -> nums1[0] + nums2[0] + nums3[0] + nums4[1] = 1 + (-2) + (-1) + 2 = 0
+> 2. (1, 1, 0, 0) -> nums1[1] + nums2[1] + nums3[0] + nums4[0] = 2 + (-1) + (-1) + 0 = 0
+>
+> 示例 2： \
+> 输入：nums1 = [0], nums2 = [0], nums3 = [0], nums4 = [0] \
+> 输出：1
+
+思路：hash法，记住前2项和、后2项和，然后分别比较两项和是否构成和为0，符合条件则累计次数
+```go
+func fourSumCount(nums1 []int, nums2 []int, nums3 []int, nums4 []int) int {
+    n := len(nums1)
+    sumOT := make(map[int]int)
+    for i := 0; i < n; i++{ // 前两项和
+        for j := 0; j < n; j++{
+            sumOT[nums1[i]+nums2[j]]++
+        }
+    }
+
+    sumTF := make(map[int]int)
+    for i := 0; i < n; i++{ // 后两项和
+        for j := 0; j < n; j++{
+            sumTF[nums3[i]+nums4[j]]++
+        }
+    }
+
+    ans := 0
+    for kOT, vOT := range sumOT{ // 匹配
+        if vTF, ok := sumTF[-kOT]; ok{
+            ans += vOT*vTF
+        }
+    }
+    return ans
+}
+```
+优化，减少迭代次数：在获取后两项和时，直接匹配前两项和
+```go
+func fourSumCount(nums1 []int, nums2 []int, nums3 []int, nums4 []int) int {
+    n := len(nums1)
+    sumOT := make(map[int]int)
+    for i := 0; i < n; i++{
+        for j := 0; j < n; j++{
+            sumOT[nums1[i]+nums2[j]]++
+        }
+    }
+
+    ans := 0
+    for i := 0; i < n; i++{
+        for j := 0; j < n; j++{
+            if v,ok := sumOT[-nums3[i]-nums4[j]]; ok{ // 直接匹配后两项与前两项和
+                ans += v
+            }
+        }
+    }
+    
+    return ans
+}
+```
+
+## [448. 找到所有数组中消失的数字](https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/)
+给你一个含 n 个整数的数组 nums ，其中 nums[i] 在区间 [1, n] 内。请你找出所有在 [1, n] 范围内但没有出现在 nums 中的数字，并以数组的形式返回结果。
+
+> 示例 1： \
+> 输入：nums = [4,3,2,7,8,2,3,1] \
+> 输出：[5,6]
+>
+> 示例 2： \
+> 输入：nums = [1,1] \
+> 输出：[2]
+
+思路：通过数组记录出现次数
+- 在可以产生连续的排列时，数组下标可以作为特殊的key值
+- 比如连续的大写字母、小写字母、数值（注意，大小写字母直接有空隙，需要排除）
+```go
+func findDisappearedNumbers(nums []int) []int {
+    nm := make([]int, len(nums)+1)
+    for _,v := range nums{
+        nm[v]++
+    }
+    ans := []int{}
+    for i,v := range nm{
+        if i == 0 {
+            continue
+        }
+        if v == 0{
+            ans = append(ans, i)
+        }
+    }
+    return ans
+}
+```
+
+思路2：原位操作
+- 数组中的值是乱序
+- 数组中的值在 1-n之间，可以构成下标（需要v-1）
+- 值指向的下标，对应值需要+n，来区别没有值对应的下标值
+- +n是便于取模定位
+```go
+func findDisappearedNumbers(nums []int) []int {
+    n := len(nums)
+    // 注意，nums是乱序
+    for _,v := range nums{
+        // 需要将值对应到长度为 n 的数组，那么 v 作为下标，需要-1
+        v = (v-1)%n // 获取 v值 的前一项（此次 v 被看着下标，取n的余数，是因为v可能大于n
+        nums[v] += n // 此次操作，使得 v 可能大于 n
+    }
+    ans := []int{}
+    for i,v := range nums{
+        if v <= n{ // v
+            ans = append(ans, i+1)
+        }
+    }
+    return ans
+}
+```
