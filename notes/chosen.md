@@ -365,3 +365,51 @@ func (this *TwoSum) Find(value int) bool {
     return false
 }
 ```
+
+## [253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
+给你一个会议时间安排的数组 intervals ，每个会议时间都会包括开始和结束的时间 intervals[i] = [starti, endi] ，返回 所需会议室的最小数量 。
+
+> 示例 1： \
+> 输入：intervals = [[0,30],[5,10],[15,20]] \
+> 输出：2
+>
+> 示例 2： \
+> 输入：intervals = [[7,10],[2,4]] \
+> 输出：1
+
+思路：组会议室
+- 对于有交集的会议，需要错开会议室
+- 没有交集的会议，可以合并在同一个会议室
+- 一个会议结束时间 == 另一个会议的开始时间，可以在同一个会议室
+- 可以合并的会议，对应会议室更新结束时间
+- 会议室，按结束时间从小到大排序
+```go
+func minMeetingRooms(intervals [][]int) int {
+    sort.Slice(intervals, func(i,j int)bool{ // 从小到大排序
+        return intervals[i][0] < intervals[j][0]
+    })
+    // 对于有交集的会议，需要错开会议室
+    // 没有交集的会议，可以合并在同一个会议室
+    // 一个会议结束时间 == 另一个会议的开始时间，可以在同一个会议室
+    // 可以合并的会议，对应会议室更新结束时间
+    // 会议室，按结束时间从小到大排序
+    arranges := make([][]int, 0, len(intervals)) // 会议室数组
+    arranges = append(arranges, intervals[0])
+    for _, v := range intervals[1:]{
+        if arranges[0][1] > v[0]{
+            arranges = append(arranges, v)
+        } else {
+            for _, a := range arranges{
+                if a[1] <= v[0]{ // 题目对结束时间 = 会议开始时间，认为可以同一个会议室
+                    a[1] = v[1]
+                    break
+                }
+            }
+        }
+        sort.Slice(arranges, func(i, j int)bool{ // 排序，对已安排的会议，按结束时间从小到大排序
+            return arranges[i][1] < arranges[j][1]
+        })
+    }
+    return len(arranges)
+}
+```
