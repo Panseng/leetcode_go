@@ -16,4 +16,11 @@ func main()  {
 	} else {
 		fmt.Println("regexp absolute addr wrong")
 	}
+
+	var i interface{} = 77
+	if value, ok := i.(int); ok {
+		fmt.Println("类型匹配整型：%d\n", value)
+	} else if value, ok := i.(string); ok {
+		fmt.Printf("类型匹配字符串:%s\n", value)
+	}
 }

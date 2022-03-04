@@ -1148,7 +1148,7 @@ func getNext(s string, next []int){
 	j := 0;
 	next[0] = j
 	for i := 1; i < len(s); i++{
-		for j > 0 && s[j] != s[i]{ // 凡是遇到不匹配的，则需要从头开始寻找前缀值
+		for j > 0 && s[i] != s[j]{ // 凡是遇到不匹配的，则需要从头开始寻找前缀值
 			j = next[j-1]
 		}
 		if s[i]==s[j]{ // 前缀右侧端点右移：增加匹配的前缀长度

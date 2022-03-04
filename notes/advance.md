@@ -790,3 +790,55 @@ func shortestPalindrome(s string) string {
 }
 ```
 思路3：前缀和 kmp算法
+- 关键代码：反转后的尾部 同 反转前的头部，最大的重叠区间
+- 那么，不相同的反转头部，为最小字符串
+- 转换为`kmp`算法，则 `s + "#" + rs`，求 next
+- 则最后一个字母的前缀和，对应与 s 的头部重叠区间
+```go
+	for ; i < l; i++ {
+		if rs[i:] == s[:l-i] {
+			break
+		}
+	}
+```
+s 为`aacecaaa`，rs 为 `aaacecaa`
+```go
+rs - aaacecaa
+s  -  aacecaaa
+```
+![](../img/214.png) \
+![](../img/214-1.jpg)
+
+```go
+func shortestPalindrome(s string) string {
+	n := len(s)
+	pattern := s+ "#" + reverserStr(s)
+	n = n*2+1
+	next := make([]int, n)
+	getNext(pattern, next)
+	return pattern[len(s)+1:n-next[n-1]] + s
+}
+
+func getNext(s string, next []int) {
+	j := 0
+	next[0] = j
+	n := len(s)
+	for i := 1; i < n; i++{
+		for j > 0 && s[i] != s[j]{
+			j = next[j-1]
+		}
+		if s[i] == s[j]{
+			j++
+		}
+		next[i] = j
+	}
+}
+func reverserStr(x string) string {
+	res := strings.Builder{}
+	for i := len(x) - 1; i >= 0; i-- {
+		res.WriteByte(x[i])
+	}
+	return res.String()
+}
+```
+

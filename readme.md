@@ -26,4 +26,17 @@
 
 ![](img/structure.png) \
 
+## 高效代码
+
+### 反转字符串
+```go
+func reverserStr(x string) string {
+	res := strings.Builder{}
+	for i := len(x) - 1; i >= 0; i-- {
+		res.WriteByte(x[i])
+	}
+	return res.String()
+}
+```
+
 
