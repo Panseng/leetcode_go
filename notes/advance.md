@@ -494,3 +494,299 @@ func stringShift(s string, shift [][]int) string {
     return s[len(s)+amount:] + s[:len(s)+amount]
 }
 ```
+
+## [44. 通配符匹配](https://leetcode-cn.com/problems/wildcard-matching/)
+给定一个字符串 (s) 和一个字符模式 (p) ，实现一个支持 '?' 和 '*' 的通配符匹配。
+
+> '?' 可以匹配任何单个字符。
+> '*' 可以匹配任意字符串（包括空字符串）。
+
+两个字符串完全匹配才算匹配成功。
+
+说明:
+- s 可能为空，且只包含从 a-z 的小写字母。
+- p 可能为空，且只包含从 a-z 的小写字母，以及字符 ? 和 *。
+
+> 示例 1: \
+> 输入: \
+> s = "aa" \
+> p = "a" \
+> 输出: false \
+> 解释: "a" 无法匹配 "aa" 整个字符串。
+>
+> 示例 2: \
+> 输入: \
+> s = "aa" \
+> p = "*" \
+> 输出: true \
+> 解释: '*' 可以匹配任意字符串。
+>
+> 示例 3: \
+> 输入： \
+> s = "cb" \
+> p = "?a" \
+> 输出: false \
+> 解释: '?' 可以匹配 'c', 但第二个 'a' 无法匹配 'b'。
+>
+> 示例 4: \
+> 输入: \
+> s = "adceb" \
+> p = "*a*b" \
+> 输出: true \
+> 解释: 第一个 '*' 可以匹配空字符串, 第二个 '*' 可以匹配字符串 "dce".
+>
+> 示例 5: \
+> 输入: \
+> s = "acdcb" \
+> p = "a*c?b" \
+> 输出: false
+
+思路1：动态规划 \
+![](../img/44-1.png) \
+![](../img/44-2.png)
+
+```go
+func isMatch(s string, p string) bool {
+    ns, np := len(s), len(p)
+    dp := make([][]bool, ns+1) // 0 位保存长度为0的结果， ns位保存尾部匹配结果
+    for i := range dp{
+        dp[i] = make([]bool, np+1)
+    }
+
+    dp[0][0] = true // 长度均为 0 时，返回真
+    for j := 1; j <= np; j++{ // 对于 s 为 0的情况，如果p的前j项为*，则j+1均为真
+        if p[j-1] == '*'{
+            dp[0][j] = true
+        } else{
+            break
+        }
+    }
+
+    for i := 1; i <= ns; i++{
+        for j := 1; j <= np; j++{
+            if p[j-1] == '*'{ // 对于 * ，我们可以用或不用
+                dp[i][j] = dp[i-1][j] || dp[i][j-1]
+            } else if p[j-1] == '?' || p[j-1] == s[i-1]{
+                dp[i][j] = dp[i-1][j-1]
+            }
+        }
+    }
+    return dp[ns][np]
+}
+```
+
+思路2：贪心算法 \
+![](../img/44-3.png)
+```go
+// 我们用 sIndex 和 pIndex 表示当前遍历到 s 和 p 的位置
+// 此时我们正在 s 中寻找某个 u_i
+// 其在 s 和 p 中的起始位置为 sRecord 和 pRecord
+
+// sIndex 和 sRecord 的初始值为 0
+// 即我们从字符串 s 的首位开始匹配
+sIndex = sRecord = 0
+
+// pIndex 和 pRecord 的初始值为 1
+// 这是因为模式 p 的首位是星号，那么 u_1 的起始位置为 1
+pIndex = pRecord = 1
+
+while sIndex < s.length and pIndex < p.length do
+    if p[pIndex] == '*' then
+        // 如果遇到星号，说明找到了 u_i，开始寻找 u_i+1
+        pIndex += 1
+        // 记录下起始位置
+        sRecord = sIndex
+        pRecord = pIndex
+    else if match(s[sIndex], p[pIndex]) then
+        // 如果两个字符可以匹配，就继续寻找 u_i 的下一个字符
+        sIndex += 1
+        pIndex += 1
+    else if sRecord + 1 < s.length then
+        // 如果两个字符不匹配，那么需要重新寻找 u_i
+        // 枚举下一个 s 中的起始位置
+        sRecord += 1
+        sIndex = sRecord
+        pIndex = pRecord
+    else
+        // 如果不匹配并且下一个起始位置不存在，那么匹配失败
+        return False
+    end if
+end while
+
+// 由于 p 的最后一个字符是星号，那么 s 未匹配完，那么没有关系
+// 但如果 p 没有匹配完，那么 p 剩余的字符必须都是星号
+```
+![](../img/44-4.png)
+```go
+func isMatch(s string, p string) bool {
+    ns, np := len(s), len(p)
+    for ; ns > 0 && np > 0 && p[np-1] != '*'; ns, np = len(s), len(p){
+        if charMatch(s[len(s)-1], p[len(p)-1]){
+            s = s[:ns-1]
+            p = p[:np-1]
+        } else{
+            return false
+        }
+    }
+    if np == 0{
+        return ns == 0
+    }
+
+    si, pi := 0, 0
+    sr, pr := -1, -1
+    for si < ns && pr < np{
+        if p[pi] == '*'{
+            pi++
+            sr, pr = si, pi
+        } else if charMatch(s[si], p[pi]){
+            si++
+            pi++
+        } else if sr != -1 && sr+1 < ns{ // 回到有 * 的起点
+            sr++
+            si, pi = sr, pr
+        } else{
+            return false
+        }
+    }
+    return allStars(p, pi, np)
+}
+
+func charMatch(s, p byte) bool{
+    return s == p || p == '?'
+}
+
+func allStars(p string, start, end int) bool{
+    for _, v := range p[start:end]{
+        if v != '*'{
+            return false
+        }
+    }
+    return true
+}
+```
+## [214. 最短回文串](https://leetcode-cn.com/problems/shortest-palindrome/)
+给定一个字符串 s，你可以通过在字符串前面添加字符将其转换为回文串。找到并返回可以用这种方式转换的最短回文串。
+
+> 示例 1： \
+> 输入：s = "aacecaaa" \
+> 输出："aaacecaaa"
+>
+> 示例 2： \
+> 输入：s = "abcd" \
+> 输出："dcbabcd"
+
+思路：从中间往左侧寻找回文字段
+- 要求回文左侧要在字符串头
+- 字符串可能是奇数或偶数，那么中间字段取值不同
+- 回文长度也存在奇偶性
+```go
+func shortestPalindrome(s string) string {
+    n := len(s)
+    if n < 2{
+        return s
+    }
+    mid := n/2 + n%2
+    end := 0
+    for i := mid-1; i >= 0; i--{
+        start1, end1 := expandPali(s, i, i, n) // 回文数目为奇数
+		start2, end2 := expandPali(s, i, i+1, n) // 回文数目为偶数
+        if start1 == 0 && start2 == 0{
+            if end1 > end2{
+                end = end1
+            } else{
+                end = end2
+            }
+            break
+        } else if start1 == 0{
+            end = end1
+            break
+        } else if start2 == 0{
+            end = end2
+            break
+        }
+    }
+    
+    if end == n-1{
+        return s
+    }
+    ans := strings.Split(s[end+1:], "") // 字符串转换为数组
+    for left, right := 0, len(ans)-1; left < right; left, right = left+1, right-1{
+        ans[left], ans[right] = ans[right],ans[left]
+    }
+    return strings.Join(ans, "") + s // 数组转换为字符串
+}
+
+func expandPali(s string,start, end, n int) (int, int){
+	for ; start >= 0 && end < n && s[start] == s[end]; start, end = start-1, end+1{}
+	return start+1, end-1
+}
+```
+同思路
+```go
+func shortestPalindrome(s string) string {
+	n := len(s)
+    if n < 2{
+        return s
+    }
+	right := 1
+	for j := 0+2; j <= n; j++{  // 每次只对比 大于目前最大回文长度 的字符串
+		if isPali(s[0:j]){
+			right = j
+		}
+	}
+    if right == n{
+        return s
+    }
+    b := strings.Split(s[right:], "")
+    for l, r := 0, n-right-1; l < r; l, r = l+1, r-1{
+        b[l], b[r] = b[r], b[l]
+    }
+	return strings.Join(b,"") + s
+}
+
+
+func isPali(s string) bool{
+	for i := 0; i < len(s)/2; i++{
+		if s[i] != s[len(s)-1-i]{
+			return false
+		}
+	}
+	return true
+}
+```
+
+思路2：字符串哈希
+- 如何以O(n)的复杂度求出从头开始的最长回文串?
+- 从左往右遍历，计算当前这个子串 s[1, i]s[1,i] 的正向 p 进制的哈希值 forward 和反向 p 进制表示哈希值 backward，如果两者相同，说明当前子串是个回文串。
+```go
+func shortestPalindrome(s string) string {
+    var q, forward, backward uint64
+    const P uint64 = 131
+    q = 1
+    right := 0
+    forward = 0
+    backward = 0
+    n := len(s)
+    if n < 2{
+        return s
+    }
+    for i := 0; i < n; i++{
+        v := uint64(s[i]-'a')
+        forward = forward*P + v   // p进制，高位在前
+        backward = backward + v*q // p进制，高位在后
+        q = q*P
+        if forward == backward{ // 说明当前是一个从头开始的回文串
+            right = i
+        }
+    }
+    if right == n-1{
+        return s
+    }
+    ans := strings.Split(s[right+1:], "") // 字符串转换为数组
+    for left, right := 0, len(ans)-1; left < right; left, right = left+1, right-1{
+        ans[left], ans[right] = ans[right],ans[left]
+    }
+    return strings.Join(ans, "") + s // 数组转换为字符串
+}
+```
+思路3：前缀和 kmp算法
