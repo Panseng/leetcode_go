@@ -841,4 +841,86 @@ func reverserStr(x string) string {
 	return res.String()
 }
 ```
+## [369. 给单链表加一](https://leetcode-cn.com/problems/plus-one-linked-list/)
+给定一个用链表表示的非负整数， 然后将这个整数 再加上 1 。 \
+这些数字的存储是这样的：最高位有效的数字位于链表的首位 head 。
+
+> 示例 1: \
+> 输入: head = [1,2,3] \
+> 输出: [1,2,4]
+>
+> 示例 2: \
+> 输入: head = [0] \
+> 输出: [1]
+
+思路：利用数组进位
+```go
+func plusOne(head *ListNode) *ListNode {
+    prev := head
+    nums := []int{}
+    for prev != nil{ // 将链表展开为数组，便于进位计算
+        nums = append(nums, prev.Val)
+        prev = prev.Next
+    }
+    carry := 0 // 进位
+    for i := len(nums)-1; i >= 0; i--{
+        if nums[i] == 9{
+            nums[i] = 0
+            carry = 1
+        } else{
+            nums[i] += 1
+            carry = 0
+        }
+        if carry == 0{
+            break
+        }
+    }
+    if carry == 1{
+        head = &ListNode{Val:1}
+        prev = head
+    } else{
+        head = &ListNode{Val: nums[0]}
+        prev= head
+        nums = nums[1:]
+    }
+    for len(nums) > 0{
+        prev.Next = &ListNode{Val: nums[0]}
+        prev = prev.Next
+        nums = nums[1:]
+    }
+    return head
+}
+```
+思路：哨兵头节点 \
+![](../img/369-1.png) \
+![](../img/369-2.png) \
+![](../img/369-3.png) 
+- 初始化哨兵节点 ListNode(0)，同时将它设为新的头节点：sentinel.next = head。
+- 找到最靠右的数值不为 9 的节点。
+- 将该节点的数值加 1。
+- 将该节点之后所有节点数值改为 0。
+- 如果哨兵节点的数值为 1，直接返回哨兵节点，否则返回原始头节点 sentinel.next。
+
+```go
+func plusOne(head *ListNode) *ListNode {
+    ans := &ListNode{Val: 0,Next: head}
+    notNine := ans // 初始值为 0 的新节点
+    for head != nil{ // 找到最右侧值不为 9 的节点
+        if head.Val != 9{
+            notNine = head
+        }
+        head = head.Next
+    }
+    notNine.Val++ // 最右侧不为9的节点值 +1
+    notNine = notNine.Next
+    for notNine != nil{ // 将该值右侧所有节点值置为 0
+        notNine.Val = 0
+        notNine = notNine.Next
+    }
+    if ans.Val == 0{
+        return ans.Next
+    }
+    return ans
+}
+```
 

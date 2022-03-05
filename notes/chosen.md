@@ -413,3 +413,68 @@ func minMeetingRooms(intervals [][]int) int {
     return len(arranges)
 }
 ```
+
+## [340. 至多包含 K 个不同字符的最长子串](https://leetcode-cn.com/problems/longest-substring-with-at-most-k-distinct-characters/)
+给定一个字符串 s ，找出 至多 包含 k 个不同字符的最长子串 T。
+
+> 示例 1:
+> 输入: s = "eceba", k = 2
+> 输出: 3
+> 解释: 则 T 为 "ece"，所以长度为 3。
+>
+> 示例 2:
+> 输入: s = "aa", k = 1
+> 输出: 2
+> 解释: 则 T 为 "aa"，所以长度为 2。
+
+思路：hash法+滑动窗口计数
+- hash表记录字符在当前窗口最后出现位置
+- 先进先出的队列，记录字符和索引信息
+  - 在出栈时（从小到大，按字符位置），不断对比与当前hash表是否相等
+  - 相等则说明找到最小位置
+```go
+type addr struct{ b byte; i int } // b 为字符byte，i 为索引
+func lengthOfLongestSubstringKDistinct(s string, k int) int {
+	n := len(s)
+	if n == 0 || k == 0{
+		return 0
+	}
+	if n <= k{
+		return n
+	}
+	hash := make(map[byte]int) // 记录符合要求的字符在窗口最后出现的索引
+	hash[s[0]] = 0
+	addrs := []addr{{ // 记录位置信息
+		b: s[0],
+		i: 0,
+	}}
+	count := 1 // 记录当前窗口字符种类
+	maxLen := 1 // 记录最大窗口
+	for left, right := 0, 1; right < n && left < n; {
+		if _, ok := hash[s[right]]; ok || count < k{ // 当前字符在符合的字符类集中、字符种类数小于k
+			if !ok { // 字符种类+1
+				count++
+			}
+			hash[s[right]] = right
+			addrs = append(addrs, addr{b: s[right], i: right})
+			right++
+			if right - left > maxLen{
+				maxLen = right-left
+			}
+			continue
+		}
+		a := addrs[0]
+		addrs = addrs[1:]
+		for a.i != hash[a.b]{
+			a = addrs[0]
+			addrs = addrs[1:]
+		}
+		left = a.i+1
+		delete(hash, a.b)
+		hash[s[right]] = right
+		addrs = append(addrs, addr{b: s[right], i: right})
+		right++
+	}
+	return maxLen
+}
+```
