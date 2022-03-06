@@ -923,4 +923,275 @@ func plusOne(head *ListNode) *ListNode {
     return ans
 }
 ```
+## [148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
 
+> 示例 1： \
+> ![](../img/148-2.jpg) \
+> 输入：head = [4,2,1,3] \
+> 输出：[1,2,3,4]
+>
+> 示例 2： \
+> ![](../img/148-3.jpg) \
+> 输入：head = [-1,5,3,4,0] \
+> 输出：[-1,0,3,4,5]
+>
+> 示例 3： \
+> 输入：head = [] \
+> 输出：[]
+
+思路1：冒泡排序，时间复杂度如下 \
+![](../img/148-1.jpg) \
+在本题中超时
+```go
+func sortList(head *ListNode) *ListNode {
+    ans := &ListNode{Next: head}
+    prev := ans
+    for {
+        isChanged := false
+        for prev.Next != nil && prev.Next.Next != nil{
+            if prev.Next.Next.Val < prev.Next.Val{
+                // 链表交换节点，多用变量，不要用多项赋值
+                // 如：prev.Next, prev.Next.Next = prev.Next.Next, prev.Next
+                tail := prev.Next.Next.Next
+                nextOne := prev.Next
+                nextTwo := prev.Next.Next
+                prev.Next = nextTwo
+                prev.Next.Next = nextOne
+                prev.Next.Next.Next = tail
+                isChanged = true
+            }
+            prev = prev.Next
+        }
+        if !isChanged{
+            break
+        }
+        prev = ans
+    }
+    return ans.Next
+}
+```
+
+思路2：队列
+```go
+func sortList(head *ListNode) *ListNode {
+    nodes := []int{}
+    for head != nil{
+        nodes = append(nodes, head.Val)
+        head = head.Next
+    }
+    if len(nodes) == 0{
+        return head
+    }
+    sort.Ints(nodes)
+    ans := &ListNode{Val: nodes[0]}
+    nodes = nodes[1:]
+    prev := ans
+    for len(nodes) > 0{
+        prev.Next = &ListNode{Val: nodes[0]}
+        prev = prev.Next
+        nodes = nodes[1:]
+    }
+    return ans
+}
+```
+
+思路3：最小堆
+- 排序用冒泡的方式
+```go
+func sortList(head *ListNode) *ListNode {
+    h := &hp{}
+    for head != nil{
+        heap.Push(h, head.Val)
+        head = head.Next
+    }
+    if h.Len() == 0{
+        return head
+    }
+    ans := &ListNode{Val: heap.Pop(h).(int)}
+    prev := ans
+    for h.Len() > 0{
+        prev.Next = &ListNode{Val: heap.Pop(h).(int)}
+        prev = prev.Next
+    }
+    return ans
+}
+
+type hp []int
+func (h hp)Len() int{return len(h)}
+func (h hp)Less(i, j int) bool {return h[i] < h[j]}
+func (h hp)Swap(i,j int){h[i], h[j] = h[j], h[i]}
+func (h *hp) Push(v interface{}){*h = append(*h, v.(int))}
+func (h *hp) Pop() (v interface{}) { a := *h; *h, v = a[:len(a)-1], a[len(a)-1]; return }
+```
+
+## [138. 复制带随机指针的链表](https://leetcode-cn.com/problems/copy-list-with-random-pointer/)
+给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。
+
+构造这个链表的 深拷贝。 深拷贝应该正好由 n 个 全新 节点组成，其中每个新节点的值都设为其对应的原节点的值。新节点的 next 指针和 random 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。复制链表中的指针都不应指向原链表中的节点 。
+
+例如，如果原链表中有 X 和 Y 两个节点，其中 X.random --> Y 。那么在复制链表中对应的两个节点 x 和 y ，同样有 x.random --> y 。
+
+返回复制链表的头节点。
+
+用一个由 n 个节点组成的链表来表示输入/输出中的链表。每个节点用一个 [val, random_index] 表示：
+- val：一个表示 Node.val 的整数。
+- random_index：随机指针指向的节点索引（范围从 0 到 n-1）；如果不指向任何节点，则为  null 。
+
+你的代码 只 接受原链表的头节点 head 作为传入参数。
+
+> 示例 1： \
+> ![](../img/138-1.png) \
+> 输入：head = [[7,null],[13,0],[11,4],[10,2],[1,0]] \
+> 输出：[[7,null],[13,0],[11,4],[10,2],[1,0]]
+>
+> 示例 2： \
+> ![](../img/138-2.png) \
+> 输入：head = [[1,1],[2,1]] \
+> 输出：[[1,1],[2,1]]
+>
+> 示例 3： \
+> ![](../img/138-3.png) \
+> 输入：head = [[3,null],[3,0],[3,null]] \
+> 输出：[[3,null],[3,0],[3,null]]
+
+思路：通过队列+hash表存储random信息
+```go
+func copyRandomList(head *Node) *Node {
+    if head == nil{
+        return head
+    }
+    ans := &Node{Val: head.Val}
+    prevH := head.Next
+    prev := ans
+    mp := make(map[*Node]int)
+    i := 0
+    mp[head] = i
+    rans := []*Node{ans}
+    for prevH != nil{
+        prev.Next = &Node{Val: prevH.Val}
+        i++
+        mp[prevH] = i
+        prevH = prevH.Next
+        prev = prev.Next
+        rans = append(rans, prev)
+    }
+    prev = ans
+    for head != nil{
+        if head.Random == nil{
+            prev.Random = nil
+        } else{
+            prev.Random = rans[mp[head.Random]]
+        }
+        head = head.Next
+        prev = prev.Next
+    }
+    return ans
+}
+```
+
+## [430. 扁平化多级双向链表](https://leetcode-cn.com/problems/flatten-a-multilevel-doubly-linked-list/)
+你会得到一个双链表，其中包含的节点有一个下一个指针、一个前一个指针和一个额外的 子指针 。这个子指针可能指向一个单独的双向链表，也包含这些特殊的节点。这些子列表可以有一个或多个自己的子列表，以此类推，以生成如下面的示例所示的 多层数据结构 。 \
+给定链表的头节点 head ，将链表 扁平化 ，以便所有节点都出现在单层双链表中。让 curr 是一个带有子列表的节点。子列表中的节点应该出现在扁平化列表中的 curr 之后 和 curr.next 之前 。 \
+返回 扁平列表的 head 。列表中的节点必须将其 所有 子指针设置为 null 。
+
+数据结构
+```go
+/**
+ * Definition for a Node.
+ * type Node struct {
+ *     Val int
+ *     Prev *Node
+ *     Next *Node
+ *     Child *Node
+ * }
+ */
+```
+> 示例 1： \
+> ![](../img/430-1.jpg) \
+> 输入：head = [1,2,3,4,5,6,null,null,null,7,8,9,10,null,null,11,12] \
+> 输出：[1,2,3,7,8,11,12,9,10,4,5,6] \
+> 解释：输入的多级列表如上图所示。 \
+> 扁平化后的链表如下图： \
+> ![](../img/430-2.jpg) 
+>
+> 示例 2： \
+> ![](../img/430-3.jpg) \
+> 输入：head = [1,2,null,3] \
+> 输出：[1,3,2] \
+> 解释：输入的多级列表如上图所示。 \
+> 扁平化后的链表如下图： \
+> ![](../img/430-4.jpg) 
+>
+> 示例 3： \
+> 输入：head = [] \
+> 输出：[] \
+> 说明：输入中可能存在空列表。
+
+思路1：队列辅助
+```go
+func flatten(root *Node) *Node {
+    if root == nil{
+        return root
+    }
+    ns := []*Node{}
+    getNodes(root, &ns)
+    var ans, cur *Node
+    for i := 0; i < len(ns); i++{ // 不断展开 子节点
+        if ns[i].Child != nil{
+            tem := []*Node{}
+            root = ns[i].Child
+            ns[i].Child = nil
+            getNodes(root, &tem)
+            tem = append(tem, ns[i+1:]...)
+            ns = append(ns[:i+1], tem...)
+        }
+        if i == 0{
+            ans = ns[0]
+            cur = ans
+            continue
+        }
+        cur.Next = ns[i]
+        cur = cur.Next
+    }
+    cur = ans
+    for cur != nil && cur.Next != nil{
+        cur.Next.Prev = cur
+        cur = cur.Next
+    }
+    return ans
+}
+// 数组指针的传递 & 使用
+func getNodes(root *Node, ns *[]*Node){
+    for root!= nil{
+        *ns = append(*ns, root)
+        root = root.Next
+    }
+}
+```
+思路2：递归
+```go
+func flatten(root *Node) *Node {
+    if root == nil {
+        return root
+    }
+    ans := root
+    for root != nil{
+        if root.Child != nil{
+            tail := root.Next
+            root.Next = flatten(root.Child)
+            root.Next.Prev = root
+            root.Child = nil
+            for root.Next != nil{
+                root = root.Next
+            }
+            if tail != nil{
+                tail.Prev = root
+                root.Next = tail
+            }
+        }
+        root = root.Next
+    }
+    return ans
+}
+```
