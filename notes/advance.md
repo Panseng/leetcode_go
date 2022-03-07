@@ -1195,3 +1195,92 @@ func flatten(root *Node) *Node {
     return ans
 }
 ```
+
+## [281. 锯齿迭代器](https://leetcode-cn.com/problems/zigzag-iterator/)
+给出两个一维的向量，请你实现一个迭代器，交替返回它们中间的元素。
+
+> 示例: \
+> 输入: \
+> v1 = [1,2] \
+> v2 = [3,4,5,6] \
+> 输出: [1,3,2,4,5,6] \
+> 解析: 通过连续调用 next 函数直到 hasNext 函数返回 false，next 函数返回值的次序应依次为: [1,3,2,4,5,6]。
+
+```go
+type ZigzagIterator struct {
+    Nums []int
+}
+
+func Constructor(v1, v2 []int) *ZigzagIterator {
+    ns := []int{}
+    i := 0
+    for len(v1) > 0 && len(v2) > 0{
+        if i%2 == 0{
+            ns = append(ns, v1[0])
+            v1 = v1[1:]
+        } else{
+            ns = append(ns, v2[0])
+            v2 = v2[1:]
+        }
+        i++
+    }
+    if len(v1) > 0{
+        ns = append(ns, v1...)
+    } else{
+        ns = append(ns, v2...)
+    }
+    return &ZigzagIterator{Nums: ns}    
+}
+
+func (this *ZigzagIterator) next() int {
+    ans := this.Nums[0]
+    this.Nums = this.Nums[1:]
+    return ans
+}
+
+func (this *ZigzagIterator) hasNext() bool {
+	return len(this.Nums) > 0
+}
+```
+
+## [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串 的长度。
+
+> 示例 1: \
+> 输入: s = "abcabcbb" \
+> 输出: 3 \
+> 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+>
+> 示例 2: \
+> 输入: s = "bbbbb" \
+> 输出: 1 \
+> 解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+>
+> 示例 3: \
+> 输入: s = "pwwkew" \
+> 输出: 3 \
+> 解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。 \
+> 请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串
+
+思路：hash法
+```go
+func lengthOfLongestSubstring(s string) int {
+    mp := make(map[byte]int) // 记录字符最后出现的位置
+    n := len(s)
+    maxL := 0
+    for l, r := 0, 0; r < n && l < n; r++{
+        if v, ok := mp[s[r]]; ok && v >= l{ // 也要保证 hash表中的值在窗口内，窗口外的不作数
+            l = mp[s[r]]+1
+            if n-l <= maxL{
+                break
+            }
+        } else{
+            if r-l+1 > maxL{
+                maxL = r-l+1
+            }
+        }
+        mp[s[r]] = r
+    }
+    return maxL
+}
+```
