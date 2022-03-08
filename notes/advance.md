@@ -1284,3 +1284,144 @@ func lengthOfLongestSubstring(s string) int {
     return maxL
 }
 ```
+
+## [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+给定一个整数数组 temperatures ，表示每天的温度，返回一个数组 answer ，其中 answer[i] 是指在第 i 天之后，才会有更高的温度。如果气温在这之后都不会升高，请在该位置用 0 来代替。
+> 30 <= temperatures[i] <= 100
+
+> 示例 1: \
+> 输入: temperatures = [73,74,75,71,69,72,76,73] \
+> 输出: [1,1,4,2,1,1,0,0]
+>
+> 示例 2: \
+> 输入: temperatures = [30,40,50,60] \
+> 输出: [1,1,1,0]
+>
+> 示例 3: \
+> 输入: temperatures = [30,60,90] \
+> 输出: [1,1,0]
+
+思路：用数组做温度的hash表
+```go
+func dailyTemperatures(temperatures []int) []int {
+    temIn := make([]int, 101) // 温度hash表
+    n := len(temperatures)
+    ans := make([]int, n)
+    for i := n-1; i >= 0; i--{ // 从尾部迭代
+        temIn[temperatures[i]] = i
+        if i == n-1{
+            continue
+        }
+        ans[i] = getHighRight(temperatures[i], temIn, i)
+    }
+    return ans
+}
+
+func getHighRight(temp int, temIn []int, i int) int{
+    ans := 1000000
+    for _, v := range temIn[temp+1:]{ // 温度hash表迭代
+        if v != 0 && v-i < ans{
+            ans = v-i
+            if ans == 1{
+                return ans
+            }
+        }
+    }
+    if ans == 1000000{
+        return 0
+    }
+    return ans
+}
+```
+
+## [42. 接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+> 示例 1： \
+> ![](../img/42-3.png) \
+> 输入：height = [0,1,0,2,1,0,1,3,2,1,2,1] \
+> 输出：6 \
+> 解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。
+>
+> 示例 2： \
+> 输入：height = [4,2,0,3,2,5] \
+> 输出：9
+
+思路：动态规划法 \
+![](../img/42-2.png)
+```go
+func trap(height []int) int {
+    n := len(height)
+    if n < 3{
+        return 0
+    }
+
+    rightMax := make([]int, n)
+    rightMax[n-1] = height[n-1]
+    for i := n-2; i >= 0; i--{
+        rightMax[i] = max(height[i], rightMax[i+1])
+    }
+
+    leftMax := make([]int, n)
+    leftMax[0] = height[0]
+    for i := 1; i < n; i++{
+        leftMax[i] = max(height[i], leftMax[i-1])
+    }
+
+    ans := 0
+    for i, h := range height{
+        ans += min(leftMax[i], rightMax[i])-h
+    }
+    return ans
+}
+
+func max(a, b int)int{
+    if a < b{
+        return b
+    }
+    return a
+}
+func min(a, b int)int{
+    if a < b{
+        return a
+    }
+    return b
+}
+```
+思路2：栈 \
+![](../img/42-2.png)
+```go
+func trap(height []int) int {
+    n := len(height)
+    if n < 3{
+        return 0
+    }
+    ans := 0
+    stack := []int{}
+    ns := 0 // 栈长度
+    for i, h := range height{
+        for ns > 0 && h > height[stack[ns-1]]{
+            top := stack[ns-1]
+            stack = stack[:ns-1]
+            ns--
+            if ns == 0{
+                break
+            }
+            left := stack[ns-1]
+            curHeight := min(h, height[left]) - height[top]
+            curWidth := i-left-1
+            ans += curHeight*curWidth
+        }
+        stack = append(stack, i)
+        ns++
+    }
+    return ans
+}
+
+func min(a, b int)int{
+    if a < b{
+        return a
+    }
+    return b
+}
+```

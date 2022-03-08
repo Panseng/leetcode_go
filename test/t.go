@@ -23,4 +23,8 @@ func main()  {
 	} else if value, ok := i.(string); ok {
 		fmt.Printf("类型匹配字符串:%s\n", value)
 	}
+	a := 5
+	c := float64(a)/2
+	fmt.Println(c)
 }
+
