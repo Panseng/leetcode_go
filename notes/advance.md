@@ -1425,3 +1425,107 @@ func min(a, b int)int{
     return b
 }
 ```
+
+## [402. 移掉 K 位数字](https://leetcode-cn.com/problems/remove-k-digits/)
+给你一个以字符串表示的非负整数 num 和一个整数 k ，移除这个数中的 k 位数字，使得剩下的数字最小。请你以字符串形式返回这个最小的数字。
+
+> 示例 1 ：
+> 输入：num = "1432219", k = 3
+> 输出："1219"
+> 解释：移除掉三个数字 4, 3, 和 2 形成一个新的最小的数字 1219 。
+>
+> 示例 2 ：
+> 输入：num = "10200", k = 1
+> 输出："200"
+> 解释：移掉首位的 1 剩下的数字为 200. 注意输出不能有任何前导零。
+>
+> 示例 3 ：
+> 输入：num = "10", k = 2
+> 输出："0"
+> 解释：从原数字移除所有的数字，剩余为空就是 0 。
+>
+> 示例 4 ：
+> 输入：num = "115", k = 1
+> 输出："11"
+
+思路：贪心+栈
+- 每次填充前，先将所有大于自身的前值删去
+- 注意甄别：可能存在一次遍历后，删减位数不够的情况，需要将k删减完
+- 注意，保留的值，长度可能为0
+```go
+func removeKdigits(num string, k int) string {
+    stack := make([]byte, 0, len(num))
+    n := 0 // stack 长度
+    for i,_ := range num{ 
+        for n > 0 && num[i] < stack[n-1] && k > 0{ // 形成了小到大的排序
+            stack = stack[:n-1]
+            n--
+            k--
+        }
+        stack = append(stack, num[i])
+        n++
+    }
+    for k > 0 && n > 0{
+        stack = stack[:n-1]
+        n--
+        k--
+    }
+    for n > 0 && stack[0] == '0'{
+        stack = stack[1:]
+        n--
+    }
+    if n == 0{
+        return "0"
+    }
+    return string(stack)
+}
+```
+## [456. 132 模式](https://leetcode-cn.com/problems/132-pattern/)
+给你一个整数数组 nums ，数组中共有 n 个整数。132 模式的子序列 由三个整数 nums[i]、nums[j] 和 nums[k] 组成，并同时满足：i < j < k 和 nums[i] < nums[k] < nums[j] 。 \
+如果 nums 中存在 132 模式的子序列 ，返回 true ；否则，返回 false 。
+
+> 示例 1： \
+> 输入：nums = [1,2,3,4] \
+> 输出：false \
+> 解释：序列中不存在 132 模式的子序列。
+>
+> 示例 2： \
+> 输入：nums = [3,1,4,2] \
+> 输出：true \
+> 解释：序列中有 1 个 132 模式的子序列： [1, 4, 2] 。
+>
+> 示例 3： \
+> 输入：nums = [-1,3,2,0] \
+> 输出：true \
+> 解释：序列中有 3 个 132 模式的的子序列：[-1, 3, 2]、[-1, 3, 0] 和 [-1, 2, 0] 。
+
+思路：枚举1
+- 题目要求满足132模式，132模式的规律是： nums [i, ..., j..., k] i < k < j
+- 如果要达到132模式，至少得满足得存在三个数字 分别为 min， max， mid，而且是min， max， mid这个顺序不能调换
+- 我们从右向左遍历，用单调栈，具体来说是单调递增栈，每个元素入栈，在入栈之前只要栈顶元素比当前元素小就出栈，这样保证了栈的单调递增性
+- 为什么要用单调栈呢，因为我们要找到132模式中的次大者，单调栈中栈顶元素永远是最大值，这时，如果再遇到一个元素比栈顶元素还大，那栈顶元素是不是就是次大者
+- 这时，如果再遇到一个比次大者还小的元素，是不是就满足了132模式。而且我们是按照数组从右到左遍历的顺序
+```go
+func find132pattern(nums []int) bool {
+	stack := make([]int, 0, len(nums))
+	ns := 0
+	maxK := math.MinInt // 存放132模式中的次大值
+	for i := len(nums)-1; i >= 0; i--{
+		if nums[i] < maxK{
+			return true
+		}
+		// 如果栈中有值，并且栈顶的值还小于当前元素
+		// 此时，有了nums[j](nums[i]值) & nums[k](栈顶值)
+		// 只要栈顶比当前元素小就出栈，保证了栈内元素是升序的，栈顶是【栈中】最大值
+		for ns > 0 && stack[ns-1] < nums[i] {
+			// 保存次大值
+			maxK = stack[ns-1]
+			stack = stack[:ns-1]
+			ns--
+		}
+		stack = append(stack, nums[i])
+		ns++
+	}
+	return false
+}
+```

@@ -4,14 +4,22 @@ import (
 	"container/heap"
 	"fmt"
 	"regexp"
+	"strconv"
 )
 
 func main()  {
-	// 最小堆
-	t_20220238_3()
-	// 切片
-	t_20220238_2()
-	t_20220238()
+	t_20220309()
+	//// 最小堆
+	//t_20220238_3()
+	//// 切片
+	//t_20220238_2()
+	//t_20220238()
+}
+func t_20220309(){
+	s := "$22.65美元"
+	m,_ := regexp.Compile("[0-9.]+")
+	ns := m.FindString(s)
+	fmt.Println(strconv.ParseFloat(ns, 64))
 }
 
 func t_20220238_3()  {
