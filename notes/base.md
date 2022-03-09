@@ -429,7 +429,7 @@ func (this *MyHashMap) Remove(key int)  {
 ## [119. 杨辉三角 II](https://leetcode-cn.com/problems/pascals-triangle-ii/)
 给定一个非负索引 rowIndex，返回「杨辉三角」的第 rowIndex 行。\
 在「杨辉三角」中，每个数是它左上方和右上方的数的和。
-![](../img/118-0.gif)
+![](img/118-0.gif)
 > 示例 1:\
 > 输入: rowIndex = 3\
 > 输出: [1,3,3,1]
@@ -470,7 +470,7 @@ func getRow(rowIndex int) []int {
 }
 ```
 思路2：杨辉三角公式 \
-![](../img/119-2.png)
+![](img/119-2.png)
 ```go
 func getRow(rowIndex int) []int {
     row := make([]int, rowIndex+1)
@@ -486,17 +486,17 @@ func getRow(rowIndex int) []int {
 给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。\
 你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
 > 示例 1：\
-> ![](../img/48-1.jpg) \
+> ![](img/48-1.jpg) \
 > 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]] \
 > 输出：[[7,4,1],[8,5,2],[9,6,3]]
 > 
 > 示例 2：\
-> ![](../img/48-2.jpg) \
+> ![](img/48-2.jpg) \
 > 输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]] \
 > 输出：[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
 
 思路1：借助辅助数组
-![](../img/48-3.png)
+![](img/48-3.png)
 ```go
 func rotate(matrix [][]int)  {
     n := len(matrix)
@@ -513,11 +513,11 @@ func rotate(matrix [][]int)  {
 }
 ```
 思路2：思路1的公式嵌套推理
-![](../img/48-6.png)
-![](../img/48-7.png)
-![](../img/48-8.png)
-![](../img/48-9.png)
-![](../img/48-10.png)
+![](img/48-6.png)
+![](img/48-7.png)
+![](img/48-8.png)
+![](img/48-9.png)
+![](img/48-10.png)
 ```go
 func rotate(matrix [][]int)  {
     n := len(matrix)
@@ -530,8 +530,8 @@ func rotate(matrix [][]int)  {
 }
 ```
 思路3：翻转替代 \
-![](../img/48-4.png) \
-![](../img/48-5.png) \
+![](img/48-4.png) \
+![](img/48-5.png) \
 如果先对角翻转，再水平翻转，则逆时针旋转90°
 ```go
 func rotate(matrix [][]int)  {
@@ -551,15 +551,15 @@ func rotate(matrix [][]int)  {
 ## [59. 螺旋矩阵 II](https://leetcode-cn.com/problems/spiral-matrix-ii/)
 给你一个正整数 n ，生成一个包含 1 到 n2 所有元素，且元素按顺时针顺序螺旋排列的 n x n 正方形矩阵 matrix 。
 > 示例 1：\
-> ![](../img/59-5.jpg)
+> ![](img/59-5.jpg)
 > 输入：n = 3 \
 > 输出：[[1,2,3],[8,9,4],[7,6,5]]
 
 思路1：按层模拟 \
-![](../img/59-4.png) \
-![](../img/59-1.png) \
-![](../img/59-2.png) \
-![](../img/59-3.png) 
+![](img/59-4.png) \
+![](img/59-1.png) \
+![](img/59-2.png) \
+![](img/59-3.png) 
 
 ```go
 func generateMatrix(n int) [][]int {
@@ -603,12 +603,12 @@ func generateMatrix(n int) [][]int {
 - 每列的元素从上到下升序排列。
 
 > 示例 1：\
-> ![](../img/240-1.jpg) \
+> ![](img/240-1.jpg) \
 > 输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5 \
 > 输出：true
 > 
 > 示例 2：\
-> ![](../img/240-2.jpg) \
+> ![](img/240-2.jpg) \
 > 输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20 \
 > 输出：false
 
@@ -692,7 +692,7 @@ func searchMatrix(matrix [][]int, target int) bool {
 
 思路：贪心算法，[算法讲解](https://leetcode-cn.com/problems/non-overlapping-intervals/solution/435-wu-zhong-die-qu-jian-tan-xin-jing-di-qze0/) [讲解视频](https://www.bilibili.com/video/BV1WK4y1R71x)
 - 按照右边界排序，就要从左向右遍历，因为右边界越小越好，只要右边界越小，留给下一个区间的空间就越大，所以从左向右遍历，优先选右边界小的。 \
-![](../img/435-1.png)
+![](img/435-1.png)
 ```go
 func eraseOverlapIntervals(intervals [][]int) int {
 	if len(intervals) < 2{
@@ -914,7 +914,7 @@ func subarraySum(nums []int, k int) int {
 }
 ```
 思路2：前项和+hash表法 \
-![](../img/560-1.png)
+![](img/560-1.png)
 ```go
 func subarraySum(nums []int, k int) int {
     count := 0
@@ -949,7 +949,7 @@ func subarraySum(nums []int, k int) int {
 > 输入：num1 = "0", num2 = "0" \
 > 输出："0"
 
-思路1：通过数组值 & 索引 进行加法运算，代码实现：[stringsAdd](../string/add/test.go) \
+思路1：通过数组值 & 索引 进行加法运算，代码实现：[stringsAdd](../code/string/add/test.go) \
 优化
 - 字符串通过 `len` 获取长度，也可以通过 `下标 i ` 获取对应字符的`byte`值
 - 通过字符转换进行加法运算（替代原方法的索引加减运算）
@@ -1174,7 +1174,7 @@ func merge(intervals [][]int) [][]int {
 }
 ```
 思路2：贪心算法 \
-![](../img/763-1.png)
+![](img/763-1.png)
 ```go
 func partitionLabels(s string) []int {
     lastPos := [26]int{} // 记录各个字母（题目限制小写字母）最后出现的位置
@@ -1265,7 +1265,7 @@ func groupAnagrams(strs []string) [][]string {
 > 输出: "6"
 
 思路：通过数组，记录乘积的每个位值
-![](../img/43-1.png)
+![](img/43-1.png)
 ```go
 func multiply(num1 string, num2 string) string {
     if num1 == "0" || num2 == "0"{
@@ -1400,7 +1400,7 @@ func expandPali(s string,start, end int) (int, int){
 你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
 
 > 示例 1： \
-> ![](../img/2-1.jpg) \
+> ![](img/2-1.jpg) \
 > 输入：l1 = [2,4,3], l2 = [5,6,4] \
 > 输出：[7,0,8] \
 > 解释：342 + 465 = 807.
@@ -1484,12 +1484,12 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 给定一个已排序的链表的头 head ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。
 
 > 示例 1： \
-> ![](../img/82-1.jpg) \
+> ![](img/82-1.jpg) \
 > 输入：head = [1,2,3,3,4,4,5] \
 > 输出：[1,2,5]
 
 > 示例 2： \
-> ![](../img/82-2.jpg) \
+> ![](img/82-2.jpg) \
 > 输入：head = [1,1,1,2,3] \
 > 输出：[2,3]
 
@@ -1635,12 +1635,12 @@ k 是一个正整数，它的值小于或等于链表的长度。 \
 - 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
 
 > 示例 1： \
-> ![](../img/25-1.jpg) \
+> ![](img/25-1.jpg) \
 > 输入：head = [1,2,3,4,5], k = 2 \
 > 输出：[2,1,4,3,5] 
 >
 > 示例 2： \
-> ![](../img/25-2.jpg) \
+> ![](img/25-2.jpg) \
 > 输入：head = [1,2,3,4,5], k = 3 \
 > 输出：[3,2,1,4,5]
 >
@@ -1874,7 +1874,7 @@ func mergeList(l1, l2 *ListNode){
 > - minStack.top();      --> 返回 0.
 > - minStack.getMin();   --> 返回 -2.
 
-![](../img/155-1.png)
+![](img/155-1.png)
 思路：通过值记录常用值
 ```go
 type MinStack struct {
@@ -1954,7 +1954,7 @@ func (this *MinStack) resetMin() {
 > 输出："" \
 > 解释：空字符串也是有效的
 
-![](../img/1249-1.png)
+![](img/1249-1.png)
 
 思路1：栈，用栈存放 "(" 位置，判断遇到的 ")"是否合法
 - leftBs 存放 "(" 位置
@@ -2058,17 +2058,17 @@ func findTheWinner(n int, k int) int {
 给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。\
 高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
 
-![](../img/108-4.png)
+![](img/108-4.png)
 
 > 示例 1： \
-> ![](../img/108-1.jpg) \
+> ![](img/108-1.jpg) \
 > 输入：nums = [-10,-3,0,5,9] \
 > 输出：[0,-3,9,-10,null,5] \
 > 解释：[0,-10,5,null,-3,null,9] 也将被视为正确答案：\
-> ![](../img/108-2.jpg) 
+> ![](img/108-2.jpg) 
 >
 > 示例 2： \
-> ![](../img/108-3.jpg) \
+> ![](img/108-3.jpg) \
 > 输入：nums = [1,3] \
 > 输出：[3,1] \
 > 解释：[1,3] 和 [3,1] 都是高度平衡二叉搜索树。
@@ -2194,10 +2194,10 @@ func  add(node *TreeNode, value int) *TreeNode {
 ```
 ## [105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
 给定两个整数数组 preorder 和 inorder ，其中 preorder 是二叉树的先序遍历， inorder 是同一棵树的中序遍历，请构造二叉树并返回其根节点。\
-![](../img/105-2.png)
+![](img/105-2.png)
 
 > 示例 1: \
-> ![](../img/105-1.jpg) \
+> ![](img/105-1.jpg) \
 > 输入: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7] \
 > 输出: [3,9,20,null,null,15,7]
 >
@@ -2240,7 +2240,7 @@ func getIndex(inorder []int, rootNum int) int{
 给你二叉树的根节点 root ，返回其节点值的 锯齿形层序遍历 。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
 
 > 示例 1： \
-> ![](../img/103-1.jpg) \
+> ![](img/103-1.jpg) \
 > 输入：root = [3,9,20,null,null,15,7] \
 > 输出：[[3],[20,9],[15,7]] 
 >
@@ -2288,7 +2288,7 @@ func zigzagLevelOrder(root *TreeNode) [][]int {
 
 ## [199. 二叉树的右视图](https://leetcode-cn.com/problems/binary-tree-right-side-view/)
 给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。\
-![](../img/199-1.png)
+![](img/199-1.png)
 >这里的右侧，是指所有元素中最右侧的节点，并不单纯的指节点的右侧
 
 > 示例 1: \
@@ -2414,12 +2414,12 @@ func pathSum(root *TreeNode, targetSum int) (ans [][]int) {
 - 如果找到了，删除它。
 
 > 示例 1: \
-> ![](../img/450-1.jpg) \
+> ![](img/450-1.jpg) \
 > 输入：root = [5,3,6,2,4,null,7], key = 3 \
 > 输出：[5,4,6,2,null,null,7] \
 > 解释：给定需要删除的节点值是 3，所以我们首先找到 3 这个节点，然后删除它。 \
 > 一个正确的答案是 [5,4,6,2,null,null,7], 如下图所示。 \
-> ![](../img/450-2.jpg) \
+> ![](img/450-2.jpg) \
 > 另一个正确答案是 [5,2,6,null,4,null,7]。
 >
 > 示例 2: \
@@ -2471,12 +2471,12 @@ func deleteNode(root *TreeNode, key int) *TreeNode {
 给定一个二叉搜索树的根节点 root ，和一个整数 k ，请你设计一个算法查找其中第 k 个最小元素（从 1 开始计数）。
 
 > 示例 1： \
-> ![](../img/230-1.jpg) \
+> ![](img/230-1.jpg) \
 > 输入：root = [3,1,4,null,2], k = 1 \
 > 输出：1
 >
 > 示例 2： \
-> ![](../img/230-2.jpg) \
+> ![](img/230-2.jpg) \
 > 输入：root = [5,3,6,2,4,null,null,1], k = 3 \
 > 输出：3
 
@@ -2510,7 +2510,7 @@ func kthSmallest(root *TreeNode, k int) int {
 你可以假设 next() 调用总是有效的，也就是说，当调用 next() 时，BST 的中序遍历中至少存在一个下一个数字。
 
 > 示例： \
-> ![](../img/173-1.png) \
+> ![](img/173-1.png) \
 > 输入 \
 > ["BSTIterator", "next", "next", "hasNext", "next", "hasNext", "next", "hasNext", "next", "hasNext"] \
 > [[[7, 3, 15, null, null, 9, 20]], [], [], [], [], [], [], [], [], []] \
@@ -2576,13 +2576,13 @@ func (this *BSTIterator) HasNext() bool {
 百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
 
 > 示例 1： \
-> ![](../img/236-1.png) \
+> ![](img/236-1.png) \
 > 输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1 \
 > 输出：3 \
 > 解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
 >
 > 示例 2： \
-> ![](../img/236-2.png) \
+> ![](img/236-2.png) \
 > 输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4 \
 > 输出：5 \
 > 解释：节点 5 和节点 4 的最近公共祖先是节点 5 。因为根据定义最近公共祖先节点可以为节点本身。
@@ -2646,7 +2646,7 @@ func isContain(root, p *TreeNode)bool{
   return right
 }
 ```
-![](../img/236-3.png)
+![](img/236-3.png)
 思路2：hash法，获取所有节点的父节点
 - 叶子节点，通过父节点往上推，首个共同父节点即最深共同节点
 ```go
@@ -2691,7 +2691,7 @@ func isContain(root, p *TreeNode)bool{
 提示: 输入输出格式与 LeetCode 目前使用的方式一致，详情请参阅 LeetCode 序列化二叉树的格式。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
 
 > 示例 1： \
-> ![](../img/297-0.jpg)
+> ![](img/297-0.jpg)
 > 输入：root = [1,2,3,null,null,4,5] \
 > 输出：[1,2,3,null,null,4,5]
 >
@@ -2712,7 +2712,7 @@ func isContain(root, p *TreeNode)bool{
 
 思路2：按前序遍历编码
 - 如[1,2,3,4,5]，序列化为：1,2,3,nil,nil,4,nil,nil,5,nil,nil, \
-![](../img/297-1.png)
+![](img/297-1.png)
 ```go
 type Codec struct {
     
@@ -2873,13 +2873,13 @@ func findJudge(n int, trust [][]int) int {
 所有点对 (fromi, toi) 互不相同。
 
 > 示例 1： \
-> ![](../img/1557-1.png) \
+> ![](img/1557-1.png) \
 > 输入：n = 6, edges = [[0,1],[0,2],[2,5],[3,4],[4,2]] \
 > 输出：[0,3] \
 > 解释：从单个节点出发无法到达所有节点。从 0 出发我们可以到达 [0,1,2,5] 。从 3 出发我们可以到达 [3,4,2,5] 。所以我们输出 [0,3] 。
 >
 > 示例 2： \
-> ![](../img/1557-2.png) \
+> ![](img/1557-2.png) \
 > 输入：n = 5, edges = [[0,1],[2,1],[3,1],[1,4],[2,4]] \
 > 输出：[0,2,3] \
 > 解释：注意到节点 0，3 和 2 无法从其他节点到达，所以我们必须将它们包含在结果点集中，这些点都能到达节点 1 和 4 。
@@ -2956,7 +2956,7 @@ func canVisitAllRooms(rooms [][]int) bool {
 > 输入: nums = [1], k = 1 \
 > 输出: [1]
 
-![](../img/347.png)
+![](img/347.png)
 
 思路：统计次数，排序，获取目标数组
 ```go

@@ -542,8 +542,8 @@ func stringShift(s string, shift [][]int) string {
 > 输出: false
 
 思路1：动态规划 \
-![](../img/44-1.png) \
-![](../img/44-2.png)
+![](img/44-1.png) \
+![](img/44-2.png)
 
 ```go
 func isMatch(s string, p string) bool {
@@ -576,7 +576,7 @@ func isMatch(s string, p string) bool {
 ```
 
 思路2：贪心算法 \
-![](../img/44-3.png)
+![](img/44-3.png)
 ```go
 // 我们用 sIndex 和 pIndex 表示当前遍历到 s 和 p 的位置
 // 此时我们正在 s 中寻找某个 u_i
@@ -616,7 +616,7 @@ end while
 // 由于 p 的最后一个字符是星号，那么 s 未匹配完，那么没有关系
 // 但如果 p 没有匹配完，那么 p 剩余的字符必须都是星号
 ```
-![](../img/44-4.png)
+![](img/44-4.png)
 ```go
 func isMatch(s string, p string) bool {
     ns, np := len(s), len(p)
@@ -806,8 +806,8 @@ s 为`aacecaaa`，rs 为 `aaacecaa`
 rs - aaacecaa
 s  -  aacecaaa
 ```
-![](../img/214.png) \
-![](../img/214-1.jpg)
+![](img/214.png) \
+![](img/214-1.jpg)
 
 ```go
 func shortestPalindrome(s string) string {
@@ -892,9 +892,9 @@ func plusOne(head *ListNode) *ListNode {
 }
 ```
 思路：哨兵头节点 \
-![](../img/369-1.png) \
-![](../img/369-2.png) \
-![](../img/369-3.png) 
+![](img/369-1.png) \
+![](img/369-2.png) \
+![](img/369-3.png) 
 - 初始化哨兵节点 ListNode(0)，同时将它设为新的头节点：sentinel.next = head。
 - 找到最靠右的数值不为 9 的节点。
 - 将该节点的数值加 1。
@@ -927,12 +927,12 @@ func plusOne(head *ListNode) *ListNode {
 给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
 
 > 示例 1： \
-> ![](../img/148-2.jpg) \
+> ![](img/148-2.jpg) \
 > 输入：head = [4,2,1,3] \
 > 输出：[1,2,3,4]
 >
 > 示例 2： \
-> ![](../img/148-3.jpg) \
+> ![](img/148-3.jpg) \
 > 输入：head = [-1,5,3,4,0] \
 > 输出：[-1,0,3,4,5]
 >
@@ -941,7 +941,7 @@ func plusOne(head *ListNode) *ListNode {
 > 输出：[]
 
 思路1：冒泡排序，时间复杂度如下 \
-![](../img/148-1.jpg) \
+![](img/148-1.jpg) \
 在本题中超时
 ```go
 func sortList(head *ListNode) *ListNode {
@@ -1041,17 +1041,17 @@ func (h *hp) Pop() (v interface{}) { a := *h; *h, v = a[:len(a)-1], a[len(a)-1];
 你的代码 只 接受原链表的头节点 head 作为传入参数。
 
 > 示例 1： \
-> ![](../img/138-1.png) \
+> ![](img/138-1.png) \
 > 输入：head = [[7,null],[13,0],[11,4],[10,2],[1,0]] \
 > 输出：[[7,null],[13,0],[11,4],[10,2],[1,0]]
 >
 > 示例 2： \
-> ![](../img/138-2.png) \
+> ![](img/138-2.png) \
 > 输入：head = [[1,1],[2,1]] \
 > 输出：[[1,1],[2,1]]
 >
 > 示例 3： \
-> ![](../img/138-3.png) \
+> ![](img/138-3.png) \
 > 输入：head = [[3,null],[3,0],[3,null]] \
 > 输出：[[3,null],[3,0],[3,null]]
 
@@ -1108,20 +1108,20 @@ func copyRandomList(head *Node) *Node {
  */
 ```
 > 示例 1： \
-> ![](../img/430-1.jpg) \
+> ![](img/430-1.jpg) \
 > 输入：head = [1,2,3,4,5,6,null,null,null,7,8,9,10,null,null,11,12] \
 > 输出：[1,2,3,7,8,11,12,9,10,4,5,6] \
 > 解释：输入的多级列表如上图所示。 \
 > 扁平化后的链表如下图： \
-> ![](../img/430-2.jpg) 
+> ![](img/430-2.jpg) 
 >
 > 示例 2： \
-> ![](../img/430-3.jpg) \
+> ![](img/430-3.jpg) \
 > 输入：head = [1,2,null,3] \
 > 输出：[1,3,2] \
 > 解释：输入的多级列表如上图所示。 \
 > 扁平化后的链表如下图： \
-> ![](../img/430-4.jpg) 
+> ![](img/430-4.jpg) 
 >
 > 示例 3： \
 > 输入：head = [] \
@@ -1338,7 +1338,7 @@ func getHighRight(temp int, temIn []int, i int) int{
 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
 
 > 示例 1： \
-> ![](../img/42-3.png) \
+> ![](img/42-3.png) \
 > 输入：height = [0,1,0,2,1,0,1,3,2,1,2,1] \
 > 输出：6 \
 > 解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。
@@ -1348,7 +1348,7 @@ func getHighRight(temp int, temIn []int, i int) int{
 > 输出：9
 
 思路：动态规划法 \
-![](../img/42-2.png)
+![](img/42-2.png)
 ```go
 func trap(height []int) int {
     n := len(height)
@@ -1389,7 +1389,7 @@ func min(a, b int)int{
 }
 ```
 思路2：栈 \
-![](../img/42-2.png)
+![](img/42-2.png)
 ```go
 func trap(height []int) int {
     n := len(height)

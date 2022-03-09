@@ -44,7 +44,7 @@
 思路1：先用sort.Int排序，然后比较相邻元素是否相同\
 ```if nums[i] == nums[i-1]```\
 思路2：hash表，判断hash表中是否存在该值，存在返回真，不存在则添加\
-实现：[arr_repeat](../arr_repeat)
+实现：[arr_repeat](../code/array/arr_repeat)
 
 ## [53. 最大子数组和](https://leetcode-cn.com/problems/maximum-subarray/)
 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。\
@@ -69,7 +69,7 @@ func maxSubArray(nums []int) int {
     return max
 }
 ```
-实现：[max_sub_array](../max_sub_array)
+实现：[max_sub_array](../code/array/max_sub_array)
 
 ## [1. 两数之和](https://leetcode-cn.com/problems/two-sum/solution/liang-shu-zhi-he-by-leetcode-solution/)
 给定一个整数数组 nums和一个整数目标值 target，请你在该数组中找出 和为目标值 target的那两个整数，并返回它们的数组下标。\
@@ -106,7 +106,7 @@ func twoSum(nums []int, target int) []int {
     return nil
 }
 ```
-实现：[two_sum](../two_sum)
+实现：[two_sum](../code/array/two_sum)
 
 ## [88. 合并两个有序数组](https://leetcode-cn.com/problems/merge-sorted-array/)
 给你两个按 非递减顺序 排列的整数数组nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。\
@@ -163,7 +163,7 @@ for p1, p2, tail := m-1, n-1, m+n-1; p1 >= 0 || p2 >= 0; tail-- {
         nums1[tail] = cur
     }
 ```
-实现：[merge_increase_array](../merge_increase_array)
+实现：[merge_increase_array](../code/array/merge_increase_array)
 
 ##  [350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
 给你两个整数数组nums1 和 nums2 ，请你以数组形式返回两数组的交集。返回结果中每个元素出现的次数，应与元素在两个数组中都出现的次数一致（如果出现次数不一致，则考虑取较小值）。可以不考虑输出结果的顺序。
@@ -212,7 +212,7 @@ func intersectDoubleIndex(nums1 []int, nums2 []int) []int {
 	return intersetion
 }
 ```
-实现：[two_array_intersect](../two_array_intersect)
+实现：[two_array_intersect](../code/array/two_array_intersect)
 
 ## [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 给定一个数组 prices ，它的第i 个元素prices[i]表示一支给定股票第 i 天的价格。\
@@ -239,7 +239,7 @@ func maxProfit(prices []int) int {
 	return maxProfit
 }
 ```
-实现：[stock_max_profit](../stock_max_profit)
+实现：[stock_max_profit](../code/array/stock_max_profit)
 
 ## [566. 重塑矩阵](https://leetcode-cn.com/problems/reshape-the-matrix/)
 
@@ -248,16 +248,16 @@ func maxProfit(prices []int) int {
 重构后的矩阵需要将原始矩阵的所有元素以相同的 行迭代顺序 填充。\
 如果具有给定参数的 reshape 操作是可行且合理的，则输出新的重塑矩阵；否则，输出原始矩阵。
 
-> ![image](../img/566-01.jpg)
+> ![image](img/566-01.jpg)
 >输入：mat = [[1,2],[3,4]], r = 1, c = 4\
 >输出：[[1,2,3,4]]
 >
-> ![image](../img/566-02.jpg)\
+> ![image](img/566-02.jpg)\
 > 输入：mat = [[1,2],[3,4]], r = 2, c = 4\
 >输出：[[1,2],[3,4]]
 
 思路：二维数组的一维表示 \
-![](../img/566-03.png)
+![](img/566-03.png)
 ```go
 func matrixReshape(mat [][]int, r int, c int) [][]int {
 	m, n := len(mat), len(mat[0])
@@ -293,12 +293,12 @@ func matrixReshape2(mat [][]int, r int, c int) [][]int {
 	return newMat
 }
 ```
-实现：[matrix_reshape](../matrix_reshape)
+实现：[matrix_reshape](../code/array/matrix_reshape)
 
 ## [118. 杨辉三角](https://leetcode-cn.com/problems/pascals-triangle/)
 给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。\
 在「杨辉三角」中，每个数是它左上方和右上方的数的和。 \
-![image](../img/118-0.gif)
+![image](img/118-0.gif)
 >输入: numRows = 5\
 >输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
 >
@@ -338,7 +338,7 @@ func generate3(numRows int) [][]int {
 	return ans
 }
 ```
-实现：[yang_hui_triangle](../yang_hui_triangle)
+实现：[yang_hui_triangle](../code/yang_hui_triangle)
 
 ## [36. 有效的数独](https://leetcode-cn.com/problems/valid-sudoku/)
 
@@ -346,7 +346,7 @@ func generate3(numRows int) [][]int {
 数字1-9在每一行只能出现一次。\
 数字1-9在每一列只能出现一次。\
 数字1-9在每一个以粗实线分隔的3x3宫内只能出现一次。（请参考示例图）\
-![image](../img/36-0.png)\
+![image](img/36-0.png)\
 
 **注意：**\
 一个有效的数独（部分已被填充）**不一定是可解**的。\
@@ -365,7 +365,7 @@ func generate3(numRows int) [][]int {
 >输出：true
 
 思路1：将二维数组展开为一维数组，再用hash表查重，写完代码发现其实复杂度更高了。
-实现见[code](../sudoku_is_valid/test.go)
+实现见[code](../code/array/sudoku_is_valid/test.go)
 
 思路2：直接二维展开，通过3个hash表分别查重\
 巧妙 `index := v - '1'`，取相对值，1-9的所有值相对1的位值作索引
@@ -390,7 +390,7 @@ func isValidSudoku(board [][]byte) bool {
 	return true
 }
 ```
-实现：[sudoku_is_valid](../sudoku_is_valid)
+实现：[sudoku_is_valid](../code/array/sudoku_is_valid)
 
 ## [73. 矩阵置零](https://leetcode-cn.com/problems/set-matrix-zeroes/)
 给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 [原地](https://baike.baidu.com/item/%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95) 算法。\
@@ -398,12 +398,12 @@ func isValidSudoku(board [][]byte) bool {
 > 示例1\
 > 输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]\
 > 输出：[[1,0,1],[0,0,0],[1,0,1]]\
-> ![image](../img/73-1.jpg)
+> ![image](img/73-1.jpg)
 >
 > 示例2\
 > 输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]\
 > 输出：[[0,0,0,0],[0,4,5,0],[0,3,1,0]]\
-> ![image](../img/73-2.jpg)
+> ![image](img/73-2.jpg)
 
 > 函数输入```func setZeroes(matrix [][]int) ```
 
@@ -472,7 +472,7 @@ func setZeroes(matrix [][]int) {
         }
     }
 ```
-实现：[matrix_set_zeros](../matrix_set_zeros)
+实现：[matrix_set_zeros](../code/array/matrix_set_zeros)
 
 ## [387. 字符串中的第一个唯一字符](https://leetcode-cn.com/problems/first-unique-character-in-a-string/)
 给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
@@ -534,7 +534,7 @@ func firstUniqChar5(s string) int {
 	return -1
 }
 ```
-实现：[char_first_unique](../char_first_unique)\
+实现：[char_first_unique](../code/string/char_first_unique)\
 **_注意_**：力扣官方解法，仅限定小写字母，所以可以声明```[26]int{}```
 
 ## [383. 赎金信](https://leetcode-cn.com/problems/ransom-note/)
@@ -572,7 +572,7 @@ func canConstruc2(ransomNote string, magazine string) bool{
 	return true
 }
 ```
-实现：[char_can_construct](../char_can_construct)
+实现：[char_can_construct](../code/string/char_can_construct)
 
 ## [242. 有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
 给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。\
@@ -617,7 +617,7 @@ func isAnagram3(s string, t string) bool {
 	return string(ls1) == string(ls2)
 }
 ```
-实现：[char_is_anagram](../char_is_anagram)
+实现：[char_is_anagram](../code/string/char_is_anagram)
 
 ## [141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 给你一个链表的头节点 head ，判断链表中是否有环。\
@@ -633,17 +633,17 @@ func isAnagram3(s string, t string) bool {
  * }
  */
 ```
-> ![](../img/141-1.png) \
+> ![](img/141-1.png) \
 > 输入：head = [3,2,0,-4], pos = 1\
 > 输出：true\
 > 解释：链表中有一个环，其尾部连接到第二个节点。
 >
-> ![](../img/141-2.png) \
+> ![](img/141-2.png) \
 > 输入：head = [1,2], pos = 0\
 > 输出：true\
 > 解释：链表中有一个环，其尾部连接到第一个节点。
 >
-> ![](../img/141-3.png) \
+> ![](img/141-3.png) \
 > 输入：head = [1], pos = -1\
 > 输出：false\
 > 解释：链表中没有环。
@@ -692,7 +692,7 @@ func hasCycle(head *ListNode) bool {
  * }
  */
 ```
-![](../img/21-0.jpg) \
+![](img/21-0.jpg) \
 > 输入：l1 = [1,2,4], l2 = [1,3,4]\
 > 输出：[1,1,2,3,4,4]
 
@@ -742,7 +742,7 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 ## [203. 移除链表元素](https://leetcode-cn.com/problems/remove-linked-list-elements/)
 给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。
 
-> ![](../img/203-0.jpg) \
+> ![](img/203-0.jpg) \
 > 输入：head = [1,2,6,3,4,5,6], val = 6\
 > 输出：[1,2,3,4,5]
 
@@ -799,7 +799,7 @@ func removeElements(head *ListNode, val int) *ListNode {
 ## [206. 反转链表](https://leetcode-cn.com/problems/reverse-linked-list/)
 给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
 
-> ![](../img/206-1.jpg) \
+> ![](img/206-1.jpg) \
 > 输入：head = [1,2,3,4,5]\
 > 输出：[5,4,3,2,1]
 >
@@ -829,7 +829,7 @@ func reverseList(head *ListNode) *ListNode {
 ```
 
 思路2：迭代，倒叙迭代 \
-![](../img/206-0.gif)
+![](img/206-0.gif)
 ```go
 func reverseList(head *ListNode) *ListNode {
 	var nilHead *ListNode
@@ -857,12 +857,12 @@ func reverseList3(head *ListNode) *ListNode {
 	return cur
 }
 ```
-实现：[reverse.go](../list_node/reverse/reverse.go)
+实现：[reverse.go](../code/list_node/reverse/reverse.go)
 
 ## [83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
 给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表 。
 
-> ![](../img/83-1.jpg) \
+> ![](img/83-1.jpg) \
 > 输入：head = [1,1,2]\
 > 输出：[1,2]
 
@@ -883,7 +883,7 @@ func deleteDuplicates2(head *ListNode) *ListNode {
 	return head
 }
 ```
-实现：[delete.go](../list_node/duplicates/delete.go)
+实现：[delete.go](../code/list_node/duplicates/delete.go)
 
 ## [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
 给定一个只包括 '('，')'，'{'，'}'，'['，']'的字符串 s ，判断字符串是否有效。\
@@ -971,7 +971,7 @@ func isValid2(s string) bool {
 	return len(stack) == 0
 }
 ```
-实现：[is_valid.go](../string/brackets/is_valid.go)
+实现：[is_valid.go](../code/string/brackets/is_valid.go)
 
 
 ## [232. 用栈实现队列](https://leetcode-cn.com/problems/implement-queue-using-stacks/)
@@ -1031,7 +1031,7 @@ func (q *MyQueue) Empty() bool {
 
 > 二叉树结构
 >
-> ![](../img/144-0.png)
+> ![](img/144-0.png)
 >
 > 先序遍历：先(根)序遍历（根左右）\
 > 中序遍历：中(根)序遍历（左根右）\
@@ -1082,7 +1082,7 @@ func preorderTraversal(root *TreeNode) []int {
 中序遍历，参考上题
 > 中序遍历：中(根)序遍历（左根右）
 
-![](../img/94-1.png)
+![](img/94-1.png)
 ```go
 func inorderTraversal(root *TreeNode) []int {
     vals :=[]int{}
@@ -1142,7 +1142,7 @@ func postorderTraversal(root *TreeNode) []int {
 }
 ```
 实现2：\
-![](../img/235.png)
+![](img/235.png)
 1. 先迭代所有左侧的节点，填入节点栈
 2. 将最深处的左侧节点值填入结果栈
 3. 对最深处节点右侧节点填入节点栈
@@ -1176,7 +1176,7 @@ func postorderTraversal(root *TreeNode) []int {
 ## [102. 二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
 给你二叉树的根节点 root ，返回其节点值的 层序遍历 。 （即逐层地，从左到右访问所有节点）。
 
-> ![](../img/102-1.jpg)
+> ![](img/102-1.jpg)
 > 输入：root = [3,9,20,null,null,15,7] \
 > 输出：[[3],[9,20],[15,7]]
 
@@ -1375,7 +1375,7 @@ func isSymmetric(root *TreeNode) bool {
 ## [226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
 给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。
 
-> ![](../img/226-1.jpg) \
+> ![](img/226-1.jpg) \
 > 输入：root = [4,2,7,1,3,6,9]\
 > 输出：[4,7,2,9,6,3,1]
 
@@ -1415,7 +1415,7 @@ func invertTree(root *TreeNode) *TreeNode {
 给你二叉树的根节点root 和一个表示目标和的整数targetSum 。判断该树中是否存在 根节点到叶子节点 的路径，这条路径上所有节点值相加等于目标和 targetSum 。如果存在，返回 true ；否则，返回 false 。\
 叶子节点 是指没有子节点的节点。
 
-> ![](../img/112-1.jpg)
+> ![](img/112-1.jpg)
 > 输入：root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22\
 > 输出：true \
 > 解释：等于目标和的根节点到叶节点路径如上图所示。
@@ -1487,11 +1487,11 @@ func hasPathSum(root *TreeNode, targetSum int) bool {
 > - 左子树所有节点的元素值均小于根的元素值；
 > - 右子树所有节点的元素值均大于根的元素值。
 
-> ![](../img/700-1.jpg) \
+> ![](img/700-1.jpg) \
 > 输入：root = [4,2,7,1,3], val = 2 \
 > 输出：[2,1,3]
 >
-> ![](../img/700-2.jpg) \
+> ![](img/700-2.jpg) \
 > 输入：root = [4,2,7,1,3], val = 5 \
 > 输出：[]
 
@@ -1557,11 +1557,11 @@ func searchBST(root *TreeNode, val int) *TreeNode {
 给定二叉搜索树（BST）的根节点root和要插入树中的值value，将值插入二叉搜索树。 返回插入后二叉搜索树的根节点。 输入数据 保证 ，新值和原始二叉搜索树中的任意节点值都不同。\
 注意，可能**存在多种有效**的插入方式，只要树在插入后仍保持为二叉搜索树即可。 你**可以返回任意有效**的结果 。
 
-> ![](../img/701-1.jpg) \
+> ![](img/701-1.jpg) \
 > 输入：root = [4,2,7,1,3], val = 5 \
 > 输出：[4,2,7,1,3,5] \
 > 解释：另一个满足题目要求可以通过的树是： \
-> ![](../img/701-2.jpg)
+> ![](img/701-2.jpg)
 
 思路1：迭代
 ```go
@@ -1678,11 +1678,11 @@ func isValidBST(root *TreeNode) bool {
 
 ## [653. 两数之和 IV - 输入 BST](https://leetcode-cn.com/problems/two-sum-iv-input-is-a-bst/)
 给定一个二叉搜索树 root 和一个目标结果 k，如果 BST 中存在两个元素且它们的和等于给定的目标结果，则返回 true。
-> ![](../img/653-1.jpg) \
+> ![](img/653-1.jpg) \
 > 输入: root = [5,3,6,2,4,null,7], k = 9\
 > 输出: true
 >
-> ![](../img/653-2.jpg) \
+> ![](img/653-2.jpg) \
 > 输入: root = [5,3,6,2,4,null,7], k = 28 \
 > 输出: false
 
@@ -1716,7 +1716,7 @@ func findTarget(root *TreeNode, k int) bool {
 给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。\
 最近公共祖先的**定义**为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”\
 例如，给定如下二叉搜索树: root =[6,2,8,0,4,7,9,null,null,3,5]\
-![](../img/235.png)\
+![](img/235.png)\
 > 输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8\
 > 输出: 6\
 > 解释: 节点 2 和节点 8 的最近公共祖先是 6。

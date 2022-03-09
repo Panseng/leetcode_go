@@ -184,7 +184,7 @@ func minSubArrayLen(target int, nums []int) int {
 # 链表
 ## [24. 两两交换链表中的节点](https://leetcode-cn.com/problems/swap-nodes-in-pairs/)
 给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
-![](../img/24-1.jpg)
+![](img/24-1.jpg)
 > 示例 1： \
 > 输入：head = [1,2,3,4] \
 > 输出：[2,1,4,3]
@@ -231,7 +231,7 @@ func swapPairs(head *ListNode) *ListNode {
 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
 
 > 示例 1： \
-> ![](../img/19-1.jpg) \
+> ![](img/19-1.jpg) \
 > 输入：head = [1,2,3,4,5], n = 2 \
 > 输出：[1,2,3,5]
 >
@@ -290,11 +290,11 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 ## [面试题 02.07. 链表相交](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/)
 给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表没有交点，返回 null 。\
 图示两个链表在节点 c1 开始相交：\
-![](../img/mst-0207-1.png) \
+![](img/mst-0207-1.png) \
 题目数据 **保证** 整个链式结构中不存在环。 \
 注意，函数返回结果后，链表必须 **保持其原始结构** 。
 > 示例 1：\
-> ![](../img/mst-0207-2.png)
+> ![](img/mst-0207-2.png)
 > 输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3\
 > 输出：Intersected at '8'\
 > 解释：相交节点的值为 8 （注意，如果两个链表相交则不能为 0）。\
@@ -302,7 +302,7 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 > 在 A 中，相交节点前有 2 个节点；在 B 中，相交节点前有 3 个节点。
 > 
 > 示例 2：\
-> ![](../img/mst-0207-3.png)\
+> ![](img/mst-0207-3.png)\
 > 输入：intersectVal = 2, listA = [0,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1\
 > 输出：Intersected at '2'\
 > 解释：相交节点的值为 2 （注意，如果两个链表相交则不能为 0）。\
@@ -310,7 +310,7 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 > 在 A 中，相交节点前有 3 个节点；在 B 中，相交节点前有 1 个节点。
 > 
 > 示例 3：\
-> ![](../img/mst-0207-4.png)\
+> ![](img/mst-0207-4.png)\
 > 输入：intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2\
 > 输出：null\
 > 解释：从各自的表头开始算起，链表 A 为 [2,6,4]，链表 B 为 [1,5]。\
@@ -349,11 +349,11 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 }
 ```
 思路2：[双指针](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/solution/mian-shi-ti-0207-lian-biao-xiang-jiao-sh-b8hn/) \
-![](../img/mst-0207-5.png)\
-![](../img/mst-0207-6.png)\
-![](../img/mst-0207-7.png)\
-![](../img/mst-0207-8.png)\
-![](../img/mst-0207-9.png)
+![](img/mst-0207-5.png)\
+![](img/mst-0207-6.png)\
+![](img/mst-0207-7.png)\
+![](img/mst-0207-8.png)\
+![](img/mst-0207-9.png)
 ```go
 func getIntersectionNode(headA, headB *ListNode) *ListNode {
     prevA, prevB := headA, headB
@@ -398,19 +398,19 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 不允许修改 链表。
 
 > 示例 1：\
-> ![](../img/141-1.png) \
+> ![](img/141-1.png) \
 > 输入：head = [3,2,0,-4], pos = 1\
 > 输出：返回索引为 1 的链表节点\
 > 解释：链表中有一个环，其尾部连接到第二个节点。
 > 
 > 示例 2： \
-> ![](../img/141-2.png) \
+> ![](img/141-2.png) \
 > 输入：head = [1,2], pos = 0 \
 > 输出：返回索引为 0 的链表节点 \
 > 解释：链表中有一个环，其尾部连接到第一个节点。
 > 
 > 示例 3： \
-> ![](../img/141-3.png) \
+> ![](img/141-3.png) \
 > 输入：head = [1], pos = -1 \
 > 输出：返回 null \
 > 解释：链表中没有环。
@@ -444,7 +444,7 @@ func detectCycle(head *ListNode) *ListNode {
 }
 ```
 思路2：快慢指针 \
-![](../img/142-1.png)
+![](img/142-1.png)
 ```go
 func detectCycle(head *ListNode) *ListNode {
     fast, slow := head, head
@@ -547,7 +547,7 @@ func intersection(nums1 []int, nums2 []int) []int {
 > 输入：n = 19 \
 > 输出：true \
 > 解释： \
-> ![](../img/202-1.png)
+> ![](img/202-1.png)
 >
 > 示例 2： \
 > 输入：n = 2 \
@@ -626,7 +626,7 @@ func step(n int) int {
 }
 ```
 思路3：数学法 \
-![](../img/202-2.png)
+![](img/202-2.png)
 ```go
 func isHappy(n int) bool {
     cycle := map[int]bool{4: true, 6: true, 37: true, 58: true, 89: true, 145: true, 42: true, 20: true}
@@ -1119,7 +1119,7 @@ func strStr(haystack string, needle string) int {
 ```
 思路2：KMP算法 \
 核心内容：前缀表 \
-![](../img/28-1.gif)
+![](img/28-1.gif)
 - 获取前缀表，然后根据前缀表匹配值
 ```go
 func strStr(haystack string, needle string) int {
@@ -1249,7 +1249,7 @@ func getNext(s string, next []int)  {
 现在，从某个节点 K 发出一个信号。需要多久才能使所有节点都收到信号？如果不能使所有节点收到信号，返回 -1 。
 
 > 示例 1： \
-> ![](../img/743-1.png) \
+> ![](img/743-1.png) \
 > 输入：times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2 \
 > 输出：2
 >
