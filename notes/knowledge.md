@@ -1,5 +1,17 @@
 # 知识点
 
+## mod replace
+如果引用完整的路径，而项目还没推送到远程，是没办法下载的，因此需要用 replace 将其指定读取本地的模块路径，这样子就可以解决本地模块读取的问题。
+```mod
+module github.com/EDDYCJY/go-gin-example
+go 1.13
+require (...)
+replace (
+    github.com/EDDYCJY/go-gin-example/pkg/setting => ~/go-application/go-gin-example/pkg/setting
+    github.com/EDDYCJY/go-gin-example/routers 	  => ~/go-application/go-gin-example/routers
+)
+```
+
 ## fmt
 `Sprintf` 则格式化并返回一个字 符串而不带任何输出。举例： \
 `s := fmt.Sprintf("是字符串 %s ","string")`

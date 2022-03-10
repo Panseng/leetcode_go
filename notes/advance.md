@@ -1529,3 +1529,248 @@ func find132pattern(nums []int) bool {
 	return false
 }
 ```
+## [84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。 \
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+> 示例 1: \
+> ![](img/84-1.jpg) \
+> 输入：heights = [2,1,5,6,2,3] \
+> 输出：10 \
+> 解释：最大的矩形为图中红色区域，面积为 10
+>
+> 示例 2： \
+> ![](img/84-2.jpg) \
+> 输入： heights = [2,4] \
+> 输出： 4
+
+思路：暴力迭代：超时
+```go
+func largestRectangleArea(heights []int) int {
+    ans := 0
+    n := len(heights)
+    for i, l := range heights{
+        if l > ans{
+            ans = l
+        }
+        min := l
+        for j := i+1; j < n; j++{
+            if heights[j] < min{
+                min = heights[j]
+            }
+            if (j-i+1)*min > ans{
+                ans = (j-i+1)*min
+            }
+            if (n-i)*min <= ans{
+                break
+            }
+        }
+    }
+    return ans
+}
+```
+思路：单调栈
+- 类似回文，分别向左、向右拓展
+- 此处将向左右侧拓展拆分，因为左右两侧没有关联性，仅需不小于当前值即可
+- 获取左侧下标  
+   - [2,6,1,6,2,8,4,7,9]
+   - i = 0时，stack = []，表示 i = 0时，可取值左侧下标(不包含)为-1
+   - i = 1时，循环后stack = [0]，表示 i = 1时，可取值左侧下标(不包含)为0
+   - i = 2时，循环后stack = []，表示 i = 2时，可取值左侧下标(不包含)为-1
+   - i = 3时，循环后stack = [2]，表示 i = 3时，可取值左侧下标(不包含)为2
+- 获取右侧下标
+   - [2,6,1,6,2,8,4,7,9]
+   - i = 8时，stack = []，表示 i = 8时，可取值右侧下标(不包含)为9
+   - i = 7时，循环后stack = []，表示 i = 7时，可取值右侧下标(不包含)为9
+   - i = 6时，循环后stack = []，表示 i = 6时，可取值右侧下标(不包含)为9
+   - i = 5时，循环后stack = [6]，表示 i = 6时，可取值右侧下标(不包含)为9
+```go
+func largestRectangleArea(heights []int) int {
+	n := len(heights)
+	left, right := make([]int, n), make([]int, n)
+	stack := make([]int, 0, n) // 栈，记录可取值左侧下标
+	ns := 0 // 栈长度
+	for i := 0; i < n; i++{
+		// [2,6,1,6,2,8,4,7,9]
+		// i = 0时，stack = []，表示 i = 0时，可取值左侧下标(不包含)为-1
+		// i = 1时，循环后stack = [0]，表示 i = 1时，可取值左侧下标(不包含)为0
+        // i = 2时，循环后stack = []，表示 i = 2时，可取值左侧下标(不包含)为-1
+        // i = 3时，循环后stack = [2]，表示 i = 3时，可取值左侧下标(不包含)为2
+		// 只保留小于自身的下标
+		for ns > 0 && heights[stack[ns-1]] >= heights[i]{
+			stack = stack[:ns-1]
+			ns--
+		}
+		if ns == 0{
+			left[i] = -1
+		} else {
+			left[i] = stack[ns-1]
+		}
+		stack = append(stack, i)
+		ns++
+	}
+
+	stack = make([]int, 0, n)
+	ns = 0
+	// [2,6,1,6,2,8,4,7,9]
+	// i = 8时，stack = []，表示 i = 8时，可取值右侧下标(不包含)为9
+	// i = 7时，循环后stack = []，表示 i = 7时，可取值右侧下标(不包含)为9
+	// i = 6时，循环后stack = []，表示 i = 6时，可取值右侧下标(不包含)为9
+	// i = 5时，循环后stack = [6]，表示 i = 6时，可取值右侧下标(不包含)为9
+	for i := n-1; i >= 0; i-- {
+		for ns > 0 && heights[stack[ns-1]] >= heights[i]{
+			stack = stack[:ns-1]
+			ns--
+		}
+		if ns == 0{
+			right[i] = n
+		} else {
+			right[i] = stack[ns-1]
+		}
+		stack = append(stack, i)
+		ns++
+	}
+
+	ans := 0
+	for i := 0; i < n; i++{
+		ans = max(ans, (right[i]-left[i]-1)*heights[i])
+	}
+	return ans
+}
+
+func max(a, b int)  int{
+	if a > b {
+		return a
+	}
+	return b
+}
+```
+优化：减少一次循环的判断
+```go
+func largestRectangleArea(heights []int) int {n := len(heights)
+	left, right := make([]int, n), make([]int, n)
+	for i := range right{
+		right[i] = n
+	}
+
+	stack := make([]int, 0, n) // 栈，记录可取值左侧下标
+	ns := 0 // 栈长度
+	for i := 0; i < n; i++{
+		// [2,6,1,6,2,8,4,7,9]
+		// i = 0时，stack = []，表示 i = 0时，可取值左侧下标(不包含)为-1
+		// i = 1时，循环后stack = [0]，表示 i = 1时，可取值左侧下标(不包含)为0
+		// i = 2时，循环后stack = []，表示 i = 2时，可取值左侧下标(不包含)为-1
+		// 只保留小于自身的下标
+		for ns > 0 && heights[stack[ns-1]] >= heights[i]{
+			right[stack[ns-1]] = i
+			stack = stack[:ns-1]
+			ns--
+		}
+		if ns == 0{
+			left[i] = -1
+		} else {
+			left[i] = stack[ns-1]
+		}
+		stack = append(stack, i)
+		ns++
+	}
+
+	ans := 0
+	for i := 0; i < n; i++{
+		ans = max(ans, (right[i]-left[i]-1)*heights[i])
+	}
+	return ans
+}
+
+func max(a, b int)  int{
+	if a > b {
+		return a
+	}
+	return b
+}
+```
+## *[862. 和至少为 K 的最短子数组](https://leetcode-cn.com/problems/shortest-subarray-with-sum-at-least-k/)
+给你一个整数数组 nums 和一个整数 k ，找出 nums 中和至少为 k 的 最短非空子数组 ，并返回该子数组的长度。如果不存在这样的 子数组 ，返回 -1 。 \
+子数组 是数组中 连续 的一部分。
+
+> 示例 1： \
+> 输入：nums = [1], k = 1 \
+> 输出：1
+>
+> 示例 2： \
+> 输入：nums = [1,2], k = 4 \
+> 输出：-1
+>
+> 示例 3： \
+> 输入：nums = [2,-1,2], k = 3 \
+> 输出：3
+
+思路：滑动窗口
+```go
+func shortestSubarray(nums []int, k int) int {
+	n := len(nums)
+	sums := make([]int, n+1)
+	// 获取前n项和，
+	for i, v := range nums {
+		sums[i+1] = sums[i] + v
+	}
+
+	ans := n + 1
+	// 滑动窗口
+	// 递增元素的下标
+	queue := make([]int, 0, n+1)
+	nq := 0
+	for i, v := range sums {
+		// 确保区间内递增
+		for nq > 0 && v <= sums[queue[nq-1]] {
+			queue = queue[:nq-1]
+			nq--
+		}
+		for nq > 0 && v-sums[queue[0]] >= k {
+			if ans > i-queue[0] {
+				ans = i - queue[0]
+			}
+			queue = queue[1:]
+			nq--
+		}
+		queue = append(queue, i)
+		nq++
+	}
+	if ans == n+1 {
+		return -1
+	}
+	return ans
+}
+```
+思路：前n项和——超时
+```go
+func shortestSubarray(nums []int, k int) int {
+    n := len(nums)
+    sums := make([]int, n)
+    for i, v := range nums{
+        if v >= k{
+            return 1
+        }
+        if i == 0 {
+            sums[i] = v
+            continue
+        }
+        sums[i] = sums[i-1]+v
+    }
+    if n < 2{ // 不存在
+        return -1
+    }
+    for i := 2; i <= n; i++{
+        for j := 0; j+i-1 < n; j++{
+            left := 0
+            if j > 0{
+                left = sums[j-1]
+            }
+            if k <= sums[j+i-1]-left{
+                return i
+            }
+        }
+    }
+    return -1
+}
+```

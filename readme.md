@@ -10,6 +10,7 @@
 - [进阶](notes/advance.md)
 - [精选200](notes/chosen.md)
 - [随想录题集](notes/random.md)
+- [知识点](notes/knowledge.md)
 
 ![](notes/img/structure.png) \
 
