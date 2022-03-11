@@ -1774,3 +1774,132 @@ func shortestSubarray(nums []int, k int) int {
     return -1
 }
 ```
+## [1602. 找到二叉树中最近的右侧节点](https://leetcode-cn.com/problems/find-nearest-right-node-in-binary-tree/)
+给定一棵二叉树的根节点 root 和树中的一个节点 u ，返回与 u 所在层中距离最近的右侧节点，当 u 是所在层中最右侧的节点，返回 null 。
+
+> 示例 1： \
+> ![](img/1602.png) \
+> 输入：root = [1,2,3,null,4,5,6], u = 4 \
+> 输出：5 \
+> 解释：节点 4 所在层中，最近的右侧节点是节点 5。
+>
+> 示例 2： \
+> ![](img/1602-2.png) \
+> 输入：root = [3,null,4,2], u = 2 \
+> 输出：null \
+> 解释：2 的右侧没有节点。
+>
+> 示例 3： \
+> 输入：root = [1], u = 1 \
+> 输出：null
+>
+> 示例 4： \
+> 输入：root = [3,4,2,null,null,null,1], u = 4 \
+> 输出：2
+
+思路：层序遍历
+```go
+func findNearestRightNode(root *TreeNode, u *TreeNode) *TreeNode {
+    if root == u{
+        return nil
+    }
+    queue := []*TreeNode{root}
+    isNext := false
+    for len(queue) > 0{
+        tem := make([]*TreeNode, 0, 2*len(queue))
+        for len(queue) > 0{
+            t := queue[0]
+            queue = queue[1:]
+            if t.Left != nil{
+                if isNext{
+                    return t.Left
+                }
+                if t.Left == u{
+                    isNext = true
+                }
+                tem = append(tem, t.Left)
+            }
+            if t.Right != nil{
+                if isNext{
+                    return t.Right
+                }
+                if t.Right == u{
+                    isNext = true
+                }
+                tem = append(tem, t.Right)
+            }
+        }
+        if isNext{
+            return nil
+        }
+        queue = tem
+    }
+    return nil
+}
+```
+## [1469. 寻找所有的独生节点](https://leetcode-cn.com/problems/find-all-the-lonely-nodes/)
+二叉树中，如果一个节点是其父节点的唯一子节点，则称这样的节点为 “独生节点” 。二叉树的根节点不会是独生节点，因为它没有父节点。 \
+给定一棵二叉树的根节点 root ，返回树中 所有的独生节点的值所构成的数组 。数组的顺序 不限 。
+
+> 示例 1： \
+> ![](img/1469-1.png) \
+> 输入：root = [1,2,3,null,4] \
+> 输出：[4] \
+> 解释：浅蓝色的节点是唯一的独生节点。 \
+> 节点 1 是根节点，不是独生的。 \
+> 节点 2 和 3 有共同的父节点，所以它们都不是独生的。
+>
+> 示例 2 \
+> ![](img/1469-2.png) \
+> 输入：root = [7,1,4,6,null,5,3,null,null,null,null,null,2] \
+> 输出：[6,2] \
+> 输出：浅蓝色的节点是独生节点。 \
+> 请谨记，顺序是不限的。 [2,6] 也是一种可接受的答案。
+>
+> 示例 3： \
+> ![](img/1469-4.png) \
+> 输入：root = [11,99,88,77,null,null,66,55,null,null,44,33,null,null,22] \
+> 输出：[77,55,33,66,44,22] \
+> 解释：节点 99 和 88 有共同的父节点，节点 11 是根节点。 \
+> 其他所有节点都是独生节点。
+>
+> 示例 4： \
+> 输入：root = [197] \
+> 输出：[]
+>
+> 示例 5： \
+> 输入：root = [31,null,78,null,28] \
+> 输出：[78,28]
+
+思路：层序遍历
+```go
+func getLonelyNodes(root *TreeNode) []int {
+    queue := []*TreeNode{root}
+    ans := []int{}
+    for len(queue) > 0{
+        tem := make([]*TreeNode, 0, 2*len(queue))
+        for len(queue) > 0{
+            t := queue[0]
+            queue = queue[1:]
+            hasNil := false
+            if t.Left == nil || t.Right == nil{
+                hasNil = true
+            }
+            if t.Left != nil{
+                if hasNil{
+                    ans = append(ans, t.Left.Val)
+                }
+                tem = append(tem, t.Left)
+            }
+            if t.Right != nil{
+                if hasNil{
+                    ans = append(ans, t.Right.Val)
+                }
+                tem = append(tem, t.Right)
+            }
+        }
+        queue = tem
+    }
+    return ans
+}
+```
