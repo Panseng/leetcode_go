@@ -1903,3 +1903,144 @@ func getLonelyNodes(root *TreeNode) []int {
     return ans
 }
 ```
+
+## [1522. N 叉树的直径](https://leetcode-cn.com/problems/diameter-of-n-ary-tree/)
+给定一棵 N 叉树的根节点 root ，计算这棵树的直径长度。 \
+N 叉树的直径指的是树中任意两个节点间路径中 最长 路径的长度。这条路径可能经过根节点，也可能不经过根节点。 \
+（N 叉树的输入序列以层序遍历的形式给出，每组子节点用 null 分隔）
+
+> 示例 1： \
+> ![](img/1522-1.png) \
+> 输入：root = [1,null,3,2,4,null,5,6] \
+> 输出：3 \
+> 解释：直径如图中红线所示。
+>
+> 示例 2： \
+> ![](img/1522-2.png) \
+> 输入：root = [1,null,2,null,3,4,null,5,null,6] \
+> 输出：4
+>
+> 示例 3： \
+> ![](img/1522-3.png) \
+> 输入: root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14] \
+> 输出: 7
+
+思路：深度优先，队列保存
+- 用长度为2的队列保存当前节点最长的直径（大到小排序）
+- 当前节点最长更新到全局最长
+```go
+func diameter(root *Node) int {
+    if root == nil{
+        return 0
+    }
+    dis := make([]int, 2) // 保存两个最大路径，大到小排序
+    var find func(node *Node) int
+    find = func(node *Node) int{
+        if len(node.Children) == 0{
+            return 1
+        }
+        temDis := make([]int, 2)
+        for _, n := range node.Children{
+            d := find(n)
+            if d > temDis[1]{
+                temDis[1] = d
+                swap(temDis) // 确保数组由大到小排序
+                if dis[0]+dis[1] < temDis[0]+temDis[1]{ // 如果当前线路比已保存的路径大，则更新
+                    dis[0], dis[1] = temDis[0], temDis[1]
+                }
+            }
+        }
+        return temDis[0]+1
+    }
+    find(root)
+    return dis[0]+dis[1]
+}
+
+//交换数组，确保数组逆序排序
+func swap(nums []int){ 
+    if nums[0] < nums[1]{
+        nums[0], nums[1] = nums[1], nums[0]
+    }
+}
+```
+## [337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为 root 。 \
+除了 root 之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果 两个直接相连的房子在同一天晚上被打劫 ，房屋将自动报警。 \
+给定二叉树的 root 。返回 在不触动警报的情况下 ，小偷能够盗取的最高金额 。
+
+> 示例 1: \
+> ![](img/337-1.jpg) \
+> 输入: root = [3,2,3,null,3,null,1] \
+> 输出: 7 \
+> 解释: 小偷一晚能够盗取的最高金额 3 + 3 + 1 = 7
+>
+> 示例 2: \
+> ![](img/337-2.jpg) \
+> 输入: root = [3,4,5,1,3,null,1] \
+> 输出: 9 \
+> 解释: 小偷一晚能够盗取的最高金额 4 + 5 = 9
+
+思路：动态规划 \
+![](img/337-0.png)
+```go
+func rob(root *TreeNode) int {
+    vals := dfs(root)
+    return max(vals[0], vals[1])
+}
+
+func dfs(node *TreeNode)[]int{
+    if node == nil{
+        return []int{0,0}
+    }
+    l, r := dfs(node.Left), dfs(node.Right)
+    selected := node.Val+l[1]+r[1]
+    noSelected := max(l[0],l[1])+max(r[0],r[1])
+    return []int{selected, noSelected}
+}
+
+func max(a, b int)int{
+    if a > b{
+        return a
+    }
+    return b
+}
+```
+不能用层序遍历，隔行累加，因为在第一行、第四行出现两个大值的情况，是会出问题的 \
+[4,1,null,2,null,3]
+```go
+func rob(root *TreeNode) int {
+    if root == nil{
+        return 0
+    }
+    sumOdd, sumEven := 0, 0
+    queue := []*TreeNode{root}
+    isOdd := true // root层，第一层
+    for len(queue) > 0{
+        temQ := []*TreeNode{}
+        temS := 0
+        for len(queue) > 0{
+            node := queue[0]
+            queue = queue[1:]
+            temS += node.Val
+            if node.Left != nil{
+                temQ = append(temQ, node.Left)
+            }
+            if node.Right != nil{
+                temQ = append(temQ, node.Right)
+            }
+        }
+        queue = temQ
+        if isOdd{
+            isOdd = false
+            sumOdd += temS
+        } else{
+            isOdd = true
+            sumEven += temS
+        }
+    }
+    if sumEven > sumOdd{
+        return sumEven
+    }
+    return sumOdd
+}
+```
