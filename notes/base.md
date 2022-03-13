@@ -124,6 +124,7 @@ func majorityElement(nums []int) int {
     return candidate
 }
 ```
+
 ## [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。\
 注意：答案中不可以包含重复的三元组。
@@ -294,6 +295,7 @@ func sortColors(nums []int)  {
     }
 }
 ```
+
 ## [56. 合并区间](https://leetcode-cn.com/problems/merge-intervals/)
 以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
 
@@ -824,6 +826,7 @@ func increasingTriplet(nums []int) bool {
     return false
 }
 ```
+
 ## [238. 除自身以外数组的乘积](https://leetcode-cn.com/problems/product-of-array-except-self/)
 给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。\
 题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。\
@@ -1062,6 +1065,7 @@ func longestPalindrome(s string) int {
 	return count
 }
 ```
+
 ## [290. 单词规律](https://leetcode-cn.com/problems/word-pattern/)
 给定一种规律 pattern 和一个字符串 str ，判断 str 是否遵循相同的规律。\
 这里的 遵循 指完全匹配，例如， pattern 里的每个字母和字符串 str 中的每个非空单词之间存在着双向连接的对应规律。
@@ -1131,6 +1135,7 @@ func wordPattern3(pattern string, s string) bool {
 	return true
 }
 ```
+
 ## [763. 划分字母区间](https://leetcode-cn.com/problems/partition-labels/)
 字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。返回一个表示每个字符串片段的长度的列表。
 
@@ -1214,7 +1219,7 @@ func partitionLabels(s string) []int {
 ```go
 func groupAnagrams(strs []string) [][]string {
 	ans := [][]string{}
-	mp := make(map[string]int, len(strs))
+	mp := make(map[string]int, len(strs)) // 记录排序后字符串出现在结果集的下标
 	for _, v := range strs{
 		a := []byte(v)
 		sort.Slice(a, func(i, j int) bool {
@@ -1743,6 +1748,23 @@ func reverseKGroup2(head *ListNode, k int) *ListNode {
 ```
 
 ## [143. 重排链表](https://leetcode-cn.com/problems/reorder-list/)
+给定一个单链表 L 的头节点 head ，单链表 L 表示为：
+- L0 → L1 → … → Ln - 1 → Ln
+
+请将其重新排列后变为：
+- L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+
+不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+> 示例 1： \
+> ![](img/143-1.png) \
+> 输入：head = [1,2,3,4] \
+> 输出：[1,4,2,3]
+>
+> 示例 2： \
+> ![](img/143-2.png) \
+> 输入：head = [1,2,3,4,5] \
+> 输出：[1,5,2,4,3]
 
 思路1：队列
 - 先将所有节点填入队列，然后逐个填入head节点
@@ -1994,6 +2016,38 @@ func removeIndex (s string, n, index int) string{
 	return s[:index]+s[index+1:]
 }
 ```
+
+## [1823. 找出游戏的获胜者](https://leetcode-cn.com/problems/find-the-winner-of-the-circular-game/)
+共有 n 名小伙伴一起做游戏。小伙伴们围成一圈，按 顺时针顺序 从 1 到 n 编号。确切地说，从第 i 名小伙伴顺时针移动一位会到达第 (i+1) 名小伙伴的位置，其中 1 <= i < n ，从第 n 名小伙伴顺时针移动一位会回到第 1 名小伙伴的位置。
+
+游戏遵循如下规则：
+- 从第 1 名小伙伴所在位置 开始 。
+- 沿着顺时针方向数 k 名小伙伴，计数时需要 包含 起始时的那位小伙伴。逐个绕圈进行计数，一些小伙伴可能会被数过不止一次。
+- 你数到的最后一名小伙伴需要离开圈子，并视作输掉游戏。
+- 如果圈子中仍然有不止一名小伙伴，从刚刚输掉的小伙伴的 顺时针下一位 小伙伴 开始，回到步骤 2 继续执行。
+- 否则，圈子中最后一名小伙伴赢得游戏。
+
+给你参与游戏的小伙伴总数 n ，和一个整数 k ，返回游戏的获胜者。
+
+> 示例 1： \
+> ![](img/1823.png) \
+> 输入：n = 5, k = 2 \
+> 输出：3 \
+> 解释：游戏运行步骤如下：
+> 1) 从小伙伴 1 开始。
+> 2) 顺时针数 2 名小伙伴，也就是小伙伴 1 和 2 。
+> 3) 小伙伴 2 离开圈子。下一次从小伙伴 3 开始。
+> 4) 顺时针数 2 名小伙伴，也就是小伙伴 3 和 4 。
+> 5) 小伙伴 4 离开圈子。下一次从小伙伴 5 开始。
+> 6) 顺时针数 2 名小伙伴，也就是小伙伴 5 和 1 。
+> 7) 小伙伴 1 离开圈子。下一次从小伙伴 3 开始。
+> 8) 顺时针数 2 名小伙伴，也就是小伙伴 3 和 5 。
+> 9) 小伙伴 5 离开圈子。只剩下小伙伴 3 。所以小伙伴 3 是游戏的获胜者。
+>
+> 示例 2： \
+> 输入：n = 6, k = 5 \
+> 输出：1 \
+> 解释：小伙伴离开圈子的顺序：5、4、6、2、3 。小伙伴 1 是游戏的获胜者。
 
 思路1：使用队列，暴力模拟
 - 注意，当前计数过程中，不要重复从头数，即，要将被删数，**队列左侧**移到尾部
@@ -3160,6 +3214,26 @@ func frequencySort(s string) string {
 	return string(ans)
 }
 ```
+
+## [973. 最接近原点的 K 个点](https://leetcode-cn.com/problems/k-closest-points-to-origin/)
+给定一个数组 points ，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点，并且是一个整数 k ，返回离原点 (0,0) 最近的 k 个点。\
+这里，平面上两点之间的距离是 欧几里德距离（ √(x1 - x2)2 + (y1 - y2)2 ）。 \
+你可以按 任何顺序 返回答案。除了点坐标的顺序之外，答案 确保 是 唯一 的。
+
+> 示例 1： \
+> ![](img/973.jpg) \
+> 输入：points = [[1,3],[-2,2]], k = 1 \
+> 输出：[[-2,2]] \
+> 解释： \
+> (1, 3) 和原点之间的距离为 sqrt(10)， \
+> (-2, 2) 和原点之间的距离为 sqrt(8)， \
+> 由于 sqrt(8) < sqrt(10)，(-2, 2) 离原点更近。 \
+> 我们只需要距离原点最近的 K = 1 个点，所以答案就是 [[-2,2]]。
+>
+> 示例 2： \
+> 输入：points = [[3,3],[5,-1],[-2,4]], k = 2 \
+> 输出：[[3,3],[-2,4]] \
+> （答案 [[-2,4],[3,3]] 也会被接受。）
 
 思路：hash法
 ```go

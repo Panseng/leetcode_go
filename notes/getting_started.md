@@ -242,7 +242,6 @@ func maxProfit(prices []int) int {
 实现：[stock_max_profit](../code/array/stock_max_profit)
 
 ## [566. 重塑矩阵](https://leetcode-cn.com/problems/reshape-the-matrix/)
-
 在 MATLAB 中，有一个非常有用的函数 reshape ，它可以将一个m x n 矩阵重塑为另一个大小不同（r x c）的新矩阵，但保留其原始数据。\
 给你一个由二维数组 mat 表示的m x n 矩阵，以及两个正整数 r 和 c ，分别表示想要的重构的矩阵的行数和列数。\
 重构后的矩阵需要将原始矩阵的所有元素以相同的 行迭代顺序 填充。\
@@ -379,9 +378,9 @@ func isValidSudoku(board [][]byte) bool {
 				continue
 			}
 			index := v - '1'
-			rows[i][index]++
-			cols[j][index]++
-			ceils[i/3][j/3][index]++
+			rows[i][index]++ // 查行
+			cols[j][index]++ // 查列
+			ceils[i/3][j/3][index]++ // 查小方块
 			if rows[i][index] > 1 || cols[j][index] > 1 || ceils[i/3][j/3][index] > 1 {
 				return false
 			}
@@ -683,15 +682,6 @@ func hasCycle(head *ListNode) bool {
 ## [21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
 
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-```
 ![](img/21-0.jpg) \
 > 输入：l1 = [1,2,4], l2 = [1,3,4]\
 > 输出：[1,1,2,3,4,4]

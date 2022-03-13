@@ -12,6 +12,16 @@
 - [随想录题集](notes/random.md)
 - [知识点](notes/knowledge.md)
 
+归类：
+- [字符串](classification_notes/string.md)
+- [数组](classification_notes/array.md)
+- [链表](classification_notes/linked_list.md)
+- [二叉树](classification_notes/binary_search_tree.md)
+- [双指针法](classification_notes/double_pointer.md)
+- [栈&队列](classification_notes/stack_queue.md)
+- [hash](classification_notes/hash.md)
+- [kmp](classification_notes/kmp.md)
+
 ![](notes/img/structure.png) \
 
 

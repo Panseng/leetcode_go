@@ -1,8 +1,33 @@
 package main
 
-func main() {
+import "fmt"
 
+func main() {
+	fmt.Println(shortestSubarray3([]int{84,-37,32,40,95},167))
 }
+func shortestSubarray3(nums []int, k int) int {
+	ans := len(nums)+1
+	sum := 0
+	left := 0
+	for right, v := range nums{
+		if v >= k{
+			return 1
+		}
+		sum += v
+		for sum >= k{
+			if right-left+1 < ans{
+				ans = right-left+1
+			}
+			sum -= nums[left]
+			left++
+		}
+	}
+	if ans == len(nums)+1{
+		return -1
+	}
+	return ans
+}
+
 func shortestSubarray(nums []int, k int) int {
 	n := len(nums)
 	sums := make([]int, n+1)
