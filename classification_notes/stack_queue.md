@@ -103,7 +103,6 @@ func (h *IHeap) Pop() interface{} {
 > 此外，"bbaA"也是一个有效的答案，但"Aabb"是不正确的。
 > 注意'A'和'a'被认为是两种不同的字符。
 
-
 思路1：最小堆
 ```go
 func frequencySort(s string) string {
